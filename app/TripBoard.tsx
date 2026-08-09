@@ -77,7 +77,13 @@ async function readJson(response: Response) {
   return data;
 }
 
-export function TripBoard() {
+type TripBoardProps = {
+  viewer: { displayName: string } | null;
+  signInPath: string;
+  signOutPath: string;
+};
+
+export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
   const [board, setBoard] = useState<Board | null>(null);
   const [mode, setMode] = useState<"plan" | "expense" | "receipt">("plan");
   const [busy, setBusy] = useState(false);
@@ -114,8 +120,10 @@ export function TripBoard() {
     try {
       const data = await readJson(await fetch(url, init));
       if (data.board) setBoard(data.board);
+      return true;
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "更新できませんでした");
+      return false;
     } finally {
       setBusy(false);
     }
@@ -125,7 +133,7 @@ export function TripBoard() {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
-    await mutate("/api/proposals", {
+    const saved = await mutate("/api/proposals", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -136,14 +144,14 @@ export function TripBoard() {
         costYen: Number(data.get("costYen") || 0),
       }),
     });
-    form.reset();
+    if (saved) form.reset();
   }
 
   async function submitExpense(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
-    await mutate("/api/expenses", {
+    const saved = await mutate("/api/expenses", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -155,14 +163,14 @@ export function TripBoard() {
         status: data.get("confirmed") === "on" ? "confirmed" : "draft",
       }),
     });
-    form.reset();
+    if (saved) form.reset();
   }
 
   async function submitReceipt(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
-    await mutate("/api/receipts", { method: "POST", body: new FormData(form) });
-    form.reset();
+    const saved = await mutate("/api/receipts", { method: "POST", body: new FormData(form) });
+    if (saved) form.reset();
   }
 
   if (!board) {
@@ -201,7 +209,9 @@ export function TripBoard() {
             <div className="people">
               {board.participants.map((person) => <span key={person.id}>{person.displayName}</span>)}
             </div>
-            <a className="hero-action" href="#add">サイトに追加する</a>
+            <a className="hero-action" href={viewer ? "#add" : signInPath}>
+              {viewer ? "サイトに追加する" : "ChatGPTでサインイン"}
+            </a>
           </aside>
         </div>
       </header>
@@ -245,7 +255,7 @@ export function TripBoard() {
                 <h3>{proposal.title}</h3>
                 <p>{proposal.details || "詳細は相談しながら決める"}</p>
                 {proposal.costYen > 0 && <strong>{yen.format(proposal.costYen)}</strong>}
-                <button disabled={busy} onClick={() => void mutate(`/api/proposals/${proposal.id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ status: "adopted" }) })}>この予定を採用</button>
+                <button disabled={!viewer || busy} title={viewer ? undefined : "採用にはサインインが必要です"} onClick={() => void mutate(`/api/proposals/${proposal.id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ status: "adopted" }) })}>この予定を採用</button>
               </article>
             ))}
           </div>
@@ -290,36 +300,53 @@ export function TripBoard() {
           <button className={mode === "expense" ? "active" : ""} onClick={() => setMode("expense")}>費用を追加</button>
           <button className={mode === "receipt" ? "active" : ""} onClick={() => setMode("receipt")}>領収書を追加</button>
         </div>
+        {viewer ? (
+          <div className="auth-banner signed-in">
+            <p><strong>{viewer.displayName}</strong> として追加できます</p>
+            <a href={signOutPath}>サインアウト</a>
+          </div>
+        ) : (
+          <div className="auth-banner">
+            <p><strong>見るだけならこのままでOK。</strong>予定・費用・領収書の追加にはChatGPTサインインが必要です。</p>
+            <a href={signInPath}>サインインして追加する</a>
+          </div>
+        )}
         {error && <p className="form-error" role="alert">{error}</p>}
 
         {mode === "plan" && (
           <form className="composer-form" onSubmit={submitPlan}>
-            <label className="wide">何をしたい？<input name="title" required placeholder="例：新島で夕日を見ながら温泉" /></label>
-            <label>日付<input name="date" placeholder="8/31" /></label>
-            <label>時間<input name="time" placeholder="17:30ごろ" /></label>
-            <label>目安金額<input name="costYen" inputMode="numeric" type="number" min="0" placeholder="0" /></label>
-            <label className="wide">ひとこと<textarea name="details" rows={3} placeholder="楽しそうな理由や注意点" /></label>
-            <button className="submit-button" disabled={busy}>{busy ? "追加中…" : "相談中の予定に追加"}</button>
+            <fieldset disabled={!viewer || busy}>
+              <label className="wide">何をしたい？<input name="title" required placeholder="例：新島で夕日を見ながら温泉" /></label>
+              <label>日付<input name="date" placeholder="8/31" /></label>
+              <label>時間<input name="time" placeholder="17:30ごろ" /></label>
+              <label>目安金額<input name="costYen" inputMode="numeric" type="number" min="0" placeholder="0" /></label>
+              <label className="wide">ひとこと<textarea name="details" rows={3} placeholder="楽しそうな理由や注意点" /></label>
+              <button className="submit-button">{busy ? "追加中…" : "相談中の予定に追加"}</button>
+            </fieldset>
           </form>
         )}
 
         {mode === "expense" && (
           <form className="composer-form" onSubmit={submitExpense}>
-            <label className="wide">費目<input name="title" required placeholder="例：大島の宿代" /></label>
-            <label>金額<input name="amountYen" required inputMode="numeric" type="number" min="0" placeholder="12000" /></label>
-            <label>払った人<select name="payer"><option>共有</option>{board.participants.map((person) => <option key={person.id}>{person.displayName}</option>)}</select></label>
-            <label>分類<select name="category"><option>宿</option><option>船</option><option>食事</option><option>島内移動</option><option>体験</option><option>その他</option></select></label>
-            <label>日付<input name="occurredOn" type="date" /></label>
-            <label className="check-label"><input name="confirmed" type="checkbox" /> 金額を確認済みにする</label>
-            <button className="submit-button" disabled={busy}>{busy ? "追加中…" : "費用に追加"}</button>
+            <fieldset disabled={!viewer || busy}>
+              <label className="wide">費目<input name="title" required placeholder="例：大島の宿代" /></label>
+              <label>金額<input name="amountYen" required inputMode="numeric" type="number" min="0" placeholder="12000" /></label>
+              <label>払った人<select name="payer"><option>共有</option>{board.participants.map((person) => <option key={person.id}>{person.displayName}</option>)}</select></label>
+              <label>分類<select name="category"><option>宿</option><option>船</option><option>食事</option><option>島内移動</option><option>体験</option><option>その他</option></select></label>
+              <label>日付<input name="occurredOn" type="date" /></label>
+              <label className="check-label"><input name="confirmed" type="checkbox" /> 金額を確認済みにする</label>
+              <button className="submit-button">{busy ? "追加中…" : "費用に追加"}</button>
+            </fieldset>
           </form>
         )}
 
         {mode === "receipt" && (
           <form className="composer-form receipt-form" onSubmit={submitReceipt}>
-            <label className="wide">領収書・レシート画像<input name="file" required type="file" accept="image/jpeg,image/png,image/webp,application/pdf" /></label>
-            <p>サイトからは安全に保管して「読み取り待ち」にします。DiscordでOpenClosへ画像を送ると、店名・金額をOCRして費用の下書きまで作れます。</p>
-            <button className="submit-button" disabled={busy}>{busy ? "保存中…" : "領収書を保存"}</button>
+            <fieldset disabled={!viewer || busy}>
+              <label className="wide">領収書・レシート画像<input name="file" required type="file" accept="image/jpeg,image/png,image/webp,application/pdf" /></label>
+              <p>サイトからは安全に保管して「読み取り待ち」にします。DiscordでOpenClosへ画像を送ると、店名・金額をOCRして費用の下書きまで作れます。</p>
+              <button className="submit-button">{busy ? "保存中…" : "領収書を保存"}</button>
+            </fieldset>
           </form>
         )}
       </section>

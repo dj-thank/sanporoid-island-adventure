@@ -684,6 +684,61 @@ dd { margin: 0; font-weight: 750; text-align: right; }
   box-shadow: 0 20px 50px rgba(16, 42, 50, 0.06);
 }
 
+.composer-form fieldset {
+  display: contents;
+}
+
+.composer-form fieldset:disabled {
+  opacity: 0.58;
+}
+
+.composer-form fieldset:disabled input,
+.composer-form fieldset:disabled select,
+.composer-form fieldset:disabled textarea,
+.composer-form fieldset:disabled button {
+  cursor: not-allowed;
+}
+
+.auth-banner {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(12, 101, 115, 0.22);
+  border-radius: 12px;
+  background: var(--foam);
+}
+
+.auth-banner p {
+  margin: 0;
+  color: #526d74;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.auth-banner a {
+  flex: 0 0 auto;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: white;
+  background: var(--ocean);
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.auth-banner.signed-in {
+  border-color: rgba(38, 162, 118, 0.3);
+  background: #eefaf5;
+}
+
+.auth-banner.signed-in a {
+  color: var(--ocean);
+  background: white;
+}
+
 .composer-form label {
   display: grid;
   gap: 8px;
@@ -979,6 +1034,7 @@ footer {
   .composer-form .wide,
   .submit-button,
   .receipt-form p { grid-column: span 1; }
+  .auth-banner { align-items: flex-start; flex-direction: column; }
   .submit-button { width: 100%; }
   .expense-list > div { grid-template-columns: 66px 1fr; }
   .expense-list b { grid-column: 2; }
