@@ -89,36 +89,37 @@ export async function ensureTripStore() {
   }
 
   const tripId = Number(trip?.id);
-  const participantCount = await db
-    .prepare("SELECT COUNT(*) AS count FROM participants WHERE trip_id = ?")
-    .bind(tripId)
-    .first<{ count: number }>();
+  await db.batch([
+    db.prepare("INSERT OR IGNORE INTO participants (trip_id, discord_user_id, display_name) VALUES (?, ?, ?)").bind(tripId, "june", "June"),
+    db.prepare("INSERT OR IGNORE INTO participants (trip_id, discord_user_id, display_name) VALUES (?, ?, ?)").bind(tripId, "512529641026617344", "りも"),
+  ]);
 
-  if (!participantCount?.count) {
-    await db.batch([
-      db.prepare("INSERT INTO participants (trip_id, discord_user_id, display_name) VALUES (?, ?, ?)").bind(tripId, "june", "June"),
-      db.prepare("INSERT INTO participants (trip_id, discord_user_id, display_name) VALUES (?, ?, ?)").bind(tripId, "512529641026617344", "りも"),
-    ]);
+  const entries: Array<PlanInput> = [
+    { date: "8/29 SAT", time: "23:00", title: "東京・竹芝 発", details: "大型客船で船中泊", status: "adopted", source: "official", sortOrder: 10, costYen: 8220 },
+    { date: "8/30 SUN", time: "06:00", title: "大島 着", details: "三原山か火山景観。大島泊は未定", status: "adopted", source: "official", sortOrder: 20 },
+    { date: "8/31 MON", time: "09:45 → 10:40", title: "大島 → 新島", details: "午後は白い浜・モヤイ・温泉。新島泊は未定", status: "adopted", source: "official", sortOrder: 30, costYen: 3950 },
+    { date: "9/1 TUE", time: "14:10 → 17:00", title: "新島 → 東京", details: "大島でジェット船を乗り継ぐ", status: "adopted", source: "official", sortOrder: 40, costYen: 13280 },
+    { date: "8/31 MON", time: "17:00ごろ", title: "夕日を見て、まました温泉へ", details: "友達旅行らしく、新島の夕方は予定を詰めずに景色と温泉をセットにする案。天候で順番を入れ替える。", status: "proposed", source: "OpenClos", sortOrder: 50 },
+  ];
+  for (const entry of entries) {
+    await db.prepare("INSERT INTO plan_entries (trip_id, date, time, title, details, status, source, sort_order, cost_yen, created_by) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM plan_entries WHERE trip_id = ? AND date = ? AND time = ? AND title = ?)").bind(
+      tripId,
+      entry.date ?? "",
+      entry.time ?? "",
+      entry.title,
+      entry.details ?? "",
+      entry.status ?? "proposed",
+      entry.source ?? "site",
+      entry.sortOrder ?? 100,
+      entry.costYen ?? 0,
+      "OpenClos",
+      tripId,
+      entry.date ?? "",
+      entry.time ?? "",
+      entry.title,
+    ).run();
   }
-
-  const planCount = await db
-    .prepare("SELECT COUNT(*) AS count FROM plan_entries WHERE trip_id = ?")
-    .bind(tripId)
-    .first<{ count: number }>();
-
-  if (!planCount?.count) {
-    const entries: Array<PlanInput> = [
-      { date: "8/29 SAT", time: "23:00", title: "東京・竹芝 発", details: "大型客船で船中泊", status: "adopted", source: "official", sortOrder: 10, costYen: 8220 },
-      { date: "8/30 SUN", time: "06:00", title: "大島 着", details: "三原山か火山景観。大島泊は未定", status: "adopted", source: "official", sortOrder: 20 },
-      { date: "8/31 MON", time: "09:45 → 10:40", title: "大島 → 新島", details: "午後は白い浜・モヤイ・温泉。新島泊は未定", status: "adopted", source: "official", sortOrder: 30, costYen: 3950 },
-      { date: "9/1 TUE", time: "14:10 → 17:00", title: "新島 → 東京", details: "大島でジェット船を乗り継ぐ", status: "adopted", source: "official", sortOrder: 40, costYen: 13280 },
-      { date: "8/31 MON", time: "17:00ごろ", title: "夕日を見て、まました温泉へ", details: "友達旅行らしく、新島の夕方は予定を詰めずに景色と温泉をセットにする案。天候で順番を入れ替える。", status: "proposed", source: "OpenClos", sortOrder: 50 },
-    ];
-    for (const entry of entries) {
-      await insertPlanEntry(entry, "OpenClos", tripId);
-    }
-    await addActivity(tripId, "seed", "推奨仮案 A｜大島 → 新島 をSSOTへ登録", "OpenClos");
-  }
+  await addActivity(tripId, "seed", "推奨仮案 A｜大島 → 新島 をSSOTへ登録", "OpenClos", "seed:island-weekend-2026:v1");
 
   await db.prepare("PRAGMA optimize").run();
   return { db, tripId };
