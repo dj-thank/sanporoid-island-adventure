@@ -78,6 +78,25 @@ main {
   color: rgba(255, 255, 255, 0.64);
 }
 
+.eyebrow-actions {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.magazine-link {
+  color: var(--sun);
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.magazine-link:hover,
+.magazine-link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  outline: none;
+}
+
 .hero-grid {
   position: relative;
   z-index: 1;
@@ -196,6 +215,24 @@ h1 {
   font-size: 12px;
   font-weight: 800;
   text-decoration: none;
+}
+
+.hero-magazine-action {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 4px 3px;
+  color: rgba(255, 255, 255, 0.88);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.hero-magazine-action span {
+  color: var(--sun);
 }
 
 .quick-status {
@@ -1013,7 +1050,8 @@ footer {
 
 @media (max-width: 520px) {
   .hero { padding: 18px 20px 36px; }
-  .eyebrow { flex-direction: column; gap: 6px; }
+  .eyebrow { flex-direction: column; gap: 10px; }
+  .eyebrow-actions { width: 100%; justify-content: space-between; }
   .hero-grid { margin-top: 38px; }
   h1 { font-size: clamp(2.8rem, 15vw, 4.2rem); }
   .lead { line-height: 1.75; }

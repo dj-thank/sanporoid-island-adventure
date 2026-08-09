@@ -38,6 +38,27 @@ test("server-renders the Island Weekend shell and metadata", async () => {
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
 });
 
+test("server-renders the official-source island magazine", async () => {
+  const worker = await loadWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/discover", { headers: { accept: "text/html" } }),
+    runtime,
+    context,
+  );
+
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /黒い島から、/);
+  assert.match(html, /白い島へ。/);
+  assert.match(html, /OFFICIAL BOOKING DESK/);
+  assert.match(html, /空席未確認/);
+  assert.match(html, /EDITORIAL VISUAL/);
+  assert.match(html, /www\.tokaikisenyoyaku\.com\/app\/login/);
+  assert.match(html, /niijima-info\.jp\/stay/);
+  assert.match(html, /izu-oshima\.or\.jp\/transportation/);
+  assert.match(html, /No booking has been made/);
+});
+
 test("gates every site-side write route before parsing its payload", async () => {
   const routes = await Promise.all([
     readFile(new URL("../app/api/proposals/route.ts", import.meta.url), "utf8"),
@@ -71,6 +92,7 @@ test("shows a sign-in gate for every site-side write control", async () => {
   assert.match(board, /ChatGPTでサインイン/);
   assert.match(board, /<fieldset disabled=\{!viewer \|\| busy\}>/);
   assert.match(board, /disabled=\{!viewer \|\| busy\}/);
+  assert.match(board, /href="\/discover"/);
   assert.match(store, /oai-authenticated-user-id/);
   assert.match(store, /return null;/);
   assert.match(store, /throw new Error\("BOT_UNAUTHORIZED"\)/);

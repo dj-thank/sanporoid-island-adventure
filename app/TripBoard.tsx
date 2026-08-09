@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
 type Trip = {
   id: number;
@@ -101,9 +102,12 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
   }, []);
 
   useEffect(() => {
-    void refresh();
+    const initial = window.setTimeout(() => void refresh(), 0);
     const timer = window.setInterval(() => void refresh(true), 15000);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(timer);
+    };
   }, [refresh]);
 
   const adopted = useMemo(() => board?.plans.filter((plan) => plan.status === "adopted") ?? [], [board]);
@@ -188,7 +192,10 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
       <header className="hero">
         <nav className="eyebrow" aria-label="ページ情報">
           <span>OPENClOS · TRIP SSOT</span>
-          <span className="updated">自動更新 · 15秒</span>
+          <div className="eyebrow-actions">
+            <Link className="magazine-link" href="/discover">写真で島を知る ↗</Link>
+            <span className="updated">自動更新 · 15秒</span>
+          </div>
         </nav>
 
         <div className="hero-grid">
@@ -212,6 +219,7 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
             <a className="hero-action" href={viewer ? "#add" : signInPath}>
               {viewer ? "サイトに追加する" : "ChatGPTでサインイン"}
             </a>
+            <Link className="hero-magazine-action" href="/discover">島旅マガジンを読む <span>→</span></Link>
           </aside>
         </div>
       </header>
@@ -372,6 +380,7 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
         <div>
           <p className="footer-title">OFFICIAL SOURCES</p>
           <div className="source-links">
+            <Link href="/discover">島旅マガジン<span>→</span></Link>
             <a href="https://www.tokaikisen.co.jp/boarding/timetable/" target="_blank" rel="noreferrer">2026年 時刻表<span>↗</span></a>
             <a href="https://www.tokaikisen.co.jp/boarding/fare/2026%E5%B9%B48%E6%9C%88/" target="_blank" rel="noreferrer">8月 運賃<span>↗</span></a>
             <a href="https://www.tokaikisen.co.jp/boarding/fare/2026%E5%B9%B49%E6%9C%88/" target="_blank" rel="noreferrer">9月 運賃<span>↗</span></a>
