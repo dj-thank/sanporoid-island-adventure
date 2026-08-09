@@ -1,7 +1,8 @@
 "use client";
 
+/* eslint-disable @next/next/no-html-link-for-pages -- vinext Link navigation crashes at runtime; hard navigation is intentional. */
+
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 
 type Trip = {
   id: number;
@@ -193,7 +194,7 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
         <nav className="eyebrow" aria-label="ページ情報">
           <span>OPENClOS · TRIP SSOT</span>
           <div className="eyebrow-actions">
-            <Link className="magazine-link" href="/discover">写真で島を知る ↗</Link>
+            <a className="magazine-link" href="/discover">写真で島を知る ↗</a>
             <span className="updated">自動更新 · 15秒</span>
           </div>
         </nav>
@@ -219,7 +220,7 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
             <a className="hero-action" href={viewer ? "#add" : signInPath}>
               {viewer ? "サイトに追加する" : "ChatGPTでサインイン"}
             </a>
-            <Link className="hero-magazine-action" href="/discover">島旅マガジンを読む <span>→</span></Link>
+            <a className="hero-magazine-action" href="/discover">島旅マガジンを読む <span>→</span></a>
           </aside>
         </div>
       </header>
@@ -380,7 +381,7 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
         <div>
           <p className="footer-title">OFFICIAL SOURCES</p>
           <div className="source-links">
-            <Link href="/discover">島旅マガジン<span>→</span></Link>
+            <a href="/discover">島旅マガジン<span>→</span></a>
             <a href="https://www.tokaikisen.co.jp/boarding/timetable/" target="_blank" rel="noreferrer">2026年 時刻表<span>↗</span></a>
             <a href="https://www.tokaikisen.co.jp/boarding/fare/2026%E5%B9%B48%E6%9C%88/" target="_blank" rel="noreferrer">8月 運賃<span>↗</span></a>
             <a href="https://www.tokaikisen.co.jp/boarding/fare/2026%E5%B9%B49%E6%9C%88/" target="_blank" rel="noreferrer">9月 運賃<span>↗</span></a>
