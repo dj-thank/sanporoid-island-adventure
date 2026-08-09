@@ -48,15 +48,40 @@ test("server-renders the official-source island magazine", async () => {
 
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /黒い島から、/);
-  assert.match(html, /白い島へ。/);
-  assert.match(html, /OFFICIAL BOOKING DESK/);
-  assert.match(html, /空席未確認/);
-  assert.match(html, /EDITORIAL VISUAL/);
+  assert.match(html, /東京から、/);
+  assert.match(html, /三つの別世界へ。/);
+  assert.match(html, /採用中は「大島 → 新島」/);
+  assert.match(html, /神津島完全ガイドへ/);
+  assert.match(html, /OFFICIAL DOORS ONLY/);
+  assert.doesNotMatch(html, /EDITORIAL VISUAL/);
+  assert.doesNotMatch(html, /island-scenes-v1\.png/);
   assert.match(html, /www\.tokaikisenyoyaku\.com\/app\/login/);
   assert.match(html, /niijima-info\.jp\/stay/);
-  assert.match(html, /izu-oshima\.or\.jp\/transportation/);
+  assert.match(html, /kozushima\.com\/yado-list/);
   assert.match(html, /No booking has been made/);
+});
+
+test("server-renders a mapped long-form feature for each island", async () => {
+  const worker = await loadWorker();
+  const expectations = [
+    ["kozushima", /暗さは、島が守っている景色。/, /星空保護区/],
+    ["oshima", /2万年が、道路脇に露出している。/, /地層大切断面/],
+    ["niijima", /6\.5kmを、急いで終わらせない。/, /湯の浜露天温泉/],
+  ];
+
+  for (const [slug, feature, place] of expectations) {
+    const response = await worker.fetch(
+      new Request(`http://localhost/discover/${slug}`, { headers: { accept: "text/html" } }),
+      runtime,
+      context,
+    );
+    assert.equal(response.status, 200);
+    const html = await response.text();
+    assert.match(html, feature);
+    assert.match(html, place);
+    assert.match(html, /まず、島の形を/);
+    assert.match(html, /最後は、公式情報へ。/);
+  }
 });
 
 test("gates every site-side write route before parsing its payload", async () => {

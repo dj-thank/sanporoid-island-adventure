@@ -1,6 +1,6 @@
 # Island Weekend Field Notes — source log
 
-Checked: 2026-08-09 JST
+Checked: 2026-08-10 JST
 
 This note records the primary sources used for the `/discover` travel magazine. It intentionally separates inspiring editorial copy from live availability. No seat, room, restaurant table, vehicle, or activity slot was confirmed or booked during this update.
 
@@ -69,9 +69,43 @@ This note records the primary sources used for the `/discover` travel magazine. 
 - [Niijima Tourism Association news](https://niijima-info.jp/news/)
 - [Niijima official map, May 2026 edition](https://niijima-info.jp/cms24/wp-content/uploads/2026/06/niijimaA3MAP.pdf)
 
+## Kozushima
+
+- [Kozushima Tourism Association](https://kozushima.com/)
+  - Accommodation must be reserved before arrival; wild camping and sleeping outdoors are prohibited.
+  - Official accommodation, guide, activity, and seasonal information are linked from the tourism site.
+- [About Kozushima](https://kozushima.com/about/)
+  - Approximately 180 km south of Tokyo, about 22 km around, and 18.58 km².
+  - Mt. Tenjo is 572 m and the island can be reached by ship, Shimoda route, or flight from Chofu.
+- [Kozushima access guide](https://kozushima.com/access/)
+  - Flight time from Chofu is introduced as approximately 45 minutes.
+  - Weather can cause cancellations or conditional operation; baggage limits must be checked before booking.
+- [Official accommodation directory](https://kozushima.com/yado-list/)
+- [Mt. Tenjo model course](https://kozushima.com/tour/tourroute/866/)
+  - Omotesabaku, Urasabaku, Urasabaku viewpoint, Fudoike, and cliff viewpoints are part of the mountain experience.
+  - The official guide warns visitors to descend before dark and to respect cliff and weather risks.
+- [Akasaki promenade](https://kozushima.com/kanko/umi/beach/240/)
+  - Approximately 500 m of wooden promenade links rocky coves; summer swimming and snorkeling depend on sea conditions.
+  - Approximately 15 minutes from the port by car or bus; seasonal transport and shop operation require live confirmation.
+- [Kozushima dark-sky reserve](https://kozushima.com/star/hogoku/)
+  - Certified in December 2020 as Tokyo's first International Dark Sky Place.
+  - The editorial treats darkness protection—not only visible stars—as the core story.
+- [Tokyo Islands — Kozushima](https://www.tokyo-islands.com/about/kozushima/)
+- [Tokyo Islands inter-island access](https://www.tokyo-islands.com/access/)
+- [New Central Air schedule and fares](https://central-air.co.jp/schedule-fee.html?stt_lang=ja)
+
+## Editorial visual references
+
+- [TRANSIT](https://transit.jp/) — full-bleed documentary photography, location-led story rails, and strong cover pacing.
+- [PAPERSKY](https://papersky.jp/) — geography-first local stories, maps, and practical place context.
+- [BRUTUS travel](https://brutus.jp/tag/travel/) — one strong editorial proposition per feature.
+- [Discover Japan](https://discoverjapan-web.com/) — restrained print hierarchy and generous whitespace.
+
 ## Editorial rules
 
-- Generated scenes are labeled as editorial visuals, not documentary photographs.
+- The redesigned magazine uses real, licensed documentary photography; the old generated sprite is not rendered on `/discover`.
+- Every photograph has a visible credit linked to its source page. The complete license list is in `docs/photo-credits.md`.
 - Prices shown on third-party booking pages are not copied as confirmed trip prices.
 - Every booking card links to an official site or official directory.
 - Availability, operating port, weather, sea condition, and same-day business hours remain live checks.
+- The current SSOT remains Oshima → Niijima. Kozushima is editorial discovery/proposal content until explicitly adopted.
