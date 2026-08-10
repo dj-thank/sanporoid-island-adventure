@@ -28,6 +28,7 @@ export type Island = {
   name: string;
   reading: string;
   english: string;
+  verifiedAt: string;
   oneLine: string;
   coverLine: string;
   shortIntro: string;
@@ -38,6 +39,21 @@ export type Island = {
   mapZoom: number;
   facts: { value: string; label: string }[];
   fit: { label: string; value: string }[];
+  conditionPlans: {
+    label: string;
+    title: string;
+    lead: string;
+    steps: string[];
+    note: string;
+    sourceLabel: string;
+    sourceUrl: string;
+  }[];
+  friendMissions: {
+    number: string;
+    title: string;
+    copy: string;
+    payoff: string;
+  }[];
   spots: MapPoint[];
   chapters: {
     number: string;
@@ -137,6 +153,7 @@ export const islands: Island[] = [
     name: "神津島",
     reading: "こうづしま",
     english: "KŌZUSHIMA",
+    verifiedAt: "2026.08.10",
     oneLine: "山の白、海の青、夜の黒。ひとつの島で景色が三度反転する。",
     coverLine: "空まで、島の領域だ。",
     shortIntro: "朝は天上山、午後は透明な入り江、夜は光を守る島の星空へ。三つの旅を一泊ずつ重ねるような濃さがある。",
@@ -157,6 +174,67 @@ export const islands: Island[] = [
       { label: "MOVE", value: "村落は徒歩＋遠方はバス／車" },
       { label: "BOOK FIRST", value: "宿 → 船／飛行機 → 山・海のガイド" },
     ],
+    conditionPlans: [
+      {
+        label: "CLEAR + CALM",
+        title: "晴れて、風が弱い。",
+        lead: "いちばん遠い景色を、朝へ置く。天上山を先に歩き、午後は海、夜は星へつなぐ。",
+        steps: [
+          "朝のうちに天上山へ。コースと下山時刻を宿かガイドに共有する。",
+          "午後は赤崎か多幸湾のどちらか一方。帰りのバス／配車を先に決める。",
+          "夕食後に雲量を見て、晴れている夜だけ星空へ出る。",
+        ],
+        note: "山頂部は晴れていても風・霧が出る。低山という数字より当日の条件を優先。",
+        sourceLabel: "神津島観光協会｜天上山",
+        sourceUrl: "https://kozushima.com/kankospot/yama/",
+      },
+      {
+        label: "WIND + ROUGH SEA",
+        title: "風が強い。海は荒れている。",
+        lead: "海岸と山を追わず、村の中へ旅を折りたたむ。神話、民具、黒曜石を一本の散歩にする。",
+        steps: [
+          "港から徒歩圏の物忌奈命神社へ。島の『神々が集まった』物語から入る。",
+          "郷土資料館で、古文書・民具・船の遺物から暮らしの時間を読む。",
+          "商店と飲食店を回り、黒曜石や島の水を使った飲み物を探す。",
+        ],
+        note: "強風時は海岸・遊歩道・天上山へ無理に近づかない。施設の開館と島内交通を当日確認。",
+        sourceLabel: "神津島観光協会｜雨でも楽しめる島時間",
+        sourceUrl: "https://kozushima.com/workation/",
+      },
+      {
+        label: "RAIN",
+        title: "雨が降った。",
+        lead: "黒曜石を旅の形に変える日。屋内体験を主役にして、食事と資料館をゆっくり挟む。",
+        steps: [
+          "黒曜石入りキャンドル作りを予約。雨天時は用意された材料で体験できる。",
+          "郷土資料館で島の歴史を見て、晴れた日の景色に背景を足す。",
+          "宿か予約店で地魚の夜。翌日の山・海・帰路を同時に組み直す。",
+        ],
+        note: "体験は前日締切や定員がある。料金・開催時刻・空きは公式予約画面で直前確認。",
+        sourceLabel: "神津島観光協会｜黒曜石入りキャンドル作り",
+        sourceUrl: "https://kozushima.com/tour/ecotour/514/",
+      },
+    ],
+    friendMissions: [
+      {
+        number: "01",
+        title: "白・青・黒の写真リレー",
+        copy: "白は天上山、青は入り江、黒は夜空。担当色を一人ずつ決め、最後に三枚で一つの島を完成させる。",
+        payoff: "帰ってから3枚で旅の表紙をつくる",
+      },
+      {
+        number: "02",
+        title: "神話の足跡を集める",
+        copy: "物忌奈命神社、郷土資料館、村の路地へ。名所を増やすより、神々と水の物語が残る痕跡を三つ探す。",
+        payoff: "島さんぽを小さな共同調査にする",
+      },
+      {
+        number: "03",
+        title: "明日のA/B/Cを夕食で決める",
+        copy: "Aは山、Bは海、Cは雨の村歩き。全員が許容できる三案を決めて、朝の条件で一つだけ採用する。",
+        payoff: "天気に振り回されず、天気で遊ぶ",
+      },
+    ],
     spots: [
       { id: "tenjo", title: "天上山", label: "HIKE", position: [34.2196, 139.1486], summary: "白砂の裏砂漠、池、断崖の展望をつなぐ島の主峰。" },
       { id: "akasaki", title: "赤崎遊歩道", label: "SWIM", position: [34.2429, 139.1305], summary: "木の遊歩道と入り江。夏は泳ぎとシュノーケルの拠点。" },
@@ -166,6 +244,8 @@ export const islands: Island[] = [
       { id: "yotane", title: "よたね広場周辺", label: "STARS", position: [34.2078, 139.1392], summary: "村から歩ける星空観察候補。照明と足元に配慮。" },
       { id: "port", title: "神津島港", label: "GATE", position: [34.2045, 139.1327], summary: "船の玄関口。海況で発着地や時刻が変わることがある。" },
       { id: "airport", title: "神津島空港", label: "FLIGHT", position: [34.1886, 139.1335], summary: "調布便の玄関口。荷物制限を予約前に確認。" },
+      { id: "shrine", title: "物忌奈命神社", label: "MYTH", position: [34.2084495, 139.1342223], summary: "港から歩ける島の開祖の社。村歩きの物語の入口。" },
+      { id: "museum", title: "神津島村郷土資料館", label: "HISTORY", position: [34.208007, 139.1357374], summary: "古文書、民具、船の遺物から島の暮らしを読む雨天候補。" },
     ],
     chapters: [
       {
@@ -254,10 +334,12 @@ export const islands: Island[] = [
     food: [
       { title: "金目鯛", copy: "島の水揚げを象徴する魚。煮付け、刺身、炙りなど、その日の入荷で選ぶ。" },
       { title: "地魚の夜", copy: "店を一軒に固定しすぎず、宿の食事か予約店を軸にして売り切れリスクを避ける。" },
+      { title: "島の水とクラフトビール", copy: "東京名湧水57選に選ばれた水を生かした一杯。提供店と在庫を確認し、温泉や星空の前後に置く。" },
       { title: "山の行動食", copy: "朝出発に備え、前日に飲み物と携行食を確保。島では夜間に買える場所が限られる。" },
     ],
     stays: [
-      { title: "島の宿を公式予約", type: "OFFICIAL PORTAL", copy: "旅館・民宿・ゲストハウスを公式ポータルから比較。島内キャンプは禁止なので、交通より先に宿を確保する。", url: "https://kozushima.com/yado-list/", cta: "公式宿一覧" },
+      { title: "島の宿を公式予約", type: "OFFICIAL PORTAL", copy: "旅館・民宿・ゲストハウスを公式ポータルから比較。野宿はできないため、交通より先に滞在先を確保する。", url: "https://kozushima.com/yado-list/", cta: "公式宿一覧" },
+      { title: "指定キャンプ場を予約", type: "DESIGNATED CAMP", copy: "キャンプは村が案内する指定施設だけ。設備、受入状況、工事、予約条件を公式で確認する。", url: "https://www.vill.kouzushima.tokyo.jp/camp/", cta: "村の利用案内" },
       { title: "星空ガイドと組み合わせる", type: "NIGHT GUIDE", copy: "星の場所・時間・安全を現地ガイドに委ねる選択肢。月齢と催行条件を確認する。", url: "https://kozushima.com/star/guide/", cta: "星空ガイド" },
       { title: "島の体験をまとめて探す", type: "ECOTOUR", copy: "山・海・自然体験は公式エコツアー窓口から。繁忙期は宿と並行して問い合わせる。", url: "https://kozushima.com/", cta: "公式観光サイト" },
     ],
@@ -265,9 +347,11 @@ export const islands: Island[] = [
       { route: "調布 → 神津島", time: "約45分", copy: "飛行機。便数、運賃、手荷物上限、天候条件を予約画面で確認。", url: "https://central-air.co.jp/schedule-fee.html?stt_lang=ja" },
       { route: "竹芝 → 神津島", time: "高速船／大型客船", copy: "所要時間と運航日は季節で変動。宿を押さえてから往復を検索。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "新島 ↔ 神津島", time: "高速船 約25分の案内", copy: "島間移動は便・海況で成立条件が変わる。旅程の接続は同日便で再確認。", url: "https://www.tokyo-islands.com/access/" },
+      { route: "島内を動く", time: "村営バス／公共ライドシェア", copy: "船・飛行機の発着後にバス時刻が組まれる。遠方へ出る日は帰路と配車を先に確保。", url: "https://www.vill.kouzushima.tokyo.jp/transport/" },
+      { route: "出発当日の運航", time: "船／飛行機", copy: "発着港、欠航、条件付き運航を当日に再確認。予定より公式の運航判断を優先。", url: "https://www.tokaikisen.co.jp/schedule/" },
     ],
     rules: [
-      "島内での野宿・キャンプは禁止。宿泊先を確保してから来島する。",
+      "野宿と指定場所以外のキャンプは禁止。宿または指定キャンプ場を予約してから来島する。",
       "船・飛行機は欠航や条件付き運航がある。帰京日の予定を詰めすぎない。",
       "天上山は明るいうちに下山。低山という数字だけで装備を軽くしない。",
       "海は監視員・現地掲示・波の条件を優先。飛び込みや岩場は無理をしない。",
@@ -275,6 +359,7 @@ export const islands: Island[] = [
     ],
     official: [
       { label: "神津島観光協会", url: "https://kozushima.com/" },
+      { label: "神津島村｜交通・滞在ルール", url: "https://www.vill.kouzushima.tokyo.jp/transport/" },
       { label: "東京宝島｜神津島", url: "https://www.tokyo-islands.com/about/kozushima/" },
       { label: "東海汽船", url: "https://www.tokaikisen.co.jp/" },
       { label: "新中央航空", url: "https://central-air.co.jp/" },
@@ -286,6 +371,7 @@ export const islands: Island[] = [
     name: "大島",
     reading: "おおしま",
     english: "ŌSHIMA",
+    verifiedAt: "2026.08.10",
     oneLine: "火山の黒を歩き、地球の時間を道路脇で読む。",
     coverLine: "東京から最も近い、地球の断面。",
     shortIntro: "三原山、裏砂漠、地層大切断面。到着した朝から大きく動ける、火山を中心にしたフィールドトリップ。",
@@ -306,6 +392,67 @@ export const islands: Island[] = [
       { label: "MOVE", value: "広く回るなら車、絞るならバス" },
       { label: "BOOK FIRST", value: "船 → 宿 → 車／送迎" },
     ],
+    conditionPlans: [
+      {
+        label: "CLEAR + CALM",
+        title: "山が見えている。",
+        lead: "朝の三原山を主役にして、午後は南へ。黒い火山から縞の地層へ、時間の尺度を切り替える。",
+        steps: [
+          "発着港を確認してから三原山山頂口へ。火口周回か短い展望歩きかを決める。",
+          "車なら地層大切断面と波浮港をつなぐ。バスなら山か南部のどちらかに絞る。",
+          "西岸へ戻れる日は、夕日と浜の湯を一つの予定にする。",
+        ],
+        note: "火山・道路・バスの最新情報を優先。霧や強風が出たら山頂計画を短縮する。",
+        sourceLabel: "大島観光協会｜遊ぶ",
+        sourceUrl: "https://izu-oshima.or.jp/play.html",
+      },
+      {
+        label: "FOG + STRONG WIND",
+        title: "山が雲に隠れた。",
+        lead: "標高を下げ、道路沿いの地球を読む。地層、波浮港、泉津を体力と移動手段で二つに絞る。",
+        steps: [
+          "地層大切断面は遠景・近景・人との比較の三枚を撮る。",
+          "波浮港では展望台から港の丸い地形を見て、坂と路地へ降りる。",
+          "北へ戻るなら泉津の切通し、元町へ戻るなら温泉を選ぶ。",
+        ],
+        note: "島一周を目的にしない。風雨と帰りの港が変われば、同じ側の場所だけで完結させる。",
+        sourceLabel: "伊豆大島ジオパーク｜ジオサイト",
+        sourceUrl: "https://izuoshima-geo.org/know/highlights/geosite/",
+      },
+      {
+        label: "RAIN",
+        title: "雨で火山を歩けない。",
+        lead: "2025年に刷新されたジオノスで火山と暮らしをつなぎ、温泉と島の食へ降りる。",
+        steps: [
+          "伊豆大島ミュージアム ジオノスで、大地・生態系・暮らし・防災をまとめて見る。",
+          "御神火温泉か営業中の屋内施設へ。休館と利用条件を公式で確認する。",
+          "べっこう、椿、くさやから一つ選び、雨の日の島を味覚で残す。",
+        ],
+        note: "旧・火山博物館の情報ではなく、現行のジオノス公式案内で開館・料金を確認する。",
+        sourceLabel: "伊豆大島ジオパーク｜ジオノス",
+        sourceUrl: "https://izuoshima-geo.org/know/shisetsu.html",
+      },
+    ],
+    friendMissions: [
+      {
+        number: "01",
+        title: "黒だけ写真ビンゴ",
+        copy: "溶岩、砂、影、湯気、靴底。火山島の『黒』を各自三つ集め、同じ景色を別々の視点で持ち帰る。",
+        payoff: "ただ歩く時間を、観察ゲームに変える",
+      },
+      {
+        number: "02",
+        title: "島一周の音を一本にする",
+        copy: "山へ上がる曲、南へ走る曲、港へ戻る曲を一人一曲ずつ選ぶ。移動時間まで旅の記憶にする。",
+        payoff: "ドライブの空白を共有プレイリストにする",
+      },
+      {
+        number: "03",
+        title: "べっこうの辛さを比べる",
+        copy: "青唐辛子醤油の漬け具合は店で違う。全員で同じ一皿を頼むより、それぞれの一番を探す。",
+        payoff: "食事を小さな編集会議にする",
+      },
+    ],
     spots: [
       { id: "mihara", title: "三原山山頂口", label: "HIKE", position: [34.7275, 139.3949], summary: "火口周回へ入る火山歩きの基準点。" },
       { id: "urasabaku", title: "裏砂漠", label: "VOLCANO", position: [34.7379, 139.4213], summary: "風と噴火がつくった黒い火山原。" },
@@ -316,6 +463,7 @@ export const islands: Island[] = [
       { id: "senzu", title: "泉津の切通し", label: "FOREST", position: [34.793, 139.407], summary: "巨木の根に挟まれた石段の小さな寄り道。" },
       { id: "motomachi", title: "元町港", label: "GATE", position: [34.7529, 139.3519], summary: "西の玄関口。発着港は当日変更の可能性あり。" },
       { id: "okata", title: "岡田港", label: "GATE", position: [34.7895, 139.3907], summary: "北の玄関口。船の到着港を当日確認。" },
+      { id: "geonos", title: "伊豆大島ミュージアム ジオノス", label: "MUSEUM", position: [34.7440119, 139.3599974], summary: "火山・生態系・暮らし・防災をつなぐ、雨の日の拠点。" },
     ],
     chapters: [
       {
@@ -381,6 +529,7 @@ export const islands: Island[] = [
     ],
     food: [
       { title: "べっこう", copy: "青唐辛子醤油に漬けた島の魚。寿司や丼で、店ごとの辛さを比べる。" },
+      { title: "伊勢エビと磯もの", copy: "溶岩地形の岩礁で育つ海のもの。入荷と旬を店で聞き、その日にある一皿を選ぶ。" },
       { title: "島の牛乳", copy: "大島の酪農文化を、牛乳・アイス・菓子で休憩に組み込む。" },
       { title: "椿油", copy: "食と手仕事の両方につながる島の素材。土産だけでなく料理でも探す。" },
     ],
@@ -393,6 +542,7 @@ export const islands: Island[] = [
       { route: "竹芝 → 大島", time: "高速船／大型客船", copy: "季節と便で所要時間が変わる。到着港は当日の運航情報で確認。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "調布 → 大島", time: "飛行機", copy: "便数、運賃、手荷物上限を新中央航空で確認。", url: "https://central-air.co.jp/schedule-fee.html?stt_lang=ja" },
       { route: "島内", time: "バス／車／自転車", copy: "火山と南部を一日でつなぐなら車が有力。タクシーは予約前提。", url: "https://izu-oshima.or.jp/transportation.html" },
+      { route: "出発当日の運航", time: "元町港／岡田港", copy: "どちらの港を使うかを当日確認。宿の送迎と荷物の動線も発着港に合わせる。", url: "https://www.tokaikisen.co.jp/schedule/" },
     ],
     rules: [
       "発着港は元町港・岡田港のどちらになるか当日まで変わることがある。",
@@ -405,6 +555,7 @@ export const islands: Island[] = [
       { label: "伊豆大島観光協会", url: "https://izu-oshima.or.jp/" },
       { label: "東京宝島｜大島", url: "https://www.tokyo-islands.com/about/oshima/" },
       { label: "大島町", url: "https://www.town.oshima.tokyo.jp/" },
+      { label: "ジオノス｜現行施設案内", url: "https://izuoshima-geo.org/know/shisetsu.html" },
       { label: "東海汽船", url: "https://www.tokaikisen.co.jp/" },
     ],
   },
@@ -414,6 +565,7 @@ export const islands: Island[] = [
     name: "新島",
     reading: "にいじま",
     english: "NIIJIMA",
+    verifiedAt: "2026.08.10",
     oneLine: "白い崖、白い海岸、オリーブ色のガラス。速度を落とす島。",
     coverLine: "白の中で、予定をほどく。",
     shortIntro: "羽伏浦の長い海岸、湯の浜露天温泉、新島ガラス。自転車の速度で余白を味わう。",
@@ -424,8 +576,8 @@ export const islands: Island[] = [
     mapZoom: 12,
     facts: [
       { value: "6.5km", label: "羽伏浦海岸" },
-      { value: "24h", label: "湯の浜の公式案内" },
-      { value: "約2,000", label: "島の人口" },
+      { value: "100+", label: "島内のモヤイ像" },
+      { value: "2 shores", label: "朝日と夕日の海岸" },
       { value: "0", label: "コンビニ" },
     ],
     fit: [
@@ -433,6 +585,67 @@ export const islands: Island[] = [
       { label: "PACE", value: "1〜2泊、余白多め" },
       { label: "MOVE", value: "中心部は自転車、若郷は車" },
       { label: "BOOK FIRST", value: "宿 → 船 → 必要なら車" },
+    ],
+    conditionPlans: [
+      {
+        label: "CLEAR + CALM",
+        title: "東の海が穏やか。",
+        lead: "朝は羽伏浦の白、午後はコーガ石、夕方は西の温泉へ。東西の光を一日で反転させる。",
+        steps: [
+          "自転車で羽伏浦へ。端まで制覇せず、気に入った場所で長く止まる。",
+          "モヤイ像と新島ガラスをつなぎ、同じ石が像と色へ変わる過程を見る。",
+          "営業を確認できたら湯の浜へ。夕食の予約時刻から逆算する。",
+        ],
+        note: "海は眺められても泳げるとは限らない。遊泳・波・監視・現地掲示を優先。",
+        sourceLabel: "新島観光案内所｜絶景を満喫する",
+        sourceUrl: "https://niijima-info.jp/spectacularview/",
+      },
+      {
+        label: "WIND + ROUGH SEA",
+        title: "海は見る日に変える。",
+        lead: "波へ入らず、白い崖と石の文化を遠くから読む。移動距離を短くして町の密度を上げる。",
+        steps: [
+          "羽伏浦は安全な展望地点から見る。崖下や危険区域へ入らない。",
+          "本村へ戻り、モヤイ像を三体だけ選んで名前を付ける。",
+          "ガラス施設、商店、カフェから営業中の二つをつなぐ。",
+        ],
+        note: "平成新島トンネルは徒歩・自転車で通れない。若郷方面は車と道路情報を確認。",
+        sourceLabel: "新島観光案内所｜島内移動",
+        sourceUrl: "https://niijima-info.jp/ido/",
+      },
+      {
+        label: "RAIN",
+        title: "白い海岸が、雨に消えた。",
+        lead: "火山の石がオリーブ色のガラスになる場所へ。制作・展示・土産を一つの物語として見る。",
+        steps: [
+          "新島ガラスアートセンターの開館と体験枠を公式で確認する。",
+          "くさや、島焼酎、コーガ石の土産から、島でしか話せない一品を選ぶ。",
+          "温泉は利用可否を確認できたときだけ候補にし、宿で翌日の海と帰路を再編集する。",
+        ],
+        note: "『24時間いつでも入れる』と決め打ちせず、改修・清掃・天候を含む最新告知を確認。",
+        sourceLabel: "新島村観光情報｜お知らせ",
+        sourceUrl: "https://niijima.com/kankou/news/index.html",
+      },
+    ],
+    friendMissions: [
+      {
+        number: "01",
+        title: "モヤイに勝手なプロフィールを付ける",
+        copy: "百体以上あると案内されるモヤイから推しを三体だけ選ぶ。名前、職業、口癖まで決めて旅の仲間にする。",
+        payoff: "町歩きを、全員参加の物語に変える",
+      },
+      {
+        number: "02",
+        title: "白の見本帳をつくる",
+        copy: "崖、砂、波、建物、曇り空。同じ白に見えるものを別々に撮り、最後に一番『新島らしい白』を選ぶ。",
+        payoff: "景色に共通の編集テーマをつくる",
+      },
+      {
+        number: "03",
+        title: "朝日組と夕日組に分かれる",
+        copy: "東の羽伏浦と西の前浜。起きられる人は朝、温泉へ行きたい人は夕方を担当して、一日の光を交換する。",
+        payoff: "全員が同じ行程をこなさなくていい",
+      },
     ],
     spots: [
       { id: "habushiura", title: "羽伏浦海岸", label: "SURF", position: [34.3802, 139.2818], summary: "約6.5km続く白い海岸。遊泳より海況を優先。" },
@@ -476,7 +689,7 @@ export const islands: Island[] = [
         eyebrow: "SUNSET / YUNOHAMA",
         title: "夕方を、予定ではなく温度で決める。",
         copy: [
-          "海辺に現れるギリシャ神殿風の湯の浜露天温泉。公式案内では無料・24時間・水着着用。観光の最後に入れるのではなく、夕日がきれいなら早めに切り上げて向かう。予定より光を優先する場所だ。",
+          "海辺に現れるギリシャ神殿風の湯の浜露天温泉。水着で入る海辺の湯として案内されているが、改修・清掃・天候で利用条件は変わる。使えることを確認できた日だけ、夕日の時間をここへ渡す。",
           "温泉の後は、予約した夕食へ行くか、テイクアウトで宿へ戻る。新島にはコンビニがなく、店の閉店も早い。だらだらするための準備だけは、先にしておく。",
         ],
         image: photos.niijimaYunohama,
@@ -501,13 +714,15 @@ export const islands: Island[] = [
         theme: "石の色を持ち帰る",
         items: [
           { time: "AM", title: "モヤイ探し", detail: "見つけた像に勝手な名前をつける。", spotId: "moyai" },
-          { time: "PM", title: "新島ガラス体験", detail: "電話予約優先。約40分の公式案内。", spotId: "glass" },
+          { time: "PM", title: "新島ガラス体験", detail: "開館日と制作体験の予約枠を公式で確認。", spotId: "glass" },
           { time: "DEPART", title: "港／空港へ", detail: "船・飛行機の運航と荷物を再確認。", spotId: "airport" },
         ],
       },
     ],
     food: [
       { title: "島寿司と地魚", copy: "当日の魚と営業で選ぶ。店は席数が限られるため、夕食は予約候補を持つ。" },
+      { title: "くさや", copy: "島の発酵文化を一口だけでも試す。店・宿・持ち帰りで、匂いへの配慮まで含めて選ぶ。" },
+      { title: "島焼酎", copy: "東京諸島の麦麹で仕込む焼酎。小さなボトルや銘柄の違いを、土産店で聞いて選ぶ。" },
       { title: "カフェ休憩", copy: "自転車の途中に一軒だけ目的地を置き、海と温泉の間に余白をつくる。" },
       { title: "夜の買い出し", copy: "コンビニと24時間ATMはない。飲み物・朝食・現金を明るいうちに確保。" },
     ],
@@ -520,6 +735,7 @@ export const islands: Island[] = [
       { route: "竹芝 → 新島", time: "高速船／大型客船", copy: "季節で便・所要時間が変わる。東海汽船の同日検索を優先。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "調布 → 新島", time: "飛行機", copy: "発売時期、便数、手荷物制限を予約前に確認。", url: "https://central-air.co.jp/schedule-fee.html?stt_lang=ja" },
       { route: "大島 → 新島", time: "島間船", copy: "現在のSSOTで採用中の移動。接続・海況・当日の発着港を直前確認。", url: "https://www.tokyo-islands.com/access/" },
+      { route: "出発当日の運航", time: "船／飛行機", copy: "島間移動を含め、同日の接続を運航情報で再確認。成立しなければ一島集中へ戻す。", url: "https://www.tokaikisen.co.jp/schedule/" },
     ],
     rules: [
       "宿は早めに直接予約。交通が取れるまで仮予約扱いになる宿もある。",
@@ -532,6 +748,7 @@ export const islands: Island[] = [
       { label: "新島観光協会", url: "https://niijima-info.jp/" },
       { label: "東京宝島｜新島", url: "https://www.tokyo-islands.com/about/niijima/" },
       { label: "新島公式マップ", url: "https://niijima-info.jp/cms24/wp-content/uploads/2026/06/niijimaA3MAP.pdf" },
+      { label: "新島ガラスアートセンター", url: "https://niijimaglass.org/contents/center.html" },
       { label: "東海汽船", url: "https://www.tokaikisen.co.jp/" },
     ],
   },

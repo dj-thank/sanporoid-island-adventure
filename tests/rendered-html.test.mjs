@@ -64,12 +64,12 @@ test("server-renders the official-source island magazine", async () => {
 test("server-renders a mapped long-form feature for each island", async () => {
   const worker = await loadWorker();
   const expectations = [
-    ["kozushima", /暗さは、島が守っている景色。/, /星空保護区/],
-    ["oshima", /2万年が、道路脇に露出している。/, /地層大切断面/],
-    ["niijima", /6\.5kmを、急いで終わらせない。/, /湯の浜露天温泉/],
+    ["kozushima", /暗さは、島が守っている景色。/, /星空保護区/, /晴れて、風が弱い。/, /白・青・黒の写真リレー/],
+    ["oshima", /2万年が、道路脇に露出している。/, /地層大切断面/, /雨で火山を歩けない。/, /黒だけ写真ビンゴ/],
+    ["niijima", /6\.5kmを、急いで終わらせない。/, /湯の浜露天温泉/, /白い海岸が、雨に消えた。/, /モヤイに勝手なプロフィール/],
   ];
 
-  for (const [slug, feature, place] of expectations) {
+  for (const [slug, feature, place, condition, mission] of expectations) {
     const response = await worker.fetch(
       new Request(`http://localhost/discover/${slug}`, { headers: { accept: "text/html" } }),
       runtime,
@@ -79,11 +79,22 @@ test("server-renders a mapped long-form feature for each island", async () => {
     const html = await response.text();
     assert.match(html, feature);
     assert.match(html, place);
+    assert.match(html, condition);
+    assert.match(html, mission);
     assert.match(html, /START HERE/);
     assert.match(html, /宿を先に押さえる/);
+    assert.match(html, /天気で組み替える/);
+    assert.match(html, /FACT CHECKED 2026\.08\.10/);
     assert.match(html, /公式で確認/);
     assert.match(html, /まず、島の形を/);
     assert.match(html, /最後は、公式情報へ。/);
+    if (slug === "kozushima") {
+      assert.match(html, /指定キャンプ場/);
+      assert.doesNotMatch(html, /島内キャンプは禁止/);
+    }
+    if (slug === "niijima") {
+      assert.doesNotMatch(html, /無料・24時間・水着着用/);
+    }
   }
 });
 

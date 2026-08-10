@@ -33,6 +33,7 @@ export default function IslandFeature({ island }: { island: Island }) {
         </a>
         <nav aria-label="特集内ナビゲーション">
           <a href="#map">地図</a>
+          <a href="#conditions">天気別</a>
           <a href="#stories">見どころ</a>
           <a href="#route">旅程</a>
           <a href="#food">宿・食</a>
@@ -82,7 +83,7 @@ export default function IslandFeature({ island }: { island: Island }) {
 
       <section className={styles.planningPanel} id="plan" aria-labelledby="planning-title">
         <div className={styles.planningIntro}>
-          <p className={styles.eyebrow}>START HERE</p>
+          <p className={styles.eyebrow}>01 / START HERE</p>
           <h2 id="planning-title">まず決めるのは、<br />宿と帰り道。</h2>
           <p>島では天気や海況が予定を変える。細かな時刻を埋める前に、滞在の基地、時間帯の骨格、往復の選択肢を押さえる。</p>
         </div>
@@ -93,14 +94,20 @@ export default function IslandFeature({ island }: { island: Island }) {
             <p>{island.stays[0].copy}</p>
             <em>{island.stays[0].cta}</em>
           </a>
+          <a className={styles.planningAction} href="#conditions">
+            <small>02 / CONDITIONS</small>
+            <strong>天気で組み替える</strong>
+            <p>晴れ、強風、雨。現地の条件から選べる三つの旅にして、予定を壊さず入れ替える。</p>
+            <em>条件別プランへ</em>
+          </a>
           <a className={styles.planningAction} href="#route">
-            <small>02 / ROUTE</small>
+            <small>03 / ROUTE</small>
             <strong>{tripShape}の骨格を見る</strong>
             <p>晴れ・風・海況に合わせて、同じ日の中で入れ替えられる旅程にする。</p>
             <em>旅程へ進む</em>
           </a>
           <a className={styles.planningAction} href="#access">
-            <small>03 / ACCESS</small>
+            <small>04 / ACCESS</small>
             <strong>往復を比較する</strong>
             <p>船と飛行機の行きだけでなく、帰りの便と変更余地まで同時に確認する。</p>
             <em>交通を確認</em>
@@ -108,9 +115,49 @@ export default function IslandFeature({ island }: { island: Island }) {
         </div>
       </section>
 
+      <section className={styles.conditionSection} id="conditions" aria-labelledby="conditions-title">
+        <header className={styles.conditionHead}>
+          <div className={styles.sectionIndex}><span>02</span><p>IF / THEN</p></div>
+          <div>
+            <p className={styles.eyebrow}>THE PLAN CHANGES. THE TRIP CONTINUES.</p>
+            <h2 id="conditions-title">晴れだけを、<br />前提にしない。</h2>
+          </div>
+          <p>島の予定は固定表ではなく、条件で選ぶ三枚のカード。朝の風、雲、海、運航を見て、その日に成立する一枚へ切り替える。</p>
+        </header>
+        <div className={styles.conditionGrid}>
+          {island.conditionPlans.map((plan, index) => (
+            <article className={styles.conditionCard} key={plan.label}>
+              <header><span>{String(index + 1).padStart(2, "0")}</span><small>{plan.label}</small></header>
+              <h3>{plan.title}</h3>
+              <p>{plan.lead}</p>
+              <ol>{plan.steps.map((step) => <li key={step}>{step}</li>)}</ol>
+              <aside><small>SWITCH NOTE</small>{plan.note}</aside>
+              <ExternalLink className={styles.conditionSource} href={plan.sourceUrl}>{plan.sourceLabel}</ExternalLink>
+            </article>
+          ))}
+        </div>
+        <div className={styles.friendMissions}>
+          <header>
+            <p className={styles.eyebrow}>FRIENDS ONLY / THREE SMALL MISSIONS</p>
+            <h2>友達と行くなら、<br />観光をゲームにする。</h2>
+            <p>全員が同じものを見る必要はない。役割と遊びを一つだけ決めると、自由時間まで同じ旅になる。</p>
+          </header>
+          <div className={styles.missionGrid}>
+            {island.friendMissions.map((mission) => (
+              <article key={mission.number}>
+                <span>{mission.number}</span>
+                <h3>{mission.title}</h3>
+                <p>{mission.copy}</p>
+                <strong>{mission.payoff}</strong>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className={styles.featureMapSection} id="map">
         <div className={styles.featureMapHead}>
-          <div className={styles.sectionIndex}><span>01</span><p>FIELD MAP</p></div>
+          <div className={styles.sectionIndex}><span>03</span><p>FIELD MAP</p></div>
           <div>
             <p className={styles.eyebrow}>SPOTS BEFORE SCHEDULES</p>
             <h2>まず、島の形を<br />頭に入れる。</h2>
@@ -132,7 +179,7 @@ export default function IslandFeature({ island }: { island: Island }) {
 
       <section className={styles.longRead} id="stories">
         <header>
-          <div className={styles.sectionIndex}><span>02</span><p>LONG READ</p></div>
+          <div className={styles.sectionIndex}><span>04</span><p>LONG READ</p></div>
           <p className={styles.eyebrow}>THE ISLAND, ONE SCENE AT A TIME</p>
           <h2>{island.name}を、<br />景色の順番で読む。</h2>
         </header>
@@ -157,7 +204,7 @@ export default function IslandFeature({ island }: { island: Island }) {
 
       <section className={styles.routeSection} id="route">
         <div className={styles.routeIntro}>
-          <div className={styles.sectionIndex}><span>03</span><p>ROUTE</p></div>
+          <div className={styles.sectionIndex}><span>05</span><p>ROUTE</p></div>
           <p className={styles.eyebrow}>A PLAN THAT CAN BEND</p>
           <h2>こう回る。<br />ただし、島に従う。</h2>
           <p>時刻表ではなく、時間帯の骨格。天気・風・海況・運航が変わったら、同じ日の中で順番を入れ替える。</p>
@@ -182,7 +229,7 @@ export default function IslandFeature({ island }: { island: Island }) {
 
       <section className={styles.foodStaySection} id="food">
         <div className={styles.foodColumn}>
-          <div className={styles.sectionIndex}><span>04</span><p>EAT</p></div>
+          <div className={styles.sectionIndex}><span>06</span><p>EAT</p></div>
           <p className={styles.eyebrow}>TASTE THE CONDITION</p>
           <h2>食べるものも、<br />その日の島で決める。</h2>
           <div className={styles.foodList}>
@@ -192,7 +239,7 @@ export default function IslandFeature({ island }: { island: Island }) {
           </div>
         </div>
         <div className={styles.stayColumn}>
-          <div className={styles.sectionIndex}><span>05</span><p>SLEEP</p></div>
+          <div className={styles.sectionIndex}><span>07</span><p>SLEEP</p></div>
           <p className={styles.eyebrow}>THE BASE CHANGES THE TRIP</p>
           <h2>宿を、旅の基地として選ぶ。</h2>
           <div className={styles.stayList}>
@@ -207,7 +254,7 @@ export default function IslandFeature({ island }: { island: Island }) {
 
       <section className={styles.accessSection} id="access">
         <div className={styles.accessTitle}>
-          <div className={styles.sectionIndex}><span>06</span><p>ACCESS</p></div>
+          <div className={styles.sectionIndex}><span>08</span><p>ACCESS</p></div>
           <p className={styles.eyebrow}>GET THERE, GET BACK</p>
           <h2>行き方より先に、<br />帰り方も見る。</h2>
         </div>
@@ -229,7 +276,7 @@ export default function IslandFeature({ island }: { island: Island }) {
       </section>
 
       <section className={styles.officialSection}>
-        <div><p>PRIMARY SOURCES</p><h2>最後は、公式情報へ。</h2></div>
+        <div><p>{`PRIMARY SOURCES / FACT CHECKED ${island.verifiedAt}`}</p><h2>最後は、公式情報へ。</h2></div>
         <div className={styles.officialLinks}>
           {island.official.map((source) => <ExternalLink href={source.url} key={source.url}>{source.label}</ExternalLink>)}
         </div>
