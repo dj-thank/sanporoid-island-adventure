@@ -52,9 +52,10 @@ test("server-renders the official-source island magazine", async () => {
   assert.match(html, /大島か新島へ/);
   assert.match(html, /友達との島旅/);
   assert.match(html, /神津島を共通に、第二の島を相談中/);
-  assert.match(html, /まだ採用ルートはなく/);
+  assert.match(html, /8\/30の接続は両案とも公式時刻表で確認済み/);
   assert.match(html, /神津島のモデルコースを見る/);
   assert.match(html, /決める前に、宿と交通を確かめる/);
+  assert.match(html, /神津島行きの飛行機を見る/);
   assert.doesNotMatch(html, /採用中は「大島 → 新島」/);
   assert.doesNotMatch(html, /現在SSOTに入っている竹芝→大島→新島/);
   assert.doesNotMatch(html, /EDITORIAL VISUAL/);
@@ -100,9 +101,14 @@ test("server-renders a mapped long-form feature for each island", async () => {
     assert.doesNotMatch(html, /最後は、公式情報へ。/);
     if (slug === "kozushima") {
       assert.match(html, /指定キャンプ場/);
+      assert.match(html, /8\/30候補 13:25 → 14:05/);
       assert.doesNotMatch(html, /島内キャンプは禁止/);
     }
+    if (slug === "oshima") {
+      assert.match(html, /8\/30候補 10:45 → 11:45/);
+    }
     if (slug === "niijima") {
+      assert.match(html, /8\/30 13:25 → 14:05/);
       assert.doesNotMatch(html, /無料・24時間・水着着用/);
     }
   }
@@ -147,13 +153,22 @@ test("shows a sign-in gate for every site-side write control", async () => {
   assert.match(store, /throw new Error\("BOT_UNAUTHORIZED"\)/);
 });
 
-test("reconciles the corrected Discord route into the durable trip state", async () => {
-  const store = await readFile(new URL("../db/store.ts", import.meta.url), "utf8");
+test("reconciles the corrected Discord route and official schedule into durable state", async () => {
+  const [store, board] = await Promise.all([
+    readFile(new URL("../db/store.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/TripBoard.tsx", import.meta.url), "utf8"),
+  ]);
 
   assert.match(store, /再調整中｜神津島＋大島 \/ 新島/);
   assert.match(store, /status = 'rejected'.+status = 'adopted'/);
   assert.match(store, /reconcile:discord-route-choice:v2/);
+  assert.match(store, /reconcile:official-schedule:2026-08-10/);
   assert.match(store, /budget_min_yen = 0, budget_max_yen = 0/);
   assert.match(store, /神津島＋伊豆大島｜天上山から火山へ/);
   assert.match(store, /神津島＋新島｜山のあと、白い海へ/);
+  assert.match(store, /ジェット船10:45→11:45/);
+  assert.match(store, /大型客船10:30→11:45/);
+  assert.match(board, /大島案・交通だけ/);
+  assert.match(board, /新島案・交通だけ/);
+  assert.match(board, /公式ダイヤあり/);
 });

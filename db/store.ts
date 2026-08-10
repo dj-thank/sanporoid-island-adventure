@@ -30,12 +30,13 @@ type ExpenseInput = {
 
 const TRIP_SLUG = "island-weekend-2026";
 const DISCORD_ROUTE_RECONCILIATION = "reconcile:discord-route-choice:v2";
+const OFFICIAL_SCHEDULE_RECONCILIATION = "reconcile:official-schedule:2026-08-10";
 
 const currentRouteIdeas: Array<PlanInput> = [
   {
     date: "8/29–9/1",
     title: "神津島＋伊豆大島｜天上山から火山へ",
-    details: "8/29に神津島へ入り、8/30に伊豆大島へ移る案。8/31は大島で過ごし、9/1に東京へ戻る。島間の同日接続、宿、復路、料金は未確認。9/2延長も予備案に残す。",
+    details: "8/29に神津島へ入り、8/30に伊豆大島へ移る案。公式時刻表ではジェット船10:45→11:45／13:25→15:05、大型客船10:30→13:55。8/31は大島で過ごし、9/1に東京へ戻る。空席と宿は未確認。",
     status: "proposed",
     source: "discord",
     sortOrder: 10,
@@ -43,7 +44,7 @@ const currentRouteIdeas: Array<PlanInput> = [
   {
     date: "8/29–9/1",
     title: "神津島＋新島｜山のあと、白い海へ",
-    details: "8/29に神津島へ入り、8/30に新島へ移る案。8/31は新島で過ごし、9/1に東京へ戻る。島間の同日接続、宿、復路、料金は未確認。9/2延長も予備案に残す。",
+    details: "8/29に神津島へ入り、8/30に新島へ移る案。公式時刻表では大型客船10:30→11:45、ジェット船13:25→14:05。8/31は新島で過ごし、9/1に東京へ戻る。空席と宿は未確認。",
     status: "proposed",
     source: "discord",
     sortOrder: 20,
@@ -152,10 +153,28 @@ export async function ensureTripStore() {
       entry.title,
     ).run();
   }
+  await reconcileOfficialSchedule(db, tripId);
   await addActivity(tripId, "seed", "神津島を共通にした2案を旅行ボードへ登録", "OpenClos", "seed:island-weekend-2026:v2");
 
   await db.prepare("PRAGMA optimize").run();
   return { db, tripId };
+}
+
+async function reconcileOfficialSchedule(db: D1Database, tripId: number) {
+  const alreadyReconciled = await db
+    .prepare("SELECT id FROM activity WHERE external_id = ?")
+    .bind(OFFICIAL_SCHEDULE_RECONCILIATION)
+    .first();
+  if (alreadyReconciled) return;
+
+  await db.batch([
+    db.prepare("UPDATE plan_entries SET details = ?, updated_at = CURRENT_TIMESTAMP WHERE trip_id = ? AND title = ?")
+      .bind(currentRouteIdeas[0].details, tripId, currentRouteIdeas[0].title),
+    db.prepare("UPDATE plan_entries SET details = ?, updated_at = CURRENT_TIMESTAMP WHERE trip_id = ? AND title = ?")
+      .bind(currentRouteIdeas[1].details, tripId, currentRouteIdeas[1].title),
+    db.prepare("UPDATE trips SET updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(tripId),
+  ]);
+  await addActivity(tripId, "schedule-check", "公式時刻表で8/30の大島・新島への接続と運賃を確認", "OpenClos", OFFICIAL_SCHEDULE_RECONCILIATION);
 }
 
 async function reconcileDiscordRouteChoice(db: D1Database, tripId: number) {

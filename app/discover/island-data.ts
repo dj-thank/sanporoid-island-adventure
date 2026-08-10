@@ -368,7 +368,7 @@ export const islands: Island[] = [
     access: [
       { route: "調布 → 神津島", time: "約45分", copy: "飛行機。便数、運賃、手荷物上限、天候条件を予約画面で確認。", url: "https://central-air.co.jp/schedule-fee.html?stt_lang=ja" },
       { route: "竹芝 → 神津島", time: "高速船／大型客船", copy: "所要時間と運航日は季節で変動。宿を押さえてから往復を検索。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
-      { route: "新島 ↔ 神津島", time: "高速船 約25分の案内", copy: "島間移動は便・海況で成立条件が変わる。旅程の接続は同日便で再確認。", url: "https://www.tokyo-islands.com/access/" },
+      { route: "神津島 → 新島", time: "8/30候補 13:25 → 14:05", copy: "2026年公式時刻表のジェット船候補。大型客船10:30→11:45もある。空席と当日の港は未確認。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "島内を動く", time: "村営バス／公共ライドシェア", copy: "船・飛行機の発着後にバス時刻が組まれる。遠方へ出る日は帰路と配車を先に確保。", url: "https://www.vill.kouzushima.tokyo.jp/transport/" },
       { route: "出発当日の運航", time: "船／飛行機", copy: "発着港、欠航、条件付き運航を当日に再確認。予定より公式の運航判断を優先。", url: "https://www.tokaikisen.co.jp/schedule/" },
     ],
@@ -574,6 +574,7 @@ export const islands: Island[] = [
     access: [
       { route: "竹芝 → 大島", time: "高速船／大型客船", copy: "季節と便で所要時間が変わる。到着港は当日の運航情報で確認。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "調布 → 大島", time: "飛行機", copy: "便数、運賃、手荷物上限を新中央航空で確認。", url: "https://central-air.co.jp/schedule-fee.html?stt_lang=ja" },
+      { route: "神津島 → 大島", time: "8/30候補 10:45 → 11:45", copy: "2026年公式時刻表の最短ジェット船候補。13:25→15:05便と大型客船10:30→13:55もある。空席は未確認。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "島内", time: "バス／車／自転車", copy: "火山と南部を一日でつなぐなら車が有力。タクシーは予約前提。", url: "https://izu-oshima.or.jp/transportation.html" },
       { route: "出発当日の運航", time: "元町港／岡田港", copy: "どちらの港を使うかを当日確認。宿の送迎と荷物の動線も発着港に合わせる。", url: "https://www.tokaikisen.co.jp/schedule/" },
     ],
@@ -778,7 +779,7 @@ export const islands: Island[] = [
     access: [
       { route: "竹芝 → 新島", time: "高速船／大型客船", copy: "季節で便・所要時間が変わる。東海汽船の同日検索を優先。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "調布 → 新島", time: "飛行機", copy: "発売時期、便数、手荷物制限を予約前に確認。", url: "https://central-air.co.jp/schedule-fee.html?stt_lang=ja" },
-      { route: "神津島 → 新島", time: "島間船の候補", copy: "現在比較中の新島案。8/30の同日接続、海況、発着港、空席を確認するまでは未採用。", url: "https://www.tokyo-islands.com/access/" },
+      { route: "神津島 → 新島", time: "8/30 13:25 → 14:05", copy: "現在比較中の新島案。大型客船10:30→11:45もある。時刻と運賃は確認済み、空席と当日の港は未確認。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "出発当日の運航", time: "船／飛行機", copy: "島間移動を含め、同日の接続を運航情報で再確認。成立しなければ一島集中へ戻す。", url: "https://www.tokaikisen.co.jp/schedule/" },
     ],
     rules: [
@@ -810,19 +811,19 @@ export const overviewPoints: MapPoint[] = [
 
 export const overviewRoutes: MapRoute[] = [
   {
-    label: "共通案：東京 → 神津島（交通手段は未確定）",
+    label: "共通案：8/29 東京 → 神津島（空席未確認）",
     positions: [[35.6537, 139.7628], [34.212, 139.139]],
     color: "#ff4b2b",
     dash: true,
   },
   {
-    label: "案A：神津島 → 大島（同日接続は未確認）",
+    label: "案A：8/30 神津島 → 大島（公式ダイヤあり）",
     positions: [[34.212, 139.139], [34.737, 139.387]],
     color: "#d6ea4b",
     dash: true,
   },
   {
-    label: "案B：神津島 → 新島（同日接続は未確認）",
+    label: "案B：8/30 神津島 → 新島（公式ダイヤあり）",
     positions: [[34.212, 139.139], [34.373, 139.259]],
     color: "#0e6b77",
     dash: true,
@@ -830,8 +831,9 @@ export const overviewRoutes: MapRoute[] = [
 ];
 
 export const bookingLinks = [
-  { index: "01", title: "船の空席を調べる", detail: "竹芝・島間・復路を同じ日付で確認。", status: "LIVE CHECK", url: "https://www.tokaikisenyoyaku.com/app/login" },
-  { index: "02", title: "神津島の宿を先に押さえる", detail: "野宿不可。繁忙期は宿が旅程の成立条件。", status: "FIRST", url: "https://kozushima.com/yado-list/" },
-  { index: "03", title: "大島の宿と島内交通", detail: "発着港変更と送迎条件まで比較。", status: "COMPARE", url: "https://www.izu-oshima.or.jp/accommodation.html" },
-  { index: "04", title: "新島の宿と夕食", detail: "宿・飲食店とも数が限られるため並行確認。", status: "EARLY", url: "https://niijima-info.jp/stay/" },
+  { index: "01", title: "船の空席を調べる", detail: "8/29・8/30・9/1を同じ人数で検索。ログインが必要。", status: "LIVE CHECK", url: "https://www.tokaikisenyoyaku.com/app/login" },
+  { index: "02", title: "神津島行きの飛行機を見る", detail: "8/29は調布発が3便。空席と手荷物条件を確認。", status: "COMPARE", url: "https://central-air.co.jp/caution.html" },
+  { index: "03", title: "神津島の宿を先に押さえる", detail: "野宿不可。繁忙期は宿が旅程の成立条件。", status: "FIRST", url: "https://kozushima.com/yado-list/" },
+  { index: "04", title: "大島の宿と島内交通", detail: "発着港変更と送迎条件まで比較。", status: "OPTION A", url: "https://www.izu-oshima.or.jp/accommodation.html" },
+  { index: "05", title: "新島の宿と夕食", detail: "宿・飲食店とも数が限られるため並行確認。", status: "OPTION B", url: "https://niijima-info.jp/stay/" },
 ];

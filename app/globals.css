@@ -492,6 +492,84 @@ h1 {
   line-height: 1.75;
 }
 
+.route-verdict {
+  display: grid;
+  grid-template-columns: 10px auto 1fr;
+  gap: 8px;
+  align-items: center;
+  margin: 24px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: #526b72;
+  background: var(--foam);
+}
+
+.route-verdict small {
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.route-verdict strong {
+  justify-self: end;
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.route-schedule {
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.route-schedule > div {
+  display: grid;
+  grid-template-columns: 44px minmax(120px, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.route-schedule small {
+  color: var(--coral);
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.route-choice-card.niijima .route-schedule small {
+  color: var(--ocean);
+}
+
+.route-schedule strong {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+}
+
+.route-schedule span,
+.route-schedule b {
+  color: #667a80;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.route-schedule b {
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.route-return {
+  margin: 14px 0 0;
+  color: #64777c;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.route-return strong {
+  display: inline-block;
+  margin-right: 8px;
+  color: var(--ink);
+  font-size: 10px;
+}
+
 .route-moments {
   display: flex;
   flex-wrap: wrap;
@@ -542,6 +620,24 @@ h1 {
   padding-left: 14px;
   color: #6b6254;
   border-left: 3px solid var(--sun);
+}
+
+.route-source-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.route-source-links a {
+  padding: 7px 10px;
+  border: 1px solid rgba(12, 101, 115, 0.22);
+  border-radius: 999px;
+  color: var(--ocean);
+  background: white;
+  font-size: 9px;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .route-choice-card > a {
@@ -1194,7 +1290,8 @@ footer {
   .next-card,
   .expense-card { padding: 56px 24px; }
   .proposal-grid { grid-template-columns: 1fr 1fr; }
-  .route-choice-card { min-height: 560px; }
+  .route-choice-grid { grid-template-columns: 1fr; }
+  .route-choice-card { min-height: 0; }
   .composer-form { grid-template-columns: 1fr 1fr; }
   .composer-form .wide,
   .submit-button,
@@ -1224,6 +1321,10 @@ footer {
   .proposal-grid { grid-template-columns: 1fr; }
   .route-choice-grid { grid-template-columns: 1fr; }
   .route-choice-card { min-height: 0; padding: 28px 22px; }
+  .route-schedule > div { grid-template-columns: 42px 1fr auto; }
+  .route-schedule b { grid-column: 2 / 4; }
+  .route-verdict { grid-template-columns: 10px 1fr; }
+  .route-verdict strong { grid-column: 2; justify-self: start; }
   .route-choice-card > a { margin-top: 30px; }
   .composer-tabs { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
   .composer-tabs button { padding: 10px 6px; }

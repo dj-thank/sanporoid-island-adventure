@@ -75,7 +75,7 @@ const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY",
 
 const tripFrame = [
   { date: "8/29", time: "DAY 1", title: "本土から神津島へ", details: "神津島は2案に共通。船か飛行機か、到着時刻と宿を見て決める。", state: "共通" },
-  { date: "8/30", time: "DAY 2", title: "神津島から、もう一つの島へ", details: "伊豆大島か新島へ移る想定。同日の接続が成立するかは未確認。", state: "選択" },
+  { date: "8/30", time: "DAY 2", title: "神津島から、もう一つの島へ", details: "公式時刻表では大島・新島の両方へ接続あり。空席と当日の発着港は未確認。", state: "2案あり" },
   { date: "8/31", time: "DAY 3", title: "第二の島で一日過ごす", details: "大島なら火山と温泉、新島なら海と自転車。どちらもこの日に宿泊する。", state: "選択" },
   { date: "9/1", time: "DAY 4", title: "東京へ戻る", details: "帰りの便が合わなければ9/2まで延ばす。復路と宿はまだ押さえていない。", state: "予備日あり" },
 ];
@@ -87,8 +87,15 @@ const routeOptionCopy = [
     label: "案 A / 山と火山",
     title: "神津島のあと、大島へ",
     hook: "天上山から三原山へ。歩く旅を二つの島でつなぐ。",
+    verdict: "便の選択肢で一歩リード",
+    schedule: [
+      { label: "最短", time: "10:45 → 11:45", mode: "ジェット船", cost: "4,620円" },
+      { label: "午後発", time: "13:25 → 15:05", mode: "ジェット船", cost: "4,620円" },
+      { label: "安く", time: "10:30 → 13:55", mode: "大型客船 2等", cost: "2,100円" },
+    ],
+    returnTrip: "9/1 大島→東京はジェット船が4便候補。10:20、14:55、15:15、15:50発。",
     moments: ["三原山", "地層大切断面", "温泉", "元町で島ごはん"],
-    unknown: "8/30の神津島→大島が同日でつながるか。大島の宿、復路、総額も確認が必要。",
+    unknown: "各便の空席、神津島と大島の宿、出発当日の発着港。",
     relatedMatch: "元町で島ごはん",
     href: "/discover/oshima",
   },
@@ -98,8 +105,14 @@ const routeOptionCopy = [
     label: "案 B / 山と白い海",
     title: "神津島のあと、新島へ",
     hook: "天上山を歩いた次の日は、羽伏浦を自転車の速さで巡る。",
+    verdict: "移動の短さと安さが魅力",
+    schedule: [
+      { label: "安く", time: "10:30 → 11:45", mode: "大型客船 2等", cost: "1,190円" },
+      { label: "午後発", time: "13:25 → 14:05", mode: "ジェット船", cost: "2,450円" },
+    ],
+    returnTrip: "9/1 新島→東京はジェット船14:10→17:00、または大型客船11:55→18:40。",
     moments: ["羽伏浦", "レンタサイクル", "新島ガラス", "まました温泉"],
-    unknown: "8/30の神津島→新島が同日でつながるか。新島の宿、復路、総額も確認が必要。",
+    unknown: "各便の空席、神津島と新島の宿、出発当日の発着港。",
     relatedMatch: "まました温泉",
     href: "/discover/niijima",
   },
@@ -265,7 +278,7 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
       <section className="quick-status" aria-label="旅行の進み具合">
         <div><span className="dot pending" /><p><small>現在</small>{reconsidering ? "ルートを再調整中" : `採用中 ${adopted.length}件`}</p></div>
         <div><span className="dot confirmed" /><p><small>共通</small>8/29に神津島へ</p></div>
-        <div><span className="dot locked" /><p><small>未確認</small>島間接続・宿・料金</p></div>
+        <div><span className="dot locked" /><p><small>未確認</small>空席・宿・当日の港</p></div>
       </section>
 
       <section className="section itinerary-section" aria-labelledby="itinerary-title">
@@ -292,7 +305,7 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
           <span>02</span>
           <div><p>CHOOSE THE SECOND ISLAND</p><h2 id="proposal-title">第二の島、どっちにする？</h2></div>
         </div>
-        <p className="choice-intro">神津島は共通。旅の性格が変わるのは、その次です。まだどちらも採用せず、まず8/30の接続が成立するかを確かめます。</p>
+        <p className="choice-intro">神津島は共通。8/30は大島にも新島にも移れます。まだどちらも採用せず、空席と宿がそろうかを同じ人数で比べます。</p>
         <div className="route-choice-grid">
           {routeOptionCopy.map((option) => {
             const proposal = routeIdeas.find((idea) => idea.title.includes(option.match));
@@ -302,12 +315,25 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
                 <div className="route-choice-top"><span>{option.label}</span><small>未採用</small></div>
                 <h3>{option.title}</h3>
                 <p className="route-hook">{option.hook}</p>
+                <p className="route-verdict"><span className="dot confirmed" /><small>公式ダイヤあり</small><strong>{option.verdict}</strong></p>
+                <div className="route-schedule" aria-label="8月30日の移動候補">
+                  {option.schedule.map((row) => (
+                    <div key={`${row.time}-${row.mode}`}>
+                      <small>{row.label}</small><strong>{row.time}</strong><span>{row.mode}</span><b>{row.cost}</b>
+                    </div>
+                  ))}
+                </div>
+                <p className="route-return"><strong>帰り</strong>{option.returnTrip}</p>
                 <div className="route-moments" aria-label="この案で楽しめること">
                   {option.moments.map((moment) => <span key={moment}>{moment}</span>)}
                 </div>
                 <p className="route-flow">{proposal?.details ?? "Discordの案を旅行ボードへ反映しています。"}</p>
                 {related && <p className="route-side-idea"><strong>この案なら</strong>{related.title}。{related.details}</p>}
                 <p className="route-unknown"><strong>先に確認</strong>{option.unknown}</p>
+                <div className="route-source-links">
+                  <a href="https://www.tokaikisen.co.jp/boarding/timetable/" target="_blank" rel="noreferrer">公式時刻表 ↗</a>
+                  <a href="https://www.tokaikisenyoyaku.com/app/login" target="_blank" rel="noreferrer">空席を確認 ↗</a>
+                </div>
                 <a href={option.href}>{option.key === "oshima" ? "大島" : "新島"}の記事を読む <span aria-hidden="true">→</span></a>
               </article>
             );
@@ -337,12 +363,14 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
           <div className="section-heading compact"><span>03</span><div><p>BUDGET</p><h2>お金の見通し</h2></div></div>
           <div className="cost-total"><span>1人の旅全体</span><strong>{budgetPending ? "再計算中" : `${compactYen(board.trip.budgetMinYen)}–${compactYen(board.trip.budgetMaxYen)}`}</strong></div>
           <dl>
+            {reconsidering && <div><dt>大島案・交通だけ</dt><dd>29,330–32,950円 / 人</dd></div>}
+            {reconsidering && <div><dt>新島案・交通だけ</dt><dd>26,660–33,630円 / 人</dd></div>}
             <div><dt>採用済みの交通費</dt><dd>{adopted.length ? `${yen.format(shipTotal)} / 人` : "未確定"}</dd></div>
             <div><dt>確定済み実費</dt><dd>{yen.format(confirmedTotal)}</dd></div>
             <div><dt>{participantCount}人で均等なら</dt><dd>{yen.format(Math.round(confirmedTotal / participantCount))} / 人</dd></div>
             <div><dt>確認待ち</dt><dd>{draftExpenses.length}件</dd></div>
           </dl>
-          <p className="footnote">第二の島を選んだあと、交通・宿・食事を公式の条件で積み上げます。以前の「大島→新島」案の金額は現在の予算に含めません。</p>
+          <p className="footnote">交通小計は、8/29の神津島入りを高速船16,800円または飛行機17,900円として、島間便と9/1の復路を組み合わせた幅です。空席、宿、食事は含みません。</p>
         </article>
 
         <article className="expense-card">
@@ -423,9 +451,9 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
         <details open>
           <summary><span>まだ確定していないこと</span><small>OpenClosが次に進める</small></summary>
           <div className="details-content alternatives">
-            <p><strong>まず：</strong>第二の島を大島か新島から選ぶ</p>
-            <p><strong>選ぶ前に：</strong>8/30の神津島→各島が同日でつながるか確認する</p>
-            <p><strong>決めたら：</strong>神津島と第二の島の宿、往路、復路、総額をそろえる</p>
+            <p><strong>まず：</strong>8/29・8/30・9/1の空席を、2案とも同じ人数で確認する</p>
+            <p><strong>同時に：</strong>神津島、大島、新島の宿空室と料金を確認する</p>
+            <p><strong>そろったら：</strong>過ごし方と総額を比べ、第二の島を一つに決める</p>
           </div>
         </details>
         <details>

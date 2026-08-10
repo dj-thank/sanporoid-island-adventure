@@ -91,7 +91,7 @@ export default function DiscoverPage() {
           <span className={styles.truthLight} />
           <p><small>CURRENT TRUTH / SSOT</small><strong id="truth-title">神津島を共通に、第二の島を相談中</strong></p>
         </div>
-        <p>候補は<strong>伊豆大島と新島</strong>の二つ。まだ採用ルートはなく、8/30の接続・宿・復路を確認してから決めます。</p>
+        <p>候補は<strong>伊豆大島と新島</strong>の二つ。8/30の接続は両案とも公式時刻表で確認済み。空席と宿がそろってから決めます。</p>
         <a href="/">現在の予定を見る <b aria-hidden="true">→</b></a>
       </section>
 
@@ -103,7 +103,7 @@ export default function DiscoverPage() {
         <div className={styles.mapCopy}>
           <p className={styles.eyebrow}>MAP &amp; ROUTES</p>
           <h2>大島・新島・神津島の位置と移動</h2>
-          <p>破線は予約済みの経路ではありません。8/29に神津島へ入り、8/30に大島か新島へ移る二つの候補です。どちらも同日の接続を確認するまでは未採用です。</p>
+          <p>破線は予約済みの経路ではありません。8/29に神津島へ入り、8/30に大島か新島へ移る二つの候補です。時刻表には両方の便がありますが、空席と当日の発着港は未確認です。</p>
           <ul>
             <li><b>大島</b><span>東京に近く、到着日から火山を歩ける。</span></li>
             <li><b>新島</b><span>大島から南へ。自転車の速度で白い海岸をつなぐ。</span></li>
@@ -195,7 +195,7 @@ export default function DiscoverPage() {
           <div className={styles.sectionIndex}><span>02</span><p>BOOKING DESK</p></div>
           <p className={styles.eyebrow}>BOOKING</p>
           <h2>決める前に、宿と交通を確かめる</h2>
-          <p>空席、空室、価格はまだ確定していません。公式サイトで宿と交通を確認し、予約できた内容だけをSSOTへ移します。</p>
+          <p>時刻と運賃は公式情報で確認しました。次は同じ人数で空席と宿を照合し、取れる組み合わせだけをSSOTへ移します。</p>
         </div>
         <div className={styles.bookingList}>
           {bookingLinks.map((item) => (
