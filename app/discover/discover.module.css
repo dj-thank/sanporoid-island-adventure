@@ -113,6 +113,10 @@
   background: var(--acid);
 }
 
+.magazine .ssotNav {
+  color: var(--ink);
+}
+
 .coverStory {
   display: grid;
   grid-template-columns: minmax(420px, 0.72fr) minmax(0, 1.28fr);
@@ -719,6 +723,10 @@
 
 /* Island feature pages */
 
+.featurePage section[id] {
+  scroll-margin-top: 92px;
+}
+
 .featureMasthead {
   position: absolute;
   top: 0;
@@ -748,8 +756,9 @@
 .featureHeroCopy strong { display: block; margin-top: 38px; font-size: clamp(22px, 3vw, 44px); letter-spacing: -0.055em; }
 .featureHeroBottom { position: absolute; z-index: 2; right: clamp(24px, 5vw, 74px); bottom: 30px; left: clamp(24px, 5vw, 74px); display: flex; justify-content: space-between; gap: 30px; align-items: end; padding-top: 17px; border-top: 1px solid rgba(255, 255, 255, 0.35); }
 .featureHeroBottom p { max-width: 580px; margin: 0; color: rgba(255, 255, 255, 0.67); font-size: 11px; line-height: 1.7; }
-.featureHeroBottom > a { display: flex; gap: 18px; font-size: 9px; font-weight: 900; text-decoration: none; }
-.featureHeroBottom > a b { color: var(--acid); }
+.featureHeroActions { display: flex; gap: 10px; flex: 0 0 auto; }
+.featureHeroActions a { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; padding: 0 15px; border: 1px solid rgba(255, 255, 255, 0.42); font-size: 9px; font-weight: 900; text-decoration: none; }
+.featureHeroActions a:first-child { color: var(--ink); border-color: var(--acid); background: var(--acid); }
 .featureHero > .photoCredit { bottom: 4px; }
 
 .featureFactStrip {
@@ -781,6 +790,85 @@
 .featureOpening dl > div { display: grid; grid-template-columns: 100px 1fr; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--line); }
 .featureOpening dt { color: var(--red); font-family: var(--font-geist-mono), monospace; font-size: 7px; font-weight: 900; }
 .featureOpening dd { margin: 0; font-size: 10px; font-weight: 750; }
+
+.planningPanel {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.62fr) minmax(0, 1.38fr);
+  gap: clamp(44px, 7vw, 110px);
+  padding: 92px max(28px, calc((100vw - 1360px) / 2));
+  background: var(--acid);
+}
+
+.planningIntro h2 {
+  margin: 17px 0 0;
+  font-size: clamp(42px, 4.5vw, 68px);
+  letter-spacing: -0.075em;
+  line-height: 1.03;
+}
+
+.planningIntro > p:last-child {
+  max-width: 520px;
+  margin: 25px 0 0;
+  color: rgba(17, 21, 20, 0.68);
+  font-size: 12px;
+  line-height: 1.85;
+}
+
+.planningActions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 2px solid var(--ink);
+  border-left: 1px solid rgba(17, 21, 20, 0.35);
+}
+
+.planningAction {
+  display: flex;
+  min-width: 0;
+  min-height: 248px;
+  flex-direction: column;
+  padding: 24px;
+  border-right: 1px solid rgba(17, 21, 20, 0.35);
+  border-bottom: 1px solid rgba(17, 21, 20, 0.35);
+  text-decoration: none;
+  transition: background 180ms ease, transform 180ms ease;
+}
+
+.planningAction:hover {
+  background: rgba(255, 253, 247, 0.5);
+  transform: translateY(-3px);
+}
+
+.planningAction small {
+  color: var(--red);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.planningAction strong {
+  display: block;
+  margin-top: 38px;
+  font-size: clamp(20px, 2vw, 28px);
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+}
+
+.planningAction p {
+  margin: 13px 0 24px;
+  color: rgba(17, 21, 20, 0.64);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.planningAction em {
+  margin-top: auto;
+  padding-top: 11px;
+  border-top: 1px solid rgba(17, 21, 20, 0.38);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+}
 
 .featureMapSection {
   padding: 128px max(28px, calc((100vw - 1420px) / 2));
@@ -881,13 +969,15 @@
 .accessTitle > .eyebrow { grid-area: eyebrow; }
 .accessTitle h2 { grid-area: title; font-size: clamp(48px, 6vw, 88px); }
 .accessRows { border-top: 3px solid var(--ink); }
-.accessRow { display: grid; grid-template-columns: 42px 1fr 0.45fr 1.3fr 20px; gap: 24px; align-items: center; min-height: 115px; padding: 18px 12px; border-bottom: 1px solid var(--line); text-decoration: none; }
-.accessRow > span { display: contents; }
-.accessRow > span:first-child { display: block; color: var(--red); font-family: var(--font-geist-mono), monospace; font-size: 8px; font-weight: 900; }
+.accessRow { display: grid; grid-template-columns: 42px minmax(180px, 1fr) minmax(130px, 0.45fr) minmax(240px, 1.3fr) auto; grid-template-areas: "index route time copy cta"; gap: 24px; align-items: center; min-height: 115px; padding: 18px 12px; border-bottom: 1px solid var(--line); text-decoration: none; }
+.accessRow > span { grid-area: index; display: block; color: var(--red); font-family: var(--font-geist-mono), monospace; font-size: 8px; font-weight: 900; }
+.accessRow strong { grid-area: route; }
+.accessRow em { grid-area: time; }
+.accessRow p { grid-area: copy; }
 .accessRow strong { font-size: 17px; letter-spacing: -0.03em; }
 .accessRow em { color: var(--blue); font-size: 10px; font-style: normal; font-weight: 850; }
 .accessRow p { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.65; }
-.accessRow > b { color: var(--red); }
+.accessRow > b { grid-area: cta; padding-bottom: 4px; color: var(--red); border-bottom: 1px solid currentColor; font-size: 8px; white-space: nowrap; }
 .fieldRules { display: grid; grid-template-columns: 0.7fr 1.3fr; gap: 80px; margin-top: 100px; padding: 60px; color: var(--white); background: var(--ink); }
 .fieldRules > div > p { margin: 0 0 13px; color: var(--acid); font-family: var(--font-geist-mono), monospace; font-size: 8px; font-weight: 900; letter-spacing: 0.1em; }
 .fieldRules h3 { margin: 0; font-size: clamp(30px, 3.4vw, 50px); letter-spacing: -0.06em; line-height: 1.15; }
@@ -934,6 +1024,7 @@
   .featureHeroCopy h1 { font-size: clamp(94px, 18vw, 210px); }
   .featureOpening,
   .featureMapHead { grid-template-columns: 0.22fr 1fr 0.78fr; }
+  .planningPanel { grid-template-columns: 1fr; }
   .featureChapter,
   .featureChapterReverse { grid-template-columns: 1fr 1fr; }
   .chapterCopy { padding: 55px 45px; }
@@ -1032,8 +1123,7 @@
   .accessTitle > .sectionIndex,
   .accessTitle > .eyebrow,
   .accessTitle h2 { grid-area: auto; }
-  .accessRow { grid-template-columns: 36px 1fr auto 18px; }
-  .accessRow p { grid-column: 2 / 4; }
+  .accessRow { grid-template-columns: 36px minmax(0, 1fr) auto; grid-template-areas: "index route cta" ". time cta" ". copy copy"; gap: 10px 20px; padding: 24px 12px; }
   .fieldRules { grid-template-columns: 1fr; gap: 50px; padding: 48px; }
   .officialSection { grid-template-columns: 1fr; }
   .officialSection > p { grid-column: 1; }
@@ -1044,8 +1134,8 @@
   .masthead { display: flex; flex-wrap: wrap; gap: 12px 18px; padding: 15px 20px; }
   .wordmark { flex: 1 1 auto; }
   .ssotNav { flex: 0 0 auto; }
-  .masthead nav { order: 3; display: grid; grid-template-columns: repeat(5, auto); gap: 12px; justify-content: space-between; overflow-x: auto; }
-  .masthead nav a { font-size: 7px; white-space: nowrap; }
+  .masthead nav { order: 3; display: grid; grid-template-columns: repeat(5, minmax(52px, 1fr)); gap: 0; justify-content: space-between; overflow-x: auto; }
+  .masthead nav a { display: flex; min-height: 38px; align-items: center; justify-content: center; padding: 0 6px; font-size: 9px; white-space: nowrap; }
   .coverIntro { min-height: 620px; padding: 48px 20px; }
   .issueLine { flex-direction: column; gap: 5px; }
   .coverKicker { padding-top: 40px; }
@@ -1086,14 +1176,23 @@
   .editorNote blockquote { font-size: 34px; }
   .footer { grid-template-columns: 1fr; padding: 50px 20px; }
   .footer > p { grid-column: 1; }
-  .featureHero { min-height: 680px; }
-  .featureMasthead { min-height: 104px; }
-  .featureHeroTop { top: 120px; right: 20px; left: 20px; }
+  .featurePage section[id] { scroll-margin-top: 92px; }
+  .featureMasthead { position: sticky; top: 0; right: auto; left: auto; min-height: 0; gap: 7px 12px; padding: 9px 16px 0; background: rgba(10, 12, 11, 0.96); }
+  .featureMasthead .wordmark { min-height: 34px; align-items: center; }
+  .featureMasthead .wordmark span { font-size: 8px; }
+  .featureMasthead .wordmark strong { font-size: 11px; }
+  .featureMasthead .ssotNav { display: inline-flex; min-height: 34px; align-items: center; padding: 7px 10px; font-size: 9px; }
+  .featureMasthead nav { width: calc(100% + 32px); margin: 0 -16px; padding: 0 10px; border-top: 1px solid rgba(255, 255, 255, 0.14); }
+  .featureMasthead nav a { min-height: 44px; }
+  .featureHero { height: calc(100svh - 94px); min-height: 620px; }
+  .featureHeroTop { top: 24px; right: 20px; left: 20px; }
   .featureHeroCopy { right: 20px; bottom: 150px; left: 20px; }
   .featureHeroCopy h1 { font-size: clamp(82px, 27vw, 142px); }
   .featureHeroCopy strong { margin-top: 26px; font-size: 23px; }
   .featureHeroBottom { right: 20px; bottom: 28px; left: 20px; flex-direction: column; align-items: flex-start; }
-  .featureHeroBottom p { font-size: 9px; }
+  .featureHeroBottom p { font-size: 11px; }
+  .featureHeroActions { display: grid; grid-template-columns: 1.2fr 1fr; width: 100%; }
+  .featureHeroActions a { min-height: 44px; padding: 0 10px; font-size: 10px; }
   .featureFactStrip { padding: 0 20px; }
   .featureFactStrip div { min-height: 105px; padding: 20px 14px; }
   .featureOpening,
@@ -1104,6 +1203,17 @@
   .officialSection,
   .nextIslands { padding: 90px 20px; }
   .featureOpening blockquote { font-size: 32px; }
+  .featureOpening > div:last-child > p { font-size: 14px; line-height: 1.9; }
+  .featureOpening dt { font-size: 9px; }
+  .featureOpening dd { font-size: 12px; line-height: 1.55; }
+  .planningPanel { grid-template-columns: 1fr; gap: 38px; padding: 72px 20px; }
+  .planningIntro h2 { font-size: clamp(42px, 13vw, 58px); }
+  .planningIntro > p:last-child { font-size: 13px; line-height: 1.85; }
+  .planningActions { grid-template-columns: 1fr; }
+  .planningAction { min-height: 174px; padding: 22px; }
+  .planningAction strong { margin-top: 22px; font-size: 24px; }
+  .planningAction p { font-size: 12px; }
+  .planningAction em { font-size: 10px; }
   .featureMapHead h2,
   .longRead > header h2,
   .routeIntro h2,
@@ -1111,21 +1221,43 @@
   .stayColumn h2,
   .accessTitle h2 { font-size: clamp(41px, 13vw, 62px); }
   .featureMapGrid .mapFrame { height: 500px; }
+  .featureMapHead > p { font-size: 13px; }
   .spotIndex { max-height: none; }
+  .spotIndex small { font-size: 9px; }
+  .spotIndex strong { font-size: 16px; }
+  .spotIndex p { font-size: 12px; line-height: 1.7; }
   .featureChapter figure { min-height: 420px; }
   .chapterCopy { padding: 72px 20px; }
   .chapterCopy > span { font-size: 92px; }
   .chapterCopy h3 { font-size: 39px; }
+  .chapterCopy > p:not(.eyebrow) { font-size: 14px; line-height: 1.9; }
+  .chapterCopy aside { font-size: 12px; line-height: 1.75; }
+  .sourceLink { min-height: 44px; align-items: center; font-size: 11px; }
+  .routeIntro > p:not(.eyebrow) { font-size: 13px; }
   .dayRoutes article > header { grid-template-columns: 60px 1fr; }
   .dayRoutes ol { margin-left: 0; }
+  .dayRoutes time { font-size: 9px; }
+  .dayRoutes strong { font-size: 15px; }
+  .dayRoutes li p { font-size: 12px; line-height: 1.7; }
+  .routeDisclaimer { font-size: 11px; line-height: 1.75; }
   .foodColumn,
   .stayColumn { padding: 90px 20px; }
+  .foodList p { font-size: 13px; }
   .stayItem { grid-template-columns: 1fr 18px; grid-template-areas: "type arrow" "title arrow" "copy arrow" "cta arrow"; }
-  .accessRow { grid-template-columns: 28px 1fr 18px; gap: 12px; }
-  .accessRow em,
-  .accessRow p { grid-column: 2 / 4; }
+  .stayItem small { font-size: 9px; }
+  .stayItem p { font-size: 12px; line-height: 1.7; }
+  .stayItem em { font-size: 10px; }
+  .accessRow { grid-template-columns: 28px minmax(0, 1fr) auto; grid-template-areas: "index route cta" ". time cta" ". copy copy"; gap: 9px 12px; min-height: 0; padding: 24px 0; align-items: start; }
+  .accessRow > span { padding-top: 4px; font-size: 9px; }
+  .accessRow strong { font-size: 18px; line-height: 1.35; }
+  .accessRow em { font-size: 12px; }
+  .accessRow p { font-size: 12px; line-height: 1.7; }
+  .accessRow > b { align-self: start; padding-top: 4px; font-size: 10px; }
   .fieldRules { margin-top: 70px; padding: 36px 22px; }
+  .fieldRules li { font-size: 12px; line-height: 1.75; }
   .officialLinks { grid-template-columns: 1fr; }
+  .officialLinks a { min-height: 48px; align-items: center; font-size: 11px; }
+  .officialSection > p { font-size: 11px; line-height: 1.8; }
   .nextIslands > div { grid-template-columns: 1fr; }
   .nextIslands a { height: 250px; }
 }

@@ -22,6 +22,7 @@ function ExternalLink({ href, children, className }: { href: string; children: R
 
 export default function IslandFeature({ island }: { island: Island }) {
   const others = islands.filter((candidate) => candidate.slug !== island.slug);
+  const tripShape = island.itinerary.length === 3 ? "2泊3日" : "1泊2日";
 
   return (
     <main className={`${styles.magazine} ${styles.featurePage} ${styles[`${island.slug}Theme`]}`}>
@@ -32,10 +33,10 @@ export default function IslandFeature({ island }: { island: Island }) {
         </a>
         <nav aria-label="特集内ナビゲーション">
           <a href="#map">地図</a>
-          <a href="#stories">読み物</a>
-          <a href="#route">回り方</a>
-          <a href="#food">食と宿</a>
-          <a href="#access">行き方</a>
+          <a href="#stories">見どころ</a>
+          <a href="#route">旅程</a>
+          <a href="#food">宿・食</a>
+          <a href="#access">交通</a>
         </nav>
         <a className={styles.ssotNav} href="/">俺たちの予定</a>
       </header>
@@ -54,7 +55,10 @@ export default function IslandFeature({ island }: { island: Island }) {
         </div>
         <div className={styles.featureHeroBottom}>
           <p>{island.oneLine}</p>
-          <a href="#map">地図から読む <b aria-hidden="true">↓</b></a>
+          <div className={styles.featureHeroActions}>
+            <a href="#plan">旅の組み方を見る</a>
+            <a href="#map">地図から読む</a>
+          </div>
         </div>
         <Credit photo={island.hero} />
       </section>
@@ -73,6 +77,34 @@ export default function IslandFeature({ island }: { island: Island }) {
           <dl>
             {island.fit.map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
           </dl>
+        </div>
+      </section>
+
+      <section className={styles.planningPanel} id="plan" aria-labelledby="planning-title">
+        <div className={styles.planningIntro}>
+          <p className={styles.eyebrow}>START HERE</p>
+          <h2 id="planning-title">まず決めるのは、<br />宿と帰り道。</h2>
+          <p>島では天気や海況が予定を変える。細かな時刻を埋める前に、滞在の基地、時間帯の骨格、往復の選択肢を押さえる。</p>
+        </div>
+        <div className={styles.planningActions}>
+          <a className={styles.planningAction} href={island.stays[0].url} target="_blank" rel="noreferrer">
+            <small>01 / STAY</small>
+            <strong>宿を先に押さえる</strong>
+            <p>{island.stays[0].copy}</p>
+            <em>{island.stays[0].cta}</em>
+          </a>
+          <a className={styles.planningAction} href="#route">
+            <small>02 / ROUTE</small>
+            <strong>{tripShape}の骨格を見る</strong>
+            <p>晴れ・風・海況に合わせて、同じ日の中で入れ替えられる旅程にする。</p>
+            <em>旅程へ進む</em>
+          </a>
+          <a className={styles.planningAction} href="#access">
+            <small>03 / ACCESS</small>
+            <strong>往復を比較する</strong>
+            <p>船と飛行機の行きだけでなく、帰りの便と変更余地まで同時に確認する。</p>
+            <em>交通を確認</em>
+          </a>
         </div>
       </section>
 
@@ -181,9 +213,13 @@ export default function IslandFeature({ island }: { island: Island }) {
         </div>
         <div className={styles.accessRows}>
           {island.access.map((item, index) => (
-            <ExternalLink className={styles.accessRow} href={item.url} key={item.route}>
-              <span>{String(index + 1).padStart(2, "0")}</span><strong>{item.route}</strong><em>{item.time}</em><p>{item.copy}</p>
-            </ExternalLink>
+            <a className={styles.accessRow} href={item.url} target="_blank" rel="noreferrer" key={item.route}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{item.route}</strong>
+              <em>{item.time}</em>
+              <p>{item.copy}</p>
+              <b>公式で確認</b>
+            </a>
           ))}
         </div>
         <div className={styles.fieldRules}>

@@ -79,6 +79,9 @@ test("server-renders a mapped long-form feature for each island", async () => {
     const html = await response.text();
     assert.match(html, feature);
     assert.match(html, place);
+    assert.match(html, /START HERE/);
+    assert.match(html, /宿を先に押さえる/);
+    assert.match(html, /公式で確認/);
     assert.match(html, /まず、島の形を/);
     assert.match(html, /最後は、公式情報へ。/);
   }
