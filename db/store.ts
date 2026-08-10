@@ -29,6 +29,44 @@ type ExpenseInput = {
 };
 
 const TRIP_SLUG = "island-weekend-2026";
+const DISCORD_ROUTE_RECONCILIATION = "reconcile:discord-route-choice:v2";
+
+const currentRouteIdeas: Array<PlanInput> = [
+  {
+    date: "8/29–9/1",
+    title: "神津島＋伊豆大島｜天上山から火山へ",
+    details: "8/29に神津島へ入り、8/30に伊豆大島へ移る案。8/31は大島で過ごし、9/1に東京へ戻る。島間の同日接続、宿、復路、料金は未確認。9/2延長も予備案に残す。",
+    status: "proposed",
+    source: "discord",
+    sortOrder: 10,
+  },
+  {
+    date: "8/29–9/1",
+    title: "神津島＋新島｜山のあと、白い海へ",
+    details: "8/29に神津島へ入り、8/30に新島へ移る案。8/31は新島で過ごし、9/1に東京へ戻る。島間の同日接続、宿、復路、料金は未確認。9/2延長も予備案に残す。",
+    status: "proposed",
+    source: "discord",
+    sortOrder: 20,
+  },
+  {
+    date: "大島案",
+    time: "8/30 18:30ごろ",
+    title: "元町で島ごはんと作戦会議",
+    details: "大島案を選んだ場合の夜の過ごし方。島ごはんを囲みながら翌日の動きを決める。店と時間はルート決定後に確認する。",
+    status: "proposed",
+    source: "discord",
+    sortOrder: 30,
+  },
+  {
+    date: "新島案",
+    time: "8/31 17:00ごろ",
+    title: "夕日から、まました温泉へ",
+    details: "新島案を選んだ場合の夕方。予定を詰めず、景色と温泉を続けて楽しむ。天候で順番を入れ替える。",
+    status: "proposed",
+    source: "discord",
+    sortOrder: 40,
+  },
+];
 
 export function bindings() {
   return env as unknown as TripEnv;
@@ -73,13 +111,13 @@ export async function ensureTripStore() {
       .bind(
         TRIP_SLUG,
         "俺たちの島旅",
-        "友達との旅行。大島で動いて、新島でゆるむ。",
-        "A｜大島 → 新島",
+        "友達との旅行。神津島から始めて、次の島を大島か新島から選ぶ。",
+        "再調整中｜神津島＋大島 / 新島",
         "2026-08-29",
         "2026-09-01",
-        "provisional",
-        50000,
-        80000,
+        "reconsidering",
+        0,
+        0,
       )
       .run();
     trip = await db
@@ -90,18 +128,13 @@ export async function ensureTripStore() {
 
   const tripId = Number(trip?.id);
   await db.batch([
-    db.prepare("INSERT OR IGNORE INTO participants (trip_id, discord_user_id, display_name) VALUES (?, ?, ?)").bind(tripId, "june", "June"),
-    db.prepare("INSERT OR IGNORE INTO participants (trip_id, discord_user_id, display_name) VALUES (?, ?, ?)").bind(tripId, "512529641026617344", "りも"),
+    db.prepare("INSERT INTO participants (trip_id, discord_user_id, display_name) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM participants WHERE trip_id = ? AND discord_user_id = ?)").bind(tripId, "june", "June", tripId, "june"),
+    db.prepare("INSERT INTO participants (trip_id, discord_user_id, display_name) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM participants WHERE trip_id = ? AND discord_user_id = ?)").bind(tripId, "512529641026617344", "りも", tripId, "512529641026617344"),
   ]);
 
-  const entries: Array<PlanInput> = [
-    { date: "8/29 SAT", time: "23:00", title: "東京・竹芝 発", details: "大型客船で船中泊", status: "adopted", source: "official", sortOrder: 10, costYen: 8220 },
-    { date: "8/30 SUN", time: "06:00", title: "大島 着", details: "三原山か火山景観。大島泊は未定", status: "adopted", source: "official", sortOrder: 20 },
-    { date: "8/31 MON", time: "09:45 → 10:40", title: "大島 → 新島", details: "午後は白い浜・モヤイ・温泉。新島泊は未定", status: "adopted", source: "official", sortOrder: 30, costYen: 3950 },
-    { date: "9/1 TUE", time: "14:10 → 17:00", title: "新島 → 東京", details: "大島でジェット船を乗り継ぐ", status: "adopted", source: "official", sortOrder: 40, costYen: 13280 },
-    { date: "8/31 MON", time: "17:00ごろ", title: "夕日を見て、まました温泉へ", details: "友達旅行らしく、新島の夕方は予定を詰めずに景色と温泉をセットにする案。天候で順番を入れ替える。", status: "proposed", source: "OpenClos", sortOrder: 50 },
-  ];
-  for (const entry of entries) {
+  await reconcileDiscordRouteChoice(db, tripId);
+
+  for (const entry of currentRouteIdeas) {
     await db.prepare("INSERT INTO plan_entries (trip_id, date, time, title, details, status, source, sort_order, cost_yen, created_by) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM plan_entries WHERE trip_id = ? AND date = ? AND time = ? AND title = ?)").bind(
       tripId,
       entry.date ?? "",
@@ -119,10 +152,43 @@ export async function ensureTripStore() {
       entry.title,
     ).run();
   }
-  await addActivity(tripId, "seed", "推奨仮案 A｜大島 → 新島 をSSOTへ登録", "OpenClos", "seed:island-weekend-2026:v1");
+  await addActivity(tripId, "seed", "神津島を共通にした2案を旅行ボードへ登録", "OpenClos", "seed:island-weekend-2026:v2");
 
   await db.prepare("PRAGMA optimize").run();
   return { db, tripId };
+}
+
+async function reconcileDiscordRouteChoice(db: D1Database, tripId: number) {
+  const alreadyReconciled = await db
+    .prepare("SELECT id FROM activity WHERE external_id = ?")
+    .bind(DISCORD_ROUTE_RECONCILIATION)
+    .first();
+  if (alreadyReconciled) return;
+
+  const trip = await db
+    .prepare("SELECT route_label AS routeLabel FROM trips WHERE id = ?")
+    .bind(tripId)
+    .first<{ routeLabel: string }>();
+  if (trip?.routeLabel !== "A｜大島 → 新島") return;
+
+  await db.batch([
+    db.prepare("UPDATE trips SET concept = ?, route_label = ?, status = ?, budget_min_yen = 0, budget_max_yen = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+      .bind("友達との旅行。神津島から始めて、次の島を大島か新島から選ぶ。", "再調整中｜神津島＋大島 / 新島", "reconsidering", tripId),
+    db.prepare("UPDATE plan_entries SET status = 'rejected', updated_at = CURRENT_TIMESTAMP WHERE trip_id = ? AND status = 'adopted' AND title IN (?, ?, ?, ?)")
+      .bind(tripId, "東京・竹芝 発", "大島 着", "大島 → 新島", "新島 → 東京"),
+    db.prepare("UPDATE plan_entries SET date = ?, title = ?, details = ?, sort_order = 10, updated_at = CURRENT_TIMESTAMP WHERE trip_id = ? AND title = ?")
+      .bind(currentRouteIdeas[0].date, currentRouteIdeas[0].title, currentRouteIdeas[0].details, tripId, "8/29 本土→神津島、8/30 神津島→伊豆大島、8/31 伊豆大島泊、9/1 伊豆大島→本土案"),
+    db.prepare("UPDATE plan_entries SET date = ?, title = ?, details = ?, sort_order = 20, updated_at = CURRENT_TIMESTAMP WHERE trip_id = ? AND title = ?")
+      .bind(currentRouteIdeas[1].date, currentRouteIdeas[1].title, currentRouteIdeas[1].details, tripId, "8/29 本土→神津島、8/30 神津島→新島、8/31 新島泊、9/1 新島→本土案"),
+    db.prepare("UPDATE plan_entries SET date = ?, time = ?, title = ?, details = ?, sort_order = 30, updated_at = CURRENT_TIMESTAMP WHERE trip_id = ? AND title = ?")
+      .bind(currentRouteIdeas[2].date, currentRouteIdeas[2].time, currentRouteIdeas[2].title, currentRouteIdeas[2].details, tripId, "8/30 18:30ごろ、大島・元町で島ごはんを食べながら作戦会議"),
+    db.prepare("UPDATE plan_entries SET date = ?, time = ?, title = ?, details = ?, source = 'discord', sort_order = 40, updated_at = CURRENT_TIMESTAMP WHERE trip_id = ? AND title = ?")
+      .bind(currentRouteIdeas[3].date, currentRouteIdeas[3].time, currentRouteIdeas[3].title, currentRouteIdeas[3].details, tripId, "夕日を見て、まました温泉へ"),
+    db.prepare("UPDATE plan_entries SET status = 'rejected', updated_at = CURRENT_TIMESTAMP WHERE trip_id = ? AND title IN (?, ?)")
+      .bind(tripId, "候補を『神津島+伊豆大島』または『神津島+新島』のどちらかに絞る案", "俺たちの予定は再調整中（神津島+伊豆大島 / 神津島+新島）"),
+  ]);
+
+  await addActivity(tripId, "route-reset", "Discordの訂正に合わせ、神津島を共通にした2案へ再調整", "OpenClos", DISCORD_ROUTE_RECONCILIATION);
 }
 
 export async function getTripBoard() {
@@ -204,7 +270,16 @@ export async function insertExpense(input: ExpenseInput, actor: string) {
 
 export async function addActivity(tripId: number, kind: string, summary: string, actor: string, externalId?: string) {
   const db = database();
-  await db.prepare("INSERT OR IGNORE INTO activity (trip_id, kind, summary, actor, external_id) VALUES (?, ?, ?, ?, ?)").bind(tripId, cleanText(kind, 40), cleanText(summary, 300), cleanText(actor, 100), externalId ? cleanText(externalId, 160) : null).run();
+  const cleanExternalId = externalId ? cleanText(externalId, 160) : null;
+  if (cleanExternalId) {
+    await db.prepare("INSERT INTO activity (trip_id, kind, summary, actor, external_id) SELECT ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM activity WHERE external_id = ?)")
+      .bind(tripId, cleanText(kind, 40), cleanText(summary, 300), cleanText(actor, 100), cleanExternalId, cleanExternalId)
+      .run();
+    return;
+  }
+  await db.prepare("INSERT INTO activity (trip_id, kind, summary, actor, external_id) VALUES (?, ?, ?, ?, NULL)")
+    .bind(tripId, cleanText(kind, 40), cleanText(summary, 300), cleanText(actor, 100))
+    .run();
 }
 
 export async function externalActionExists(externalId: string) {
@@ -260,6 +335,7 @@ export async function requireBot(request: Request) {
 }
 
 export function cleanText(value: unknown, maxLength: number) {
+  // eslint-disable-next-line no-control-regex -- API input is normalized by removing ASCII control characters.
   return String(value ?? "").replace(/[\u0000-\u001F\u007F]/g, " ").trim().slice(0, maxLength);
 }
 

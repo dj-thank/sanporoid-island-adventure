@@ -778,7 +778,7 @@ export const islands: Island[] = [
     access: [
       { route: "竹芝 → 新島", time: "高速船／大型客船", copy: "季節で便・所要時間が変わる。東海汽船の同日検索を優先。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "調布 → 新島", time: "飛行機", copy: "発売時期、便数、手荷物制限を予約前に確認。", url: "https://central-air.co.jp/schedule-fee.html?stt_lang=ja" },
-      { route: "大島 → 新島", time: "島間船", copy: "現在のSSOTで採用中の移動。接続・海況・当日の発着港を直前確認。", url: "https://www.tokyo-islands.com/access/" },
+      { route: "神津島 → 新島", time: "島間船の候補", copy: "現在比較中の新島案。8/30の同日接続、海況、発着港、空席を確認するまでは未採用。", url: "https://www.tokyo-islands.com/access/" },
       { route: "出発当日の運航", time: "船／飛行機", copy: "島間移動を含め、同日の接続を運航情報で再確認。成立しなければ一島集中へ戻す。", url: "https://www.tokaikisen.co.jp/schedule/" },
     ],
     rules: [
@@ -810,20 +810,21 @@ export const overviewPoints: MapPoint[] = [
 
 export const overviewRoutes: MapRoute[] = [
   {
-    label: "現在のSSOT：竹芝 → 大島 → 新島",
-    positions: [[35.6537, 139.7628], [34.737, 139.387], [34.373, 139.259]],
+    label: "共通案：東京 → 神津島（交通手段は未確定）",
+    positions: [[35.6537, 139.7628], [34.212, 139.139]],
     color: "#ff4b2b",
-  },
-  {
-    label: "神津島への島間ルート候補",
-    positions: [[34.373, 139.259], [34.212, 139.139]],
-    color: "#0e6b77",
     dash: true,
   },
   {
-    label: "調布 → 神津島（空路）",
-    positions: [[35.6717, 139.528], [34.1886, 139.1335]],
+    label: "案A：神津島 → 大島（同日接続は未確認）",
+    positions: [[34.212, 139.139], [34.737, 139.387]],
     color: "#d6ea4b",
+    dash: true,
+  },
+  {
+    label: "案B：神津島 → 新島（同日接続は未確認）",
+    positions: [[34.212, 139.139], [34.373, 139.259]],
+    color: "#0e6b77",
     dash: true,
   },
 ];

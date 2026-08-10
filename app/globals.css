@@ -410,6 +410,161 @@ h1 {
 
 .proposal-section {
   padding-top: 18px;
+  scroll-margin-top: 20px;
+}
+
+.choice-intro {
+  max-width: 720px;
+  margin: -18px 0 28px;
+  color: #5f747a;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.route-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.route-choice-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+  padding: clamp(26px, 4vw, 42px);
+  border: 1px solid rgba(16, 42, 50, 0.2);
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 20px 52px rgba(16, 42, 50, 0.08);
+  overflow: hidden;
+}
+
+.route-choice-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 7px;
+  background: var(--coral);
+}
+
+.route-choice-card.niijima::before {
+  background: var(--ocean);
+}
+
+.route-choice-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--coral);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.route-choice-card.niijima .route-choice-top {
+  color: var(--ocean);
+}
+
+.route-choice-top small {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #6c7f84;
+  background: var(--foam);
+  font-family: var(--font-geist-sans);
+  font-size: 9px;
+  letter-spacing: 0;
+}
+
+.route-choice-card h3 {
+  margin: 32px 0 8px;
+  font-size: clamp(28px, 3.3vw, 45px);
+  letter-spacing: -0.055em;
+  line-height: 1.08;
+}
+
+.route-hook {
+  margin: 0;
+  color: #526b72;
+  font-size: 14px;
+  font-weight: 680;
+  line-height: 1.75;
+}
+
+.route-moments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 24px 0;
+}
+
+.route-moments span {
+  padding: 7px 10px;
+  border: 1px solid rgba(16, 42, 50, 0.13);
+  border-radius: 999px;
+  color: #526b72;
+  background: #fffefa;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.route-flow,
+.route-side-idea,
+.route-unknown {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.route-flow {
+  color: #64777c;
+}
+
+.route-side-idea {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  color: #4e686e;
+  background: var(--foam);
+}
+
+.route-side-idea strong,
+.route-unknown strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--ink);
+  font-size: 10px;
+}
+
+.route-unknown {
+  margin-top: 18px;
+  padding-left: 14px;
+  color: #6b6254;
+  border-left: 3px solid var(--sun);
+}
+
+.route-choice-card > a {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: auto;
+  padding-top: 28px;
+  color: var(--ocean);
+  border-bottom: 1px solid currentColor;
+  font-size: 12px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.proposal-followups {
+  margin-top: 54px;
+}
+
+.proposal-followups > h3 {
+  margin: 0 0 18px;
+  font-size: 20px;
+  letter-spacing: -0.03em;
 }
 
 .proposal-grid {
@@ -1039,6 +1194,7 @@ footer {
   .next-card,
   .expense-card { padding: 56px 24px; }
   .proposal-grid { grid-template-columns: 1fr 1fr; }
+  .route-choice-card { min-height: 560px; }
   .composer-form { grid-template-columns: 1fr 1fr; }
   .composer-form .wide,
   .submit-button,
@@ -1066,6 +1222,9 @@ footer {
   .micro-status { grid-column: 2; }
   .heading-note { display: none !important; }
   .proposal-grid { grid-template-columns: 1fr; }
+  .route-choice-grid { grid-template-columns: 1fr; }
+  .route-choice-card { min-height: 0; padding: 28px 22px; }
+  .route-choice-card > a { margin-top: 30px; }
   .composer-tabs { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
   .composer-tabs button { padding: 10px 6px; }
   .composer-form { grid-template-columns: 1fr; padding: 20px; }

@@ -6,8 +6,8 @@ import { bookingLinks, islands, overviewPoints, overviewRoutes, type Photo } fro
 import styles from "./discover.module.css";
 
 export const metadata: Metadata = {
-  title: "大島・新島・神津島の旅ガイド｜ISLAND WEEKEND",
-  description: "大島・新島・神津島を友達と旅するためのガイド。地図、モデルコース、雨の日、食、宿、交通、公式予約先をまとめました。",
+  title: "神津島から、大島か新島へ｜ISLAND WEEKEND",
+  description: "神津島を共通に、大島と新島の2案を比べる友達との島旅ガイド。地図、モデルコース、雨の日、食、宿、交通、公式予約先をまとめました。",
 };
 
 function Credit({ photo }: { photo: Photo }) {
@@ -52,12 +52,12 @@ export default function DiscoverPage() {
             <span>FIELD JOURNAL 002</span>
             <span>IZU ISLANDS / TOKYO</span>
           </div>
-          <p className={styles.coverKicker}>ŌSHIMA · NIIJIMA · KŌZUSHIMA</p>
-          <h1><span>大島・新島・</span><span>神津島の</span><span>旅ガイド</span></h1>
-          <p className={styles.coverDeck}>三原山を歩く大島、羽伏浦を自転車で巡る新島、天上山と星空を楽しむ神津島。3人でやりたいことと日数から行き先を選べます。</p>
+          <p className={styles.coverKicker}>KŌZUSHIMA · ŌSHIMA / NIIJIMA</p>
+          <h1><span>神津島から、</span><span>大島か新島へ</span><span>友達との島旅</span></h1>
+          <p className={styles.coverDeck}>8月29日に神津島へ。その先を、火山の大島にするか、白い海の新島にするか。友達と過ごしたい時間から、二つの旅を比べます。</p>
           <div className={styles.coverActions}>
-            <a href="#map">3島を地図で比べる</a>
-            <a href="/discover/kozushima">神津島の2泊3日を見る</a>
+            <a href="#map">2つの案を地図で見る</a>
+            <a href="/discover/kozushima">まず神津島を読む</a>
           </div>
         </div>
 
@@ -89,9 +89,9 @@ export default function DiscoverPage() {
       <section className={styles.truthStrip} aria-labelledby="truth-title">
         <div>
           <span className={styles.truthLight} />
-          <p><small>CURRENT TRUTH / SSOT</small><strong id="truth-title">採用中は「大島 → 新島」</strong></p>
+          <p><small>CURRENT TRUTH / SSOT</small><strong id="truth-title">神津島を共通に、第二の島を相談中</strong></p>
         </div>
-        <p>神津島は現在<strong>比較中の候補</strong>です。行き先が決まったら、Discordから採用する予定をSSOTへ追加します。</p>
+        <p>候補は<strong>伊豆大島と新島</strong>の二つ。まだ採用ルートはなく、8/30の接続・宿・復路を確認してから決めます。</p>
         <a href="/">現在の予定を見る <b aria-hidden="true">→</b></a>
       </section>
 
@@ -103,7 +103,7 @@ export default function DiscoverPage() {
         <div className={styles.mapCopy}>
           <p className={styles.eyebrow}>MAP &amp; ROUTES</p>
           <h2>大島・新島・神津島の位置と移動</h2>
-          <p>赤い実線は、現在SSOTに入っている竹芝→大島→新島です。破線は神津島を加える場合の候補。地図の点を押すと各場所の説明が開きます。</p>
+          <p>破線は予約済みの経路ではありません。8/29に神津島へ入り、8/30に大島か新島へ移る二つの候補です。どちらも同日の接続を確認するまでは未採用です。</p>
           <ul>
             <li><b>大島</b><span>東京に近く、到着日から火山を歩ける。</span></li>
             <li><b>新島</b><span>大島から南へ。自転車の速度で白い海岸をつなぐ。</span></li>
@@ -118,7 +118,7 @@ export default function DiscoverPage() {
       <section className={styles.chooseSection}>
         <div className={styles.chooseTitle}>
           <p>COMPARE THE ISLANDS</p>
-          <h2>3島を過ごし方で比べる</h2>
+          <h2>神津島の次を、過ごし方で選ぶ</h2>
         </div>
         <div className={styles.compareTable} role="table" aria-label="三島の旅の性格比較">
           <div className={styles.compareHead} role="row">
@@ -194,7 +194,7 @@ export default function DiscoverPage() {
         <div className={styles.bookingIntro}>
           <div className={styles.sectionIndex}><span>02</span><p>BOOKING DESK</p></div>
           <p className={styles.eyebrow}>BOOKING</p>
-          <h2>宿と交通をこの順で確認する</h2>
+          <h2>決める前に、宿と交通を確かめる</h2>
           <p>空席、空室、価格はまだ確定していません。公式サイトで宿と交通を確認し、予約できた内容だけをSSOTへ移します。</p>
         </div>
         <div className={styles.bookingList}>
@@ -212,7 +212,7 @@ export default function DiscoverPage() {
 
       <section className={styles.editorNote}>
         <p>HOW TO USE THIS GUIDE</p>
-        <blockquote>3島の記事を読み、行きたい場所を決める。<br />採用した予定だけをSSOTに残す。</blockquote>
+        <blockquote>まず神津島を読む。次に大島と新島を比べる。<br />決めた予定だけをSSOTに残す。</blockquote>
         <div>
           <p>このマガジンには、行き先を相談するための候補を載せています。採用した予定、金額、経費、領収書は「俺たちの予定」で管理します。</p>
           <div>

@@ -20,19 +20,19 @@ export async function generateMetadata(): Promise<Metadata> {
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const metadataBase = new URL(`${protocol}://${host}`);
   return {
-    title: "Island Weekend｜大島 → 新島 旅行ボード",
-    description: "Juneとりもの伊豆諸島旅行。採用済み予定、提案、費用、領収書を一つの正本で共有します。",
+    title: "俺たちの島旅｜神津島から、大島か新島へ",
+    description: "8月29日から9月1日。神津島を共通に、大島と新島の2案を比べる旅行ボード。予定、費用、未確認事項を一画面で共有します。",
     metadataBase,
     openGraph: {
-      title: "Island Weekend｜大島 → 新島",
-      description: "俺たちの旅行SSOT。予定・提案・費用を一画面で共有。",
+      title: "俺たちの島旅｜神津島から、大島か新島へ",
+      description: "神津島は共通。第二の島を大島か新島から選ぶ、友達との旅行SSOT。",
       type: "website",
-      images: [{ url: "/og.png", width: 1728, height: 909, alt: "Island Weekend 大島から新島へ" }],
+      images: [{ url: "/og.png", width: 1728, height: 909, alt: "Island Weekend 神津島から、大島か新島へ" }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Island Weekend｜大島 → 新島",
-      description: "俺たちの旅行SSOT。予定・提案・費用を一画面で共有。",
+      title: "俺たちの島旅｜神津島から、大島か新島へ",
+      description: "神津島は共通。第二の島を大島か新島から選ぶ、友達との旅行SSOT。",
       images: ["/og.png"],
     },
   };

@@ -33,8 +33,8 @@ test("server-renders the Island Weekend shell and metadata", async () => {
   const html = await response.text();
   assert.match(html, /<html lang="ja">/);
   assert.match(html, /俺たちの予定を読み込んでいます/);
-  assert.match(html, /Island Weekend｜大島 → 新島 旅行ボード/);
-  assert.match(html, /俺たちの旅行SSOT/);
+  assert.match(html, /俺たちの島旅｜神津島から、大島か新島へ/);
+  assert.match(html, /神津島を共通に、大島と新島の2案を比べる旅行ボード/);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
 });
 
@@ -48,12 +48,15 @@ test("server-renders the official-source island magazine", async () => {
 
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /大島・新島・/);
-  assert.match(html, /神津島の/);
-  assert.match(html, /旅ガイド/);
-  assert.match(html, /採用中は「大島 → 新島」/);
+  assert.match(html, /神津島から、/);
+  assert.match(html, /大島か新島へ/);
+  assert.match(html, /友達との島旅/);
+  assert.match(html, /神津島を共通に、第二の島を相談中/);
+  assert.match(html, /まだ採用ルートはなく/);
   assert.match(html, /神津島のモデルコースを見る/);
-  assert.match(html, /宿と交通をこの順で確認する/);
+  assert.match(html, /決める前に、宿と交通を確かめる/);
+  assert.doesNotMatch(html, /採用中は「大島 → 新島」/);
+  assert.doesNotMatch(html, /現在SSOTに入っている竹芝→大島→新島/);
   assert.doesNotMatch(html, /EDITORIAL VISUAL/);
   assert.doesNotMatch(html, /island-scenes-v1\.png/);
   assert.doesNotMatch(html, /東京から、三つの別世界へ。/);
@@ -142,4 +145,15 @@ test("shows a sign-in gate for every site-side write control", async () => {
   assert.match(store, /oai-authenticated-user-id/);
   assert.match(store, /return null;/);
   assert.match(store, /throw new Error\("BOT_UNAUTHORIZED"\)/);
+});
+
+test("reconciles the corrected Discord route into the durable trip state", async () => {
+  const store = await readFile(new URL("../db/store.ts", import.meta.url), "utf8");
+
+  assert.match(store, /再調整中｜神津島＋大島 \/ 新島/);
+  assert.match(store, /status = 'rejected'.+status = 'adopted'/);
+  assert.match(store, /reconcile:discord-route-choice:v2/);
+  assert.match(store, /budget_min_yen = 0, budget_max_yen = 0/);
+  assert.match(store, /神津島＋伊豆大島｜天上山から火山へ/);
+  assert.match(store, /神津島＋新島｜山のあと、白い海へ/);
 });
