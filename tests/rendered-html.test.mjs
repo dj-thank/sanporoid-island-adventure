@@ -48,28 +48,31 @@ test("server-renders the official-source island magazine", async () => {
 
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /東京から、/);
-  assert.match(html, /三つの別世界へ。/);
+  assert.match(html, /大島・新島・/);
+  assert.match(html, /神津島の/);
+  assert.match(html, /旅ガイド/);
   assert.match(html, /採用中は「大島 → 新島」/);
-  assert.match(html, /神津島完全ガイドへ/);
-  assert.match(html, /OFFICIAL DOORS ONLY/);
+  assert.match(html, /神津島のモデルコースを見る/);
+  assert.match(html, /宿と交通をこの順で確認する/);
   assert.doesNotMatch(html, /EDITORIAL VISUAL/);
   assert.doesNotMatch(html, /island-scenes-v1\.png/);
+  assert.doesNotMatch(html, /東京から、三つの別世界へ。/);
+  assert.doesNotMatch(html, /予約は、旅の順番で。/);
   assert.match(html, /www\.tokaikisenyoyaku\.com\/app\/login/);
   assert.match(html, /niijima-info\.jp\/stay/);
   assert.match(html, /kozushima\.com\/yado-list/);
-  assert.match(html, /No booking has been made/);
+  assert.match(html, /予約はまだしていません/);
 });
 
 test("server-renders a mapped long-form feature for each island", async () => {
   const worker = await loadWorker();
   const expectations = [
-    ["kozushima", /暗さは、島が守っている景色。/, /星空保護区/, /晴れて、風が弱い。/, /白・青・黒の写真リレー/],
-    ["oshima", /2万年が、道路脇に露出している。/, /地層大切断面/, /雨で火山を歩けない。/, /黒だけ写真ビンゴ/],
-    ["niijima", /6\.5kmを、急いで終わらせない。/, /湯の浜露天温泉/, /白い海岸が、雨に消えた。/, /モヤイに勝手なプロフィール/],
+    ["kozushima", /神津島の夜は星空観察を1晩入れる/, /星空保護区/, /晴れて風が弱い日：天上山へ/, /白・青・黒を1人1色で撮る/, /天上山・港・海岸の位置を確認する/],
+    ["oshima", /地層大切断面は車を止めて見たい/, /地層大切断面/, /雨の日：ジオノスと温泉へ/, /火山の黒を3枚ずつ撮る/, /三原山・南部・2つの港を確認する/],
+    ["niijima", /羽伏浦は自転車で好きな場所まで/, /湯の浜露天温泉/, /雨の日：ガラス施設と島の土産を探す/, /好きなモヤイ像を1体選ぶ/, /羽伏浦・本村・港の位置を確認する/],
   ];
 
-  for (const [slug, feature, place, condition, mission] of expectations) {
+  for (const [slug, feature, place, condition, mission, mapTitle] of expectations) {
     const response = await worker.fetch(
       new Request(`http://localhost/discover/${slug}`, { headers: { accept: "text/html" } }),
       runtime,
@@ -81,13 +84,17 @@ test("server-renders a mapped long-form feature for each island", async () => {
     assert.match(html, place);
     assert.match(html, condition);
     assert.match(html, mission);
-    assert.match(html, /START HERE/);
-    assert.match(html, /宿を先に押さえる/);
-    assert.match(html, /天気で組み替える/);
-    assert.match(html, /FACT CHECKED 2026\.08\.10/);
+    assert.match(html, mapTitle);
+    assert.match(html, /01 \/ PLAN/);
+    assert.match(html, /宿の空きを確認する/);
+    assert.match(html, /天気別の候補を持つ/);
+    assert.match(html, /CHECKED 2026\.08\.10/);
     assert.match(html, /公式で確認/);
-    assert.match(html, /まず、島の形を/);
-    assert.match(html, /最後は、公式情報へ。/);
+    assert.match(html, /予約前と出発当日に見る公式サイト/);
+    assert.doesNotMatch(html, /晴れだけを、前提にしない。/);
+    assert.doesNotMatch(html, /こう回る。ただし、島に従う。/);
+    assert.doesNotMatch(html, /まず、島の形を頭に入れる。/);
+    assert.doesNotMatch(html, /最後は、公式情報へ。/);
     if (slug === "kozushima") {
       assert.match(html, /指定キャンプ場/);
       assert.doesNotMatch(html, /島内キャンプは禁止/);

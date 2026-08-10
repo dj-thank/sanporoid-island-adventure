@@ -57,8 +57,8 @@ export default function IslandFeature({ island }: { island: Island }) {
         <div className={styles.featureHeroBottom}>
           <p>{island.oneLine}</p>
           <div className={styles.featureHeroActions}>
-            <a href="#plan">旅の組み方を見る</a>
-            <a href="#map">地図から読む</a>
+            <a href="#plan">最初に決めること</a>
+            <a href="#map">スポット地図を見る</a>
           </div>
         </div>
         <Credit photo={island.hero} />
@@ -71,7 +71,7 @@ export default function IslandFeature({ island }: { island: Island }) {
       </section>
 
       <section className={styles.featureOpening}>
-        <div className={styles.sectionIndex}><span>00</span><p>WHY THIS ISLAND</p></div>
+        <div className={styles.sectionIndex}><span>00</span><p>TRIP PROFILE</p></div>
         <blockquote>{island.shortIntro}</blockquote>
         <div>
           <p>{island.longIntro}</p>
@@ -83,33 +83,33 @@ export default function IslandFeature({ island }: { island: Island }) {
 
       <section className={styles.planningPanel} id="plan" aria-labelledby="planning-title">
         <div className={styles.planningIntro}>
-          <p className={styles.eyebrow}>01 / START HERE</p>
-          <h2 id="planning-title">まず決めるのは、<br />宿と帰り道。</h2>
-          <p>島では天気や海況が予定を変える。細かな時刻を埋める前に、滞在の基地、時間帯の骨格、往復の選択肢を押さえる。</p>
+          <p className={styles.eyebrow}>01 / PLAN</p>
+          <h2 id="planning-title">{island.sectionTitles.plan}</h2>
+          <p>島旅は宿と復路が決まると組みやすい。次に朝・昼・夜の大枠を置き、天気や海況に合わせて立ち寄り先を選ぶ。</p>
         </div>
         <div className={styles.planningActions}>
           <a className={styles.planningAction} href={island.stays[0].url} target="_blank" rel="noreferrer">
             <small>01 / STAY</small>
-            <strong>宿を先に押さえる</strong>
+            <strong>宿の空きを確認する</strong>
             <p>{island.stays[0].copy}</p>
             <em>{island.stays[0].cta}</em>
           </a>
           <a className={styles.planningAction} href="#conditions">
             <small>02 / CONDITIONS</small>
-            <strong>天気で組み替える</strong>
-            <p>晴れ、強風、雨。現地の条件から選べる三つの旅にして、予定を壊さず入れ替える。</p>
+            <strong>天気別の候補を持つ</strong>
+            <p>晴れ、強風、雨の3案を用意し、朝の状況に合う行程を選ぶ。</p>
             <em>条件別プランへ</em>
           </a>
           <a className={styles.planningAction} href="#route">
             <small>03 / ROUTE</small>
-            <strong>{tripShape}の骨格を見る</strong>
-            <p>晴れ・風・海況に合わせて、同じ日の中で入れ替えられる旅程にする。</p>
+            <strong>{tripShape}の流れを見る</strong>
+            <p>移動時間を詰め込みすぎず、同じ方面の場所をまとめて回る。</p>
             <em>旅程へ進む</em>
           </a>
           <a className={styles.planningAction} href="#access">
             <small>04 / ACCESS</small>
-            <strong>往復を比較する</strong>
-            <p>船と飛行機の行きだけでなく、帰りの便と変更余地まで同時に確認する。</p>
+            <strong>行きと帰りを比べる</strong>
+            <p>船と飛行機の便を往復で調べ、欠航した場合の戻り方も確認する。</p>
             <em>交通を確認</em>
           </a>
         </div>
@@ -119,10 +119,10 @@ export default function IslandFeature({ island }: { island: Island }) {
         <header className={styles.conditionHead}>
           <div className={styles.sectionIndex}><span>02</span><p>IF / THEN</p></div>
           <div>
-            <p className={styles.eyebrow}>THE PLAN CHANGES. THE TRIP CONTINUES.</p>
-            <h2 id="conditions-title">晴れだけを、<br />前提にしない。</h2>
+            <p className={styles.eyebrow}>WEATHER OPTIONS</p>
+            <h2 id="conditions-title">{island.sectionTitles.conditions}</h2>
           </div>
-          <p>島の予定は固定表ではなく、条件で選ぶ三枚のカード。朝の風、雲、海、運航を見て、その日に成立する一枚へ切り替える。</p>
+          <p>朝に天気、風、海況、運航を確認する。下の3案から、その日に無理なく動ける行程を選ぶ。</p>
         </header>
         <div className={styles.conditionGrid}>
           {island.conditionPlans.map((plan, index) => (
@@ -131,16 +131,16 @@ export default function IslandFeature({ island }: { island: Island }) {
               <h3>{plan.title}</h3>
               <p>{plan.lead}</p>
               <ol>{plan.steps.map((step) => <li key={step}>{step}</li>)}</ol>
-              <aside><small>SWITCH NOTE</small>{plan.note}</aside>
+              <aside><small>変更時の確認</small>{plan.note}</aside>
               <ExternalLink className={styles.conditionSource} href={plan.sourceUrl}>{plan.sourceLabel}</ExternalLink>
             </article>
           ))}
         </div>
         <div className={styles.friendMissions}>
           <header>
-            <p className={styles.eyebrow}>FRIENDS ONLY / THREE SMALL MISSIONS</p>
-            <h2>友達と行くなら、<br />観光をゲームにする。</h2>
-            <p>全員が同じものを見る必要はない。役割と遊びを一つだけ決めると、自由時間まで同じ旅になる。</p>
+            <p className={styles.eyebrow}>WITH FRIENDS</p>
+            <h2>{island.sectionTitles.missions}</h2>
+            <p>3人で同じ順路をこなすだけではもったいない。写真や店選びを少し分担すると、あとで話せる出来事が増える。</p>
           </header>
           <div className={styles.missionGrid}>
             {island.friendMissions.map((mission) => (
@@ -159,10 +159,10 @@ export default function IslandFeature({ island }: { island: Island }) {
         <div className={styles.featureMapHead}>
           <div className={styles.sectionIndex}><span>03</span><p>FIELD MAP</p></div>
           <div>
-            <p className={styles.eyebrow}>SPOTS BEFORE SCHEDULES</p>
-            <h2>まず、島の形を<br />頭に入れる。</h2>
+            <p className={styles.eyebrow}>MAP</p>
+            <h2>{island.sectionTitles.map}</h2>
           </div>
-          <p>点を押すと場所の役割が見える。予定表より先に距離と方角を掴み、同じ側にある場所を一つの時間帯へまとめる。</p>
+          <p>地図の点を押すと、各スポットの概要が開く。距離と方角を確認し、同じ方面の場所を同じ時間帯にまとめる。</p>
         </div>
         <div className={styles.featureMapGrid}>
           <IslandMap center={island.mapCenter} zoom={island.mapZoom} points={island.spots} label={`${island.name}のスポット地図`} />
@@ -179,9 +179,9 @@ export default function IslandFeature({ island }: { island: Island }) {
 
       <section className={styles.longRead} id="stories">
         <header>
-          <div className={styles.sectionIndex}><span>04</span><p>LONG READ</p></div>
-          <p className={styles.eyebrow}>THE ISLAND, ONE SCENE AT A TIME</p>
-          <h2>{island.name}を、<br />景色の順番で読む。</h2>
+          <div className={styles.sectionIndex}><span>04</span><p>PLACES</p></div>
+          <p className={styles.eyebrow}>WHAT TO SEE</p>
+          <h2>{island.sectionTitles.stories}</h2>
         </header>
         {island.chapters.map((chapter, index) => (
           <article className={`${styles.featureChapter} ${index % 2 === 1 ? styles.featureChapterReverse : ""}`} key={chapter.number}>
@@ -195,7 +195,7 @@ export default function IslandFeature({ island }: { island: Island }) {
               <p className={styles.eyebrow}>{chapter.eyebrow}</p>
               <h3>{chapter.title}</h3>
               {chapter.copy.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-              <aside><small>FIELD NOTE</small>{chapter.note}</aside>
+              <aside><small>現地で確認</small>{chapter.note}</aside>
               <ExternalLink className={styles.sourceLink} href={chapter.sourceUrl}>{chapter.sourceLabel}</ExternalLink>
             </div>
           </article>
@@ -205,9 +205,9 @@ export default function IslandFeature({ island }: { island: Island }) {
       <section className={styles.routeSection} id="route">
         <div className={styles.routeIntro}>
           <div className={styles.sectionIndex}><span>05</span><p>ROUTE</p></div>
-          <p className={styles.eyebrow}>A PLAN THAT CAN BEND</p>
-          <h2>こう回る。<br />ただし、島に従う。</h2>
-          <p>時刻表ではなく、時間帯の骨格。天気・風・海況・運航が変わったら、同じ日の中で順番を入れ替える。</p>
+          <p className={styles.eyebrow}>ITINERARY</p>
+          <h2>{island.sectionTitles.route}</h2>
+          <p>まずは時間帯ごとの流れを決める。天気、風、海況、運航が変わったら、近い場所どうしで順番を入れ替える。</p>
         </div>
         <div className={styles.dayRoutes}>
           {island.itinerary.map((day) => (
@@ -224,14 +224,14 @@ export default function IslandFeature({ island }: { island: Island }) {
             </article>
           ))}
         </div>
-        <p className={styles.routeDisclaimer}>これは提案用の骨格です。具体的な船便・営業・予約が確定するまで、SSOTの採用済み予定には入りません。</p>
+        <p className={styles.routeDisclaimer}>この旅程は検討用です。船便、営業日、予約が決まった予定だけをSSOTへ反映します。</p>
       </section>
 
       <section className={styles.foodStaySection} id="food">
         <div className={styles.foodColumn}>
           <div className={styles.sectionIndex}><span>06</span><p>EAT</p></div>
-          <p className={styles.eyebrow}>TASTE THE CONDITION</p>
-          <h2>食べるものも、<br />その日の島で決める。</h2>
+          <p className={styles.eyebrow}>FOOD</p>
+          <h2>{island.sectionTitles.food}</h2>
           <div className={styles.foodList}>
             {island.food.map((item, index) => (
               <article key={item.title}><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{item.title}</h3><p>{item.copy}</p></div></article>
@@ -240,8 +240,8 @@ export default function IslandFeature({ island }: { island: Island }) {
         </div>
         <div className={styles.stayColumn}>
           <div className={styles.sectionIndex}><span>07</span><p>SLEEP</p></div>
-          <p className={styles.eyebrow}>THE BASE CHANGES THE TRIP</p>
-          <h2>宿を、旅の基地として選ぶ。</h2>
+          <p className={styles.eyebrow}>STAY</p>
+          <h2>{island.sectionTitles.stay}</h2>
           <div className={styles.stayList}>
             {island.stays.map((stay) => (
               <ExternalLink className={styles.stayItem} href={stay.url} key={`${stay.type}-${stay.title}`}>
@@ -255,8 +255,8 @@ export default function IslandFeature({ island }: { island: Island }) {
       <section className={styles.accessSection} id="access">
         <div className={styles.accessTitle}>
           <div className={styles.sectionIndex}><span>08</span><p>ACCESS</p></div>
-          <p className={styles.eyebrow}>GET THERE, GET BACK</p>
-          <h2>行き方より先に、<br />帰り方も見る。</h2>
+          <p className={styles.eyebrow}>ACCESS</p>
+          <h2>{island.sectionTitles.access}</h2>
         </div>
         <div className={styles.accessRows}>
           {island.access.map((item, index) => (
@@ -270,13 +270,13 @@ export default function IslandFeature({ island }: { island: Island }) {
           ))}
         </div>
         <div className={styles.fieldRules}>
-          <div><p>BEFORE YOU GO</p><h3>島で困らないための<br />フィールドルール</h3></div>
+          <div><p>BEFORE YOU GO</p><h3>出発前に確認すること</h3></div>
           <ol>{island.rules.map((rule) => <li key={rule}>{rule}</li>)}</ol>
         </div>
       </section>
 
       <section className={styles.officialSection}>
-        <div><p>{`PRIMARY SOURCES / FACT CHECKED ${island.verifiedAt}`}</p><h2>最後は、公式情報へ。</h2></div>
+        <div><p>{`OFFICIAL LINKS / CHECKED ${island.verifiedAt}`}</p><h2>予約前と出発当日に見る公式サイト</h2></div>
         <div className={styles.officialLinks}>
           {island.official.map((source) => <ExternalLink href={source.url} key={source.url}>{source.label}</ExternalLink>)}
         </div>
