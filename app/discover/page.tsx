@@ -6,8 +6,8 @@ import { bookingLinks, islands, overviewPoints, overviewRoutes, type Photo } fro
 import styles from "./discover.module.css";
 
 export const metadata: Metadata = {
-  title: "神津島から、大島か新島へ｜ISLAND WEEKEND",
-  description: "神津島を共通に、大島と新島の2案を比べる友達との島旅ガイド。地図、モデルコース、雨の日、食、宿、交通、公式予約先をまとめました。",
+  title: "神津島から、新島へ｜ISLAND WEEKEND",
+  description: "8月29日から9月1日、神津島から新島へ。地図、モデルコース、雨の日、食、宿、交通、公式予約先をまとめた友達との島旅ガイド。",
 };
 
 function Credit({ photo }: { photo: Photo }) {
@@ -52,34 +52,34 @@ export default function DiscoverPage() {
             <span>FIELD JOURNAL 002</span>
             <span>IZU ISLANDS / TOKYO</span>
           </div>
-          <p className={styles.coverKicker}>KŌZUSHIMA · ŌSHIMA / NIIJIMA</p>
-          <h1><span>神津島から、</span><span>大島か新島へ</span><span>友達との島旅</span></h1>
-          <p className={styles.coverDeck}>8月29日に神津島へ。その先を、火山の大島にするか、白い海の新島にするか。友達と過ごしたい時間から、二つの旅を比べます。</p>
+          <p className={styles.coverKicker}>KŌZUSHIMA × NIIJIMA</p>
+          <h1><span>神津島から、</span><span>新島へ</span><span>友達との島旅</span></h1>
+          <p className={styles.coverDeck}>8月29日に神津島へ渡り、30日に新島へ。山と星の夜から、白い海と自転車の二日間へつなぐ3泊4日です。大島の記事も、次の旅のために残しました。</p>
           <div className={styles.coverActions}>
-            <a href="#map">2つの案を地図で見る</a>
+            <a href="#map">決まったルートを地図で見る</a>
             <a href="/discover/kozushima">まず神津島を読む</a>
           </div>
         </div>
 
-        <div className={styles.coverMosaic} aria-label="大島、新島、神津島の実景">
+        <div className={styles.coverMosaic} aria-label="神津島、新島、大島の実景">
           <div className={styles.coverKozu}>
             <a className={styles.coverLink} href="/discover/kozushima">
               <Image src={kozushima.hero.src} alt={kozushima.hero.alt} fill sizes="(max-width: 820px) 100vw, 58vw" priority />
-              <div><small>01 / 2 NIGHTS</small><strong>神津島</strong><span>天上山・海・星空</span></div>
+              <div><small>01 / 1 NIGHT</small><strong>神津島</strong><span>天上山・海・星空</span></div>
             </a>
             <Credit photo={kozushima.hero} />
           </div>
           <div className={styles.coverOshima}>
             <a className={styles.coverLink} href="/discover/oshima">
               <Image src={oshima.hero.src} alt={oshima.hero.alt} fill sizes="(max-width: 560px) 100vw, 29vw" />
-              <div><small>02 / 1 NIGHT</small><strong>大島</strong></div>
+              <div><small>SIDE STORY</small><strong>大島</strong></div>
             </a>
             <Credit photo={oshima.hero} />
           </div>
           <div className={styles.coverNiijima}>
             <a className={styles.coverLink} href="/discover/niijima">
               <Image src={niijima.hero.src} alt={niijima.hero.alt} fill sizes="(max-width: 560px) 100vw, 29vw" />
-              <div><small>03 / 1 NIGHT</small><strong>新島</strong></div>
+              <div><small>02 / 2 NIGHTS</small><strong>新島</strong></div>
             </a>
             <Credit photo={niijima.hero} />
           </div>
@@ -89,9 +89,9 @@ export default function DiscoverPage() {
       <section className={styles.truthStrip} aria-labelledby="truth-title">
         <div>
           <span className={styles.truthLight} />
-          <p><small>CURRENT TRUTH / SSOT</small><strong id="truth-title">神津島を共通に、第二の島を相談中</strong></p>
+          <p><small>CURRENT TRUTH / SSOT</small><strong id="truth-title">神津島 → 新島で決定</strong></p>
         </div>
-        <p>候補は<strong>伊豆大島と新島</strong>の二つ。8/30の接続は両案とも公式時刻表で確認済み。空席と宿がそろってから決めます。</p>
+        <p>8/30に<strong>神津島から新島へ</strong>移る予定を採用しました。船か飛行機か、空席と宿はこれから決めます。</p>
         <a href="/">現在の予定を見る <b aria-hidden="true">→</b></a>
       </section>
 
@@ -102,8 +102,8 @@ export default function DiscoverPage() {
         </div>
         <div className={styles.mapCopy}>
           <p className={styles.eyebrow}>MAP &amp; ROUTES</p>
-          <h2>大島・新島・神津島の位置と移動</h2>
-          <p>破線は予約済みの経路ではありません。8/29に神津島へ入り、8/30に大島か新島へ移る二つの候補です。時刻表には両方の便がありますが、空席と当日の発着港は未確認です。</p>
+          <h2>東京から神津島へ。翌日、新島へ</h2>
+          <p>地図には距離感が分かるよう大島も残しています。この旅は8/29に神津島へ入り、8/30に新島へ移る順番で決定。線はルートを示すもので、予約済みの意味ではありません。</p>
           <ul>
             <li><b>大島</b><span>東京に近く、到着日から火山を歩ける。</span></li>
             <li><b>新島</b><span>大島から南へ。自転車の速度で白い海岸をつなぐ。</span></li>
@@ -111,14 +111,14 @@ export default function DiscoverPage() {
           </ul>
         </div>
         <div className={styles.overviewMap}>
-          <IslandMap center={[34.82, 139.36]} zoom={8} points={overviewPoints} routes={overviewRoutes} label="東京・大島・新島・神津島の位置と移動候補" tone="dark" />
+          <IslandMap center={[34.82, 139.36]} zoom={8} points={overviewPoints} routes={overviewRoutes} label="東京・神津島・新島の旅程と大島の位置" tone="dark" />
         </div>
       </section>
 
       <section className={styles.chooseSection}>
         <div className={styles.chooseTitle}>
-          <p>COMPARE THE ISLANDS</p>
-          <h2>神津島の次を、過ごし方で選ぶ</h2>
+          <p>READ THE ISLANDS</p>
+          <h2>この旅の二島と、次に読みたい大島</h2>
         </div>
         <div className={styles.compareTable} role="table" aria-label="三島の旅の性格比較">
           <div className={styles.compareHead} role="row">
@@ -194,8 +194,8 @@ export default function DiscoverPage() {
         <div className={styles.bookingIntro}>
           <div className={styles.sectionIndex}><span>02</span><p>BOOKING DESK</p></div>
           <p className={styles.eyebrow}>BOOKING</p>
-          <h2>決める前に、宿と交通を確かめる</h2>
-          <p>時刻と運賃は公式情報で確認しました。次は同じ人数で空席と宿を照合し、取れる組み合わせだけをSSOTへ移します。</p>
+          <h2>決まった順番で、空席と宿を探す</h2>
+          <p>時刻と運賃は公式情報で確認しました。次は2人分の空席と、神津島1泊・新島2泊の宿を照合します。</p>
         </div>
         <div className={styles.bookingList}>
           {bookingLinks.map((item) => (
@@ -212,9 +212,9 @@ export default function DiscoverPage() {
 
       <section className={styles.editorNote}>
         <p>HOW TO USE THIS GUIDE</p>
-        <blockquote>まず神津島を読む。次に大島と新島を比べる。<br />決めた予定だけをSSOTに残す。</blockquote>
+        <blockquote>まず、今回行く神津島と新島を読む。<br />大島は、次の週末のために取っておく。</blockquote>
         <div>
-          <p>このマガジンには、行き先を相談するための候補を載せています。採用した予定、金額、経費、領収書は「俺たちの予定」で管理します。</p>
+          <p>このマガジンは、島で何をするか考える場所。採用した予定、交通費、経費、領収書は「俺たちの予定」で一つに管理します。</p>
           <div>
             <a href="/">俺たちの予定へ</a>
             <ExternalLink href="https://discord.com/channels/1535960563140796476/1535960564059213947">DiscordでOpenClosに相談</ExternalLink>

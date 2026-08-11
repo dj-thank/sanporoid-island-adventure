@@ -4,15 +4,19 @@ import {
   ensureTripStore,
   externalActionExists,
   getTripBoard,
+  inferTripRouteChoice,
   insertExpense,
   insertPlanEntry,
   receiptBucket,
   requireBot,
+  selectTripRoute,
+  type TripRouteChoice,
   updatePlanStatus,
   writeReceiptRecord,
 } from "../../../../db/store";
 
 type AgentAction =
+  | { type: "trip.route.select"; route: TripRouteChoice }
   | {
       type: "proposal.add";
       title: string;
@@ -43,6 +47,41 @@ type AgentAction =
       confirmed?: boolean;
     };
 
+function requestedRoute(actions: AgentAction[]) {
+  let route: TripRouteChoice | null = null;
+  for (const action of actions) {
+    if (action.type === "trip.route.select") route = action.route;
+    if (action.type === "proposal.add" && action.adopt) {
+      route = inferTripRouteChoice(action.title, action.details) ?? route;
+    }
+  }
+  return route;
+}
+
+function routeReceipt(
+  board: Awaited<ReturnType<typeof getTripBoard>>,
+  key: string,
+  actionCount: number,
+  expectedRoute: TripRouteChoice | null,
+) {
+  const expectedLabel = expectedRoute === "kozushima-niijima"
+    ? "決定｜神津島 → 新島"
+    : expectedRoute === "kozushima-oshima"
+      ? "決定｜神津島 → 伊豆大島"
+      : null;
+  const routeVerified = expectedLabel === null || (
+    board.trip?.status === "planning" && board.trip?.routeLabel === expectedLabel
+  );
+  return {
+    idempotencyKey: key,
+    actionCount,
+    routeLabel: board.trip?.routeLabel,
+    tripStatus: board.trip?.status,
+    routeVerified,
+    updatedAt: board.trip?.updatedAt,
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const actor = await requireBot(request);
@@ -53,14 +92,21 @@ export async function POST(request: Request) {
     };
     const key = String(payload.idempotencyKey ?? "").trim().slice(0, 160);
     if (!key) throw new Error("idempotencyKey is required");
-    if (await externalActionExists(key)) {
-      return Response.json({ duplicate: true, board: await getTripBoard() });
-    }
     const actions = Array.isArray(payload.actions) ? payload.actions.slice(0, 10) : [];
     if (!actions.length) throw new Error("actions are required");
+    const expectedRoute = requestedRoute(actions);
+    if (await externalActionExists(key)) {
+      const board = await getTripBoard();
+      const receipt = routeReceipt(board, key, actions.length, expectedRoute);
+      return Response.json({ ok: receipt.routeVerified, duplicate: true, receipt, board }, {
+        status: receipt.routeVerified ? 200 : 409,
+      });
+    }
 
     for (const action of actions) {
-      if (action.type === "proposal.add") {
+      if (action.type === "trip.route.select") {
+        await selectTripRoute(action.route, actor);
+      } else if (action.type === "proposal.add") {
         await insertPlanEntry(
           {
             title: action.title,
@@ -144,7 +190,11 @@ export async function POST(request: Request) {
       key,
     );
     await database().prepare("UPDATE trips SET updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(tripId).run();
-    return Response.json({ duplicate: false, board: await getTripBoard() });
+    const board = await getTripBoard();
+    const receipt = routeReceipt(board, key, actions.length, expectedRoute);
+    return Response.json({ ok: receipt.routeVerified, duplicate: false, receipt, board }, {
+      status: receipt.routeVerified ? 200 : 409,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "更新できませんでした";
     return Response.json(

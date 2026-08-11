@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 
 async function loadWorker() {
@@ -19,6 +20,53 @@ const context = {
   passThroughOnException() {},
 };
 
+class D1TestStatement {
+  constructor(database, sql, values = []) {
+    this.database = database;
+    this.sql = sql;
+    this.values = values;
+  }
+
+  bind(...values) {
+    return new D1TestStatement(this.database, this.sql, values);
+  }
+
+  async run() {
+    const result = this.database.prepare(this.sql).run(...this.values);
+    return {
+      success: true,
+      meta: {
+        changes: Number(result.changes ?? 0),
+        last_row_id: Number(result.lastInsertRowid ?? 0),
+      },
+    };
+  }
+
+  async all() {
+    return { success: true, results: this.database.prepare(this.sql).all(...this.values) };
+  }
+
+  async first() {
+    return this.database.prepare(this.sql).get(...this.values) ?? null;
+  }
+}
+
+class D1TestDatabase {
+  constructor() {
+    this.database = new DatabaseSync(":memory:");
+  }
+
+  prepare(sql) {
+    return new D1TestStatement(this.database, sql);
+  }
+
+  async batch(statements) {
+    const results = [];
+    for (const statement of statements) results.push(await statement.run());
+    return results;
+  }
+}
+
 test("server-renders the Island Weekend shell and metadata", async () => {
   const worker = await loadWorker();
   const response = await worker.fetch(
@@ -33,8 +81,8 @@ test("server-renders the Island Weekend shell and metadata", async () => {
   const html = await response.text();
   assert.match(html, /<html lang="ja">/);
   assert.match(html, /俺たちの予定を読み込んでいます/);
-  assert.match(html, /俺たちの島旅｜神津島から、大島か新島へ/);
-  assert.match(html, /神津島を共通に、大島と新島の2案を比べる旅行ボード/);
+  assert.match(html, /俺たちの島旅｜神津島から、新島へ/);
+  assert.match(html, /決まった予定、船と飛行機の比較、費用、未確認事項/);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
 });
 
@@ -49,13 +97,14 @@ test("server-renders the official-source island magazine", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /神津島から、/);
-  assert.match(html, /大島か新島へ/);
+  assert.match(html, /新島へ/);
   assert.match(html, /友達との島旅/);
-  assert.match(html, /神津島を共通に、第二の島を相談中/);
-  assert.match(html, /8\/30の接続は両案とも公式時刻表で確認済み/);
+  assert.match(html, /神津島 → 新島で決定/);
+  assert.match(html, /決まった順番で、空席と宿を探す/);
   assert.match(html, /神津島のモデルコースを見る/);
-  assert.match(html, /決める前に、宿と交通を確かめる/);
   assert.match(html, /神津島行きの飛行機を見る/);
+  assert.match(html, /SIDE STORY/);
+  assert.doesNotMatch(html, /第二の島を相談中/);
   assert.doesNotMatch(html, /採用中は「大島 → 新島」/);
   assert.doesNotMatch(html, /現在SSOTに入っている竹芝→大島→新島/);
   assert.doesNotMatch(html, /EDITORIAL VISUAL/);
@@ -159,16 +208,69 @@ test("reconciles the corrected Discord route and official schedule into durable 
     readFile(new URL("../app/TripBoard.tsx", import.meta.url), "utf8"),
   ]);
 
-  assert.match(store, /再調整中｜神津島＋大島 \/ 新島/);
-  assert.match(store, /status = 'rejected'.+status = 'adopted'/);
+  assert.match(store, /決定｜神津島 → 新島/);
+  assert.match(store, /selectTripRoute/);
+  assert.match(store, /status = 'rejected'.+id <>/);
   assert.match(store, /reconcile:discord-route-choice:v2/);
   assert.match(store, /reconcile:official-schedule:2026-08-10/);
+  assert.match(store, /reconcile:discord-niijima-decision:2026-08-12:v1/);
   assert.match(store, /budget_min_yen = 0, budget_max_yen = 0/);
   assert.match(store, /神津島＋伊豆大島｜天上山から火山へ/);
   assert.match(store, /神津島＋新島｜山のあと、白い海へ/);
   assert.match(store, /ジェット船10:45→11:45/);
   assert.match(store, /大型客船10:30→11:45/);
-  assert.match(board, /大島案・交通だけ/);
-  assert.match(board, /新島案・交通だけ/);
-  assert.match(board, /公式ダイヤあり/);
+  assert.match(board, /行き先は決まった。次は、どう渡る？/);
+  assert.match(board, /15,635–16,265円/);
+  assert.match(board, /28,495–29,125円/);
+  assert.match(board, /新島9:50発は東京13:40着の直行便ではありません/);
+  assert.match(board, /本人と介護者1名まで50%割引/);
+});
+
+test("an adopted Discord route updates the trip-level SSOT before the agent can report success", async () => {
+  const db = new D1TestDatabase();
+  globalThis.__testCloudflareEnv = {
+    DB: db,
+    OPENCLOS_BOT_TOKEN: "test-openclos-token",
+  };
+  const worker = await loadWorker();
+  await worker.fetch(
+    new Request("http://localhost/api/trip"),
+    { ...runtime, DB: db, OPENCLOS_BOT_TOKEN: "test-openclos-token" },
+    context,
+  );
+  db.database.prepare("UPDATE trips SET status = 'reconsidering', route_label = '再調整中｜神津島＋大島 / 新島'").run();
+  db.database.prepare("UPDATE plan_entries SET status = 'rejected' WHERE status = 'adopted'").run();
+  const response = await worker.fetch(
+    new Request("http://localhost/api/agent/update", {
+      method: "POST",
+      headers: {
+        authorization: "Bearer test-openclos-token",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        idempotencyKey: "discord-message-route-adoption",
+        summary: "神津島から新島へ行く案を採用",
+        actions: [
+          {
+            type: "proposal.add",
+            title: "採用: 神津島→新島",
+            details: "神津島で一泊してから新島へ移る。",
+            adopt: true,
+          },
+        ],
+      }),
+    }),
+    { ...runtime, DB: db, OPENCLOS_BOT_TOKEN: "test-openclos-token" },
+    context,
+  );
+
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.board.trip.status, "planning");
+  assert.equal(body.board.trip.routeLabel, "決定｜神津島 → 新島");
+  assert.equal(body.ok, true);
+  assert.equal(body.receipt.routeVerified, true);
+  assert.equal(body.receipt.actionCount, 1);
+  const adoptedRoutes = db.database.prepare("SELECT title FROM plan_entries WHERE status = 'adopted'").all();
+  assert.deepEqual(adoptedRoutes.map((row) => row.title), ["決定｜神津島 → 新島"]);
 });

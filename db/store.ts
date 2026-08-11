@@ -31,6 +31,32 @@ type ExpenseInput = {
 const TRIP_SLUG = "island-weekend-2026";
 const DISCORD_ROUTE_RECONCILIATION = "reconcile:discord-route-choice:v2";
 const OFFICIAL_SCHEDULE_RECONCILIATION = "reconcile:official-schedule:2026-08-10";
+const DISCORD_NIIJIMA_DECISION_RECONCILIATION = "reconcile:discord-niijima-decision:2026-08-12:v1";
+
+export type TripRouteChoice = "kozushima-niijima" | "kozushima-oshima";
+
+const routeDecisions: Record<TripRouteChoice, {
+  routeLabel: string;
+  concept: string;
+  title: string;
+  date: string;
+  details: string;
+}> = {
+  "kozushima-niijima": {
+    routeLabel: "決定｜神津島 → 新島",
+    concept: "友達との3泊4日。神津島で山と星を楽しみ、新島で海と温泉へ。行き先は決定、交通と宿はこれから押さえる。",
+    title: "決定｜神津島 → 新島",
+    date: "8/29–9/1",
+    details: "8/29に神津島へ入り、8/30に新島へ移り、9/1に東京へ戻る。島の順番は決定済み。船か飛行機か、各便の空席、宿、当日の発着港は未確定。",
+  },
+  "kozushima-oshima": {
+    routeLabel: "決定｜神津島 → 伊豆大島",
+    concept: "友達との3泊4日。神津島で山と星を楽しみ、伊豆大島で火山と温泉へ。行き先は決定、交通と宿はこれから押さえる。",
+    title: "決定｜神津島 → 伊豆大島",
+    date: "8/29–9/1",
+    details: "8/29に神津島へ入り、8/30に伊豆大島へ移り、9/1に東京へ戻る。島の順番は決定済み。船か飛行機か、各便の空席、宿、当日の発着港は未確定。",
+  },
+};
 
 const currentRouteIdeas: Array<PlanInput> = [
   {
@@ -155,6 +181,7 @@ export async function ensureTripStore() {
   }
   await reconcileOfficialSchedule(db, tripId);
   await addActivity(tripId, "seed", "神津島を共通にした2案を旅行ボードへ登録", "OpenClos", "seed:island-weekend-2026:v2");
+  await reconcileDiscordNiijimaDecision(db, tripId);
 
   await db.prepare("PRAGMA optimize").run();
   return { db, tripId };
@@ -210,6 +237,89 @@ async function reconcileDiscordRouteChoice(db: D1Database, tripId: number) {
   await addActivity(tripId, "route-reset", "Discordの訂正に合わせ、神津島を共通にした2案へ再調整", "OpenClos", DISCORD_ROUTE_RECONCILIATION);
 }
 
+async function reconcileDiscordNiijimaDecision(db: D1Database, tripId: number) {
+  const alreadyReconciled = await db
+    .prepare("SELECT id FROM activity WHERE external_id = ?")
+    .bind(DISCORD_NIIJIMA_DECISION_RECONCILIATION)
+    .first();
+  if (alreadyReconciled) return;
+
+  const existing = (await db
+    .prepare("SELECT id, title, details, status FROM plan_entries WHERE trip_id = ? ORDER BY id DESC")
+    .bind(tripId)
+    .all<{ id: number; title: string; details: string; status: string }>()).results;
+  const latestNiijimaDecision = existing.find((plan) =>
+    plan.status === "adopted" && inferTripRouteChoice(plan.title, plan.details) === "kozushima-niijima"
+  );
+
+  const selected = await selectTripRoute(
+    "kozushima-niijima",
+    "OpenClos",
+    latestNiijimaDecision?.id,
+    tripId,
+    DISCORD_NIIJIMA_DECISION_RECONCILIATION,
+  );
+  await db
+    .prepare("UPDATE plan_entries SET status = 'rejected', updated_at = CURRENT_TIMESTAMP WHERE trip_id = ? AND status = 'adopted' AND id <> ?")
+    .bind(tripId, selected.selectedPlanId)
+    .run();
+}
+
+export function inferTripRouteChoice(title: string, details = ""): TripRouteChoice | null {
+  const text = `${title} ${details}`.replace(/\s+/g, "");
+  const mentionsNiijima = /神津島.{0,24}新島/.test(text);
+  const mentionsOshima = /神津島.{0,24}(?:伊豆)?大島/.test(text);
+  if (mentionsNiijima === mentionsOshima) return null;
+  return mentionsNiijima ? "kozushima-niijima" : "kozushima-oshima";
+}
+
+export async function selectTripRoute(
+  choice: TripRouteChoice,
+  actor: string,
+  selectedPlanId?: number,
+  knownTripId?: number,
+  externalId?: string,
+) {
+  const { db, tripId } = knownTripId
+    ? { db: database(), tripId: knownTripId }
+    : await ensureTripStore();
+  const decision = routeDecisions[choice];
+  const plans = (await db
+    .prepare("SELECT id, title, details, status FROM plan_entries WHERE trip_id = ? ORDER BY id DESC")
+    .bind(tripId)
+    .all<{ id: number; title: string; details: string; status: string }>()).results;
+
+  let canonicalId = selectedPlanId && plans.some((plan) =>
+    Number(plan.id) === Number(selectedPlanId) && inferTripRouteChoice(plan.title, plan.details) === choice
+  ) ? Number(selectedPlanId) : undefined;
+  if (!canonicalId) {
+    canonicalId = Number(plans.find((plan) => inferTripRouteChoice(plan.title, plan.details) === choice)?.id || 0);
+  }
+  if (!canonicalId) {
+    const inserted = await db
+      .prepare("INSERT INTO plan_entries (trip_id, date, time, title, details, status, source, sort_order, cost_yen, created_by) VALUES (?, ?, '', ?, ?, 'adopted', 'discord', 1, 0, ?)")
+      .bind(tripId, decision.date, decision.title, decision.details, cleanText(actor, 100))
+      .run();
+    canonicalId = Number(inserted.meta.last_row_id);
+  }
+
+  const routePlanIds = plans
+    .filter((plan) => inferTripRouteChoice(plan.title, plan.details) !== null)
+    .map((plan) => Number(plan.id));
+  const statements = routePlanIds
+    .filter((id) => id !== canonicalId)
+    .map((id) => db.prepare("UPDATE plan_entries SET status = 'rejected', updated_at = CURRENT_TIMESTAMP WHERE id = ? AND trip_id = ?").bind(id, tripId));
+  statements.push(
+    db.prepare("UPDATE plan_entries SET date = ?, time = '', title = ?, details = ?, status = 'adopted', source = 'discord', sort_order = 1, cost_yen = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND trip_id = ?")
+      .bind(decision.date, decision.title, decision.details, canonicalId, tripId),
+    db.prepare("UPDATE trips SET concept = ?, route_label = ?, status = 'planning', budget_min_yen = 0, budget_max_yen = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+      .bind(decision.concept, decision.routeLabel, tripId),
+  );
+  await db.batch(statements);
+  await addActivity(tripId, "route-selected", `${decision.routeLabel}を採用。便と宿は未予約`, actor, externalId);
+  return { choice, routeLabel: decision.routeLabel, tripStatus: "planning" as const, selectedPlanId: canonicalId };
+}
+
 export async function getTripBoard() {
   const { db, tripId } = await ensureTripStore();
   const trip = await db.prepare("SELECT id, slug, title, concept, route_label AS routeLabel, start_date AS startDate, end_date AS endDate, status, budget_min_yen AS budgetMinYen, budget_max_yen AS budgetMaxYen, updated_at AS updatedAt FROM trips WHERE id = ?").bind(tripId).first();
@@ -248,17 +358,22 @@ export async function insertPlanEntry(input: PlanInput, actor: string, knownTrip
     .run();
   await db.prepare("UPDATE trips SET updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(tripId).run();
   await addActivity(tripId, "plan", `${status === "adopted" ? "採用" : "提案"}: ${title}`, actor);
-  return Number(result.meta.last_row_id);
+  const id = Number(result.meta.last_row_id);
+  const routeChoice = status === "adopted" ? inferTripRouteChoice(title, input.details ?? "") : null;
+  if (routeChoice) await selectTripRoute(routeChoice, actor, id, tripId);
+  return id;
 }
 
 export async function updatePlanStatus(id: number, status: string, actor: string) {
   if (!["proposed", "adopted", "rejected"].includes(status)) throw new Error("不正な予定ステータスです");
   const { db, tripId } = await ensureTripStore();
-  const row = await db.prepare("SELECT title FROM plan_entries WHERE id = ? AND trip_id = ?").bind(id, tripId).first<{ title: string }>();
+  const row = await db.prepare("SELECT title, details FROM plan_entries WHERE id = ? AND trip_id = ?").bind(id, tripId).first<{ title: string; details: string }>();
   if (!row) throw new Error("予定が見つかりません");
   await db.prepare("UPDATE plan_entries SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND trip_id = ?").bind(status, id, tripId).run();
   await db.prepare("UPDATE trips SET updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(tripId).run();
   await addActivity(tripId, "plan-status", `${status === "adopted" ? "採用" : status === "rejected" ? "見送り" : "再提案"}: ${row.title}`, actor);
+  const routeChoice = status === "adopted" ? inferTripRouteChoice(row.title, row.details) : null;
+  if (routeChoice) await selectTripRoute(routeChoice, actor, id, tripId);
 }
 
 export async function insertExpense(input: ExpenseInput, actor: string) {

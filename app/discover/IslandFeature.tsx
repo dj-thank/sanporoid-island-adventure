@@ -140,7 +140,7 @@ export default function IslandFeature({ island }: { island: Island }) {
           <header>
             <p className={styles.eyebrow}>WITH FRIENDS</p>
             <h2>{island.sectionTitles.missions}</h2>
-            <p>3人で同じ順路をこなすだけではもったいない。写真や店選びを少し分担すると、あとで話せる出来事が増える。</p>
+            <p>2人で同じ順路をこなすだけではもったいない。写真や店選びを少し分担すると、あとで話せる出来事が増える。</p>
           </header>
           <div className={styles.missionGrid}>
             {island.friendMissions.map((mission) => (

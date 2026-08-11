@@ -74,11 +74,41 @@ type Board = {
 const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
 
 const tripFrame = [
-  { date: "8/29", time: "DAY 1", title: "本土から神津島へ", details: "神津島は2案に共通。船か飛行機か、到着時刻と宿を見て決める。", state: "共通" },
-  { date: "8/30", time: "DAY 2", title: "神津島から、もう一つの島へ", details: "公式時刻表では大島・新島の両方へ接続あり。空席と当日の発着港は未確認。", state: "2案あり" },
-  { date: "8/31", time: "DAY 3", title: "第二の島で一日過ごす", details: "大島なら火山と温泉、新島なら海と自転車。どちらもこの日に宿泊する。", state: "選択" },
-  { date: "9/1", time: "DAY 4", title: "東京へ戻る", details: "帰りの便が合わなければ9/2まで延ばす。復路と宿はまだ押さえていない。", state: "予備日あり" },
+  { date: "8/29", time: "DAY 1", title: "東京から神津島へ", details: "竹芝7:25発のジェット船、または調布発の飛行機。空席と神津島の宿は未確認。", state: "便を選ぶ" },
+  { date: "8/30", time: "DAY 2", title: "神津島から新島へ", details: "大型客船10:30→11:45、またはジェット船13:25→14:05。島の順番は決定済み。", state: "行き先決定" },
+  { date: "8/31", time: "DAY 3", title: "新島を、自転車の速さで", details: "羽伏浦、新島ガラス、夕方は湯の浜露天温泉へ。天気で順番を入れ替える。", state: "島で遊ぶ" },
+  { date: "9/1", time: "DAY 4", title: "新島から東京へ戻る", details: "船なら14:10→17:00の直行便、飛行機なら約40分。帰り方と新島の宿は未確認。", state: "便を選ぶ" },
 ];
+
+const transportLegs = [
+  {
+    date: "8/29",
+    route: "東京 → 神津島",
+    note: "早く島へ着くなら飛行機。荷物と価格の気楽さなら船。",
+    options: [
+      { mode: "ジェット船", time: "竹芝 7:25 → 10:35", price: "8,400円", detail: "手帳割引 50%" },
+      { mode: "飛行機", time: "調布 8:50 → 9:35", price: "15,400円", detail: "8月繁忙期の障害者運賃" },
+    ],
+  },
+  {
+    date: "8/30",
+    route: "神津島 → 新島",
+    note: "ここは船だけ。朝を取るか、神津島を昼まで楽しむかで決める。",
+    options: [
+      { mode: "大型客船 2等", time: "10:30 → 11:45", price: "595円", detail: "手帳割引 50%" },
+      { mode: "ジェット船", time: "13:25 → 14:05", price: "1,225円", detail: "手帳割引 50%" },
+    ],
+  },
+  {
+    date: "9/1",
+    route: "新島 → 東京",
+    note: "昼前に戻るなら飛行機。船の直行便は14:10発。",
+    options: [
+      { mode: "ジェット船", time: "14:10 → 17:00", price: "6,640円", detail: "9月運賃・手帳割引 50%" },
+      { mode: "飛行機", time: "11:00 → 11:40 ほか", price: "12,500円", detail: "通常期の障害者運賃" },
+    ],
+  },
+] as const;
 
 const routeOptionCopy = [
   {
@@ -161,13 +191,12 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
   const routeIdeas = useMemo(() => proposals.filter((plan) => routeOptionCopy.some((option) => plan.title.includes(option.match))), [proposals]);
   const attachedIdeas = useMemo(() => proposals.filter((plan) => routeOptionCopy.some((option) => plan.title.includes(option.relatedMatch))), [proposals]);
   const otherProposals = useMemo(() => proposals.filter((plan) => !routeIdeas.includes(plan) && !attachedIdeas.includes(plan)), [attachedIdeas, proposals, routeIdeas]);
-  const shipTotal = adopted.reduce((total, plan) => total + Number(plan.costYen || 0), 0);
   const confirmedExpenses = board?.expenses.filter((expense) => expense.status === "confirmed") ?? [];
   const draftExpenses = board?.expenses.filter((expense) => expense.status === "draft") ?? [];
   const confirmedTotal = confirmedExpenses.reduce((total, expense) => total + Number(expense.amountYen), 0);
   const participantCount = Math.max(1, board?.participants.length ?? 1);
   const reconsidering = board?.trip.status === "reconsidering";
-  const budgetPending = board?.trip.budgetMinYen === 0 && board?.trip.budgetMaxYen === 0;
+  const niijimaSelected = board?.trip.status === "planning" && board.trip.routeLabel === "決定｜神津島 → 新島";
 
   async function mutate(url: string, init: RequestInit) {
     setBusy(true);
@@ -261,14 +290,14 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
           </div>
 
           <aside className="decision-card" aria-label="現在の結論">
-            <span className="status status-plan">{reconsidering ? "再調整中" : "採用中の仮案"}</span>
+            <span className="status status-plan">{niijimaSelected ? "行き先決定" : reconsidering ? "再調整中" : "採用中"}</span>
             <strong>{board.trip.routeLabel}</strong>
-            <p>{shortDate(board.trip.startDate)} 出発 — {shortDate(board.trip.endDate)} 東京戻り · 9/2延長も予備案</p>
+            <p>{shortDate(board.trip.startDate)} 出発 — {shortDate(board.trip.endDate)} 東京戻り · 交通と宿は未予約</p>
             <div className="people">
               {board.participants.map((person) => <span key={person.id}>{person.displayName}</span>)}
             </div>
-            <a className="hero-action" href={reconsidering ? "#route-choice" : viewer ? "#add" : signInPath}>
-              {reconsidering ? "2つの案を比べる" : viewer ? "サイトに追加する" : "ChatGPTでサインイン"}
+            <a className="hero-action" href={niijimaSelected ? "#route-choice" : reconsidering ? "#route-choice" : viewer ? "#add" : signInPath}>
+              {niijimaSelected ? "船と飛行機を比べる" : reconsidering ? "2つの案を比べる" : viewer ? "サイトに追加する" : "ChatGPTでサインイン"}
             </a>
             <a className="hero-magazine-action" href="/discover">島旅マガジンを読む <span>→</span></a>
           </aside>
@@ -276,19 +305,19 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
       </header>
 
       <section className="quick-status" aria-label="旅行の進み具合">
-        <div><span className="dot pending" /><p><small>現在</small>{reconsidering ? "ルートを再調整中" : `採用中 ${adopted.length}件`}</p></div>
-        <div><span className="dot confirmed" /><p><small>共通</small>8/29に神津島へ</p></div>
-        <div><span className="dot locked" /><p><small>未確認</small>空席・宿・当日の港</p></div>
+        <div><span className="dot confirmed" /><p><small>行き先</small>{niijimaSelected ? "神津島 → 新島で決定" : board.trip.routeLabel}</p></div>
+        <div><span className="dot pending" /><p><small>次に決める</small>往復を船にするか、飛行機にするか</p></div>
+        <div><span className="dot locked" /><p><small>まだ未確認</small>空席・宿・当日の港</p></div>
       </section>
 
       <section className="section itinerary-section" aria-labelledby="itinerary-title">
         <div className="section-heading">
           <span>01</span>
           <div><p>OUR PLAN</p><h2 id="itinerary-title">俺たちの予定</h2></div>
-          <span className="heading-note">島の組み合わせはまだ未採用</span>
+          <span className="heading-note">神津島 → 新島は決定 · 便と宿は未予約</span>
         </div>
         <div className="timeline">
-          {(reconsidering ? tripFrame : adopted).map((item, index) => (
+          {(niijimaSelected || reconsidering ? tripFrame : adopted).map((item, index) => (
             <article className="timeline-item" key={"id" in item ? item.id : item.date}>
               <div className="timeline-marker" aria-hidden="true"><span>{index + 1}</span></div>
               <p className="date">{item.date || "DATE TBD"}</p>
@@ -303,42 +332,70 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
       <section className="section proposal-section" id="route-choice" aria-labelledby="proposal-title">
         <div className="section-heading">
           <span>02</span>
-          <div><p>CHOOSE THE SECOND ISLAND</p><h2 id="proposal-title">第二の島、どっちにする？</h2></div>
+          <div><p>GETTING THERE</p><h2 id="proposal-title">行き先は決まった。次は、どう渡る？</h2></div>
         </div>
-        <p className="choice-intro">神津島は共通。8/30は大島にも新島にも移れます。まだどちらも採用せず、空席と宿がそろうかを同じ人数で比べます。</p>
-        <div className="route-choice-grid">
-          {routeOptionCopy.map((option) => {
-            const proposal = routeIdeas.find((idea) => idea.title.includes(option.match));
-            const related = attachedIdeas.find((idea) => idea.title.includes(option.relatedMatch));
-            return (
-              <article className={`route-choice-card ${option.key}`} key={option.key}>
-                <div className="route-choice-top"><span>{option.label}</span><small>未採用</small></div>
-                <h3>{option.title}</h3>
-                <p className="route-hook">{option.hook}</p>
-                <p className="route-verdict"><span className="dot confirmed" /><small>公式ダイヤあり</small><strong>{option.verdict}</strong></p>
-                <div className="route-schedule" aria-label="8月30日の移動候補">
-                  {option.schedule.map((row) => (
-                    <div key={`${row.time}-${row.mode}`}>
-                      <small>{row.label}</small><strong>{row.time}</strong><span>{row.mode}</span><b>{row.cost}</b>
+        {niijimaSelected ? (
+          <>
+            <p className="choice-intro">神津島から新島へ行くことは決定済み。残っているのは三つの区間の乗り方です。障害者手帳の割引を入れた1人分で比べました。</p>
+            <div className="transport-totals" aria-label="交通費の比較">
+              <div><small>船を中心に組む</small><strong>15,635–16,265円</strong><span>1人 · 3区間</span></div>
+              <div><small>外側2区間を飛行機</small><strong>28,495–29,125円</strong><span>1人 · 島間は船</span></div>
+              <p><b>差は約12,860円。</b>時間を買う区間だけ飛行機にする混ぜ方もできます。</p>
+            </div>
+            <div className="transport-grid">
+              {transportLegs.map((leg) => (
+                <article className="transport-leg" key={leg.date}>
+                  <div className="transport-leg-heading"><span>{leg.date}</span><h3>{leg.route}</h3></div>
+                  <p>{leg.note}</p>
+                  <div className="transport-options">
+                    {leg.options.map((option) => (
+                      <div key={`${option.mode}-${option.time}`}>
+                        <span>{option.mode}</span><strong>{option.time}</strong><b>{option.price}</b><small>{option.detail}</small>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+            <div className="fare-notes">
+              <p><strong>9/1の時刻を訂正しました。</strong>新島9:50発は東京13:40着の直行便ではありません。大島で乗り継ぎ、東京は16:40ごろ。直行便は14:10→17:00です。</p>
+              <p><strong>手帳割引について。</strong>東海汽船は本人と介護者1名まで50%割引。予約後、窓口で手帳を提示して購入します。飛行機も本人と同便の介護者1名が対象で、電話または空港窓口で確認します。</p>
+            </div>
+            <div className="transport-actions">
+              <a href="https://www.tokaikisen.co.jp/boarding/timetable/" target="_blank" rel="noreferrer">船の時刻表を見る ↗</a>
+              <a href="https://www.tokaikisenyoyaku.com/app/login" target="_blank" rel="noreferrer">船の空席を見る ↗</a>
+              <a href="https://central-air.co.jp/schedule-fee.html?stt_lang=ja" target="_blank" rel="noreferrer">飛行機の時刻・運賃を見る ↗</a>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="choice-intro">神津島は共通。8/30は大島にも新島にも移れます。空席と宿がそろうかを同じ人数で比べます。</p>
+            <div className="route-choice-grid">
+              {routeOptionCopy.map((option) => {
+                const proposal = routeIdeas.find((idea) => idea.title.includes(option.match));
+                const related = attachedIdeas.find((idea) => idea.title.includes(option.relatedMatch));
+                return (
+                  <article className={`route-choice-card ${option.key}`} key={option.key}>
+                    <div className="route-choice-top"><span>{option.label}</span><small>未採用</small></div>
+                    <h3>{option.title}</h3>
+                    <p className="route-hook">{option.hook}</p>
+                    <p className="route-verdict"><span className="dot confirmed" /><small>公式ダイヤあり</small><strong>{option.verdict}</strong></p>
+                    <div className="route-schedule" aria-label="8月30日の移動候補">
+                      {option.schedule.map((row) => <div key={`${row.time}-${row.mode}`}><small>{row.label}</small><strong>{row.time}</strong><span>{row.mode}</span><b>{row.cost}</b></div>)}
                     </div>
-                  ))}
-                </div>
-                <p className="route-return"><strong>帰り</strong>{option.returnTrip}</p>
-                <div className="route-moments" aria-label="この案で楽しめること">
-                  {option.moments.map((moment) => <span key={moment}>{moment}</span>)}
-                </div>
-                <p className="route-flow">{proposal?.details ?? "Discordの案を旅行ボードへ反映しています。"}</p>
-                {related && <p className="route-side-idea"><strong>この案なら</strong>{related.title}。{related.details}</p>}
-                <p className="route-unknown"><strong>先に確認</strong>{option.unknown}</p>
-                <div className="route-source-links">
-                  <a href="https://www.tokaikisen.co.jp/boarding/timetable/" target="_blank" rel="noreferrer">公式時刻表 ↗</a>
-                  <a href="https://www.tokaikisenyoyaku.com/app/login" target="_blank" rel="noreferrer">空席を確認 ↗</a>
-                </div>
-                <a href={option.href}>{option.key === "oshima" ? "大島" : "新島"}の記事を読む <span aria-hidden="true">→</span></a>
-              </article>
-            );
-          })}
-        </div>
+                    <p className="route-return"><strong>帰り</strong>{option.returnTrip}</p>
+                    <div className="route-moments" aria-label="この案で楽しめること">{option.moments.map((moment) => <span key={moment}>{moment}</span>)}</div>
+                    <p className="route-flow">{proposal?.details ?? "Discordの案を旅行ボードへ反映しています。"}</p>
+                    {related && <p className="route-side-idea"><strong>この案なら</strong>{related.title}。{related.details}</p>}
+                    <p className="route-unknown"><strong>先に確認</strong>{option.unknown}</p>
+                    <div className="route-source-links"><a href="https://www.tokaikisen.co.jp/boarding/timetable/" target="_blank" rel="noreferrer">公式時刻表 ↗</a><a href="https://www.tokaikisenyoyaku.com/app/login" target="_blank" rel="noreferrer">空席を確認 ↗</a></div>
+                    <a href={option.href}>{option.key === "oshima" ? "大島" : "新島"}の記事を読む <span aria-hidden="true">→</span></a>
+                  </article>
+                );
+              })}
+            </div>
+          </>
+        )}
         {otherProposals.length ? (
           <div className="proposal-followups">
             <h3>そのほかのアイデア</h3>
@@ -360,17 +417,17 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
 
       <section className="split money-section" aria-label="お金の管理">
         <article className="cost-card">
-          <div className="section-heading compact"><span>03</span><div><p>BUDGET</p><h2>お金の見通し</h2></div></div>
-          <div className="cost-total"><span>1人の旅全体</span><strong>{budgetPending ? "再計算中" : `${compactYen(board.trip.budgetMinYen)}–${compactYen(board.trip.budgetMaxYen)}`}</strong></div>
+          <div className="section-heading compact"><span>03</span><div><p>BUDGET</p><h2>いま分かるのは、交通費まで</h2></div></div>
+          <div className="cost-total"><span>船を中心に · 1人</span><strong>15,635円〜</strong></div>
           <dl>
-            {reconsidering && <div><dt>大島案・交通だけ</dt><dd>29,330–32,950円 / 人</dd></div>}
-            {reconsidering && <div><dt>新島案・交通だけ</dt><dd>26,660–33,630円 / 人</dd></div>}
-            <div><dt>採用済みの交通費</dt><dd>{adopted.length ? `${yen.format(shipTotal)} / 人` : "未確定"}</dd></div>
+            <div><dt>船中心の3区間</dt><dd>15,635–16,265円 / 人</dd></div>
+            <div><dt>往復だけ飛行機</dt><dd>28,495–29,125円 / 人</dd></div>
+            <div><dt>宿・食事・島内移動</dt><dd>これから追加</dd></div>
             <div><dt>確定済み実費</dt><dd>{yen.format(confirmedTotal)}</dd></div>
             <div><dt>{participantCount}人で均等なら</dt><dd>{yen.format(Math.round(confirmedTotal / participantCount))} / 人</dd></div>
             <div><dt>確認待ち</dt><dd>{draftExpenses.length}件</dd></div>
           </dl>
-          <p className="footnote">交通小計は、8/29の神津島入りを高速船16,800円または飛行機17,900円として、島間便と9/1の復路を組み合わせた幅です。空席、宿、食事は含みません。</p>
+          <p className="footnote">手帳割引を適用した単純計算です。実際の適用条件と空席は予約時に確認します。ここには宿、食事、島内移動、調布空港・竹芝までの交通を含めていません。</p>
         </article>
 
         <article className="expense-card">
@@ -451,9 +508,10 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
         <details open>
           <summary><span>まだ確定していないこと</span><small>OpenClosが次に進める</small></summary>
           <div className="details-content alternatives">
-            <p><strong>まず：</strong>8/29・8/30・9/1の空席を、2案とも同じ人数で確認する</p>
-            <p><strong>同時に：</strong>神津島、大島、新島の宿空室と料金を確認する</p>
-            <p><strong>そろったら：</strong>過ごし方と総額を比べ、第二の島を一つに決める</p>
+            <p><strong>交通：</strong>8/29と9/1を船にするか、時間を買って飛行機にするか</p>
+            <p><strong>空席：</strong>June・りもの2人分を同じ便で取れるか。手帳割引の適用も予約時に確認する</p>
+            <p><strong>宿：</strong>8/29の神津島1泊、8/30・31の新島2泊を押さえる</p>
+            <p><strong>港：</strong>出発前日に当日の発着港と欠航情報をもう一度見る</p>
           </div>
         </details>
         <details>
@@ -480,10 +538,6 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
       </footer>
     </main>
   );
-}
-
-function compactYen(value: number) {
-  return `${Math.round(Number(value) / 10000)}万円`;
 }
 
 function shortDate(value: string) {

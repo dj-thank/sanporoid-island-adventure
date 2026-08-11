@@ -421,6 +421,173 @@ h1 {
   line-height: 1.9;
 }
 
+.transport-totals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: clamp(20px, 3vw, 30px);
+  border-radius: 22px;
+  color: white;
+  background: var(--deep);
+}
+
+.transport-totals > div {
+  display: grid;
+  gap: 5px;
+  padding: 2px 0;
+}
+
+.transport-totals > div + div {
+  padding-left: 24px;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.transport-totals small,
+.transport-totals span {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.transport-totals strong {
+  color: var(--sun);
+  font-size: clamp(25px, 3.2vw, 42px);
+  letter-spacing: -0.05em;
+}
+
+.transport-totals > p {
+  grid-column: 1 / -1;
+  margin: 10px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.transport-totals > p b { color: white; }
+
+.transport-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.transport-leg {
+  padding: clamp(22px, 3vw, 30px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 16px 38px rgba(16, 42, 50, 0.06);
+}
+
+.transport-leg-heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.transport-leg-heading > span {
+  padding: 6px 8px;
+  border-radius: 7px;
+  color: white;
+  background: var(--coral);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.transport-leg h3 {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+
+.transport-leg > p {
+  min-height: 58px;
+  margin: 16px 0 18px;
+  color: #667a80;
+  font-size: 11px;
+  line-height: 1.75;
+}
+
+.transport-options {
+  border-top: 1px solid var(--line);
+}
+
+.transport-options > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.transport-options span,
+.transport-options small {
+  color: #71848a;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.transport-options strong {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+}
+
+.transport-options b {
+  grid-column: 2;
+  grid-row: 1;
+  color: var(--ocean);
+  font-size: 13px;
+}
+
+.transport-options small { grid-column: 1 / -1; }
+
+.fare-notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.fare-notes p {
+  margin: 0;
+  padding: 17px 18px;
+  border-left: 3px solid var(--coral);
+  border-radius: 0 12px 12px 0;
+  color: #586f75;
+  background: #fff8eb;
+  font-size: 11px;
+  line-height: 1.75;
+}
+
+.fare-notes p + p {
+  border-left-color: var(--ocean);
+  background: var(--foam);
+}
+
+.fare-notes strong { color: var(--ink); }
+
+.transport-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.transport-actions a {
+  padding: 9px 12px;
+  border: 1px solid rgba(12, 101, 115, 0.24);
+  border-radius: 999px;
+  color: var(--ocean);
+  background: white;
+  font-size: 10px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
 .route-choice-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1290,6 +1457,8 @@ footer {
   .next-card,
   .expense-card { padding: 56px 24px; }
   .proposal-grid { grid-template-columns: 1fr 1fr; }
+  .transport-grid { grid-template-columns: 1fr; }
+  .transport-leg > p { min-height: 0; }
   .route-choice-grid { grid-template-columns: 1fr; }
   .route-choice-card { min-height: 0; }
   .composer-form { grid-template-columns: 1fr 1fr; }
@@ -1318,6 +1487,11 @@ footer {
   .timeline-copy,
   .micro-status { grid-column: 2; }
   .heading-note { display: none !important; }
+  .transport-totals,
+  .fare-notes { grid-template-columns: 1fr; }
+  .transport-totals > div + div { padding: 14px 0 0; border-top: 1px solid rgba(255, 255, 255, 0.18); border-left: 0; }
+  .transport-options > div { grid-template-columns: 1fr; }
+  .transport-options b { grid-column: 1; grid-row: auto; }
   .proposal-grid { grid-template-columns: 1fr; }
   .route-choice-grid { grid-template-columns: 1fr; }
   .route-choice-card { min-height: 0; padding: 28px 22px; }
