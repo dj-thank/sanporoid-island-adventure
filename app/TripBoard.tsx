@@ -291,7 +291,11 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
 
           <aside className="decision-card" aria-label="現在の結論">
             <span className="status status-plan">あと1〜2人、歓迎</span>
-            <strong>計画の今から、仲間になってほしい。</strong>
+            <strong className="decision-card-title">
+              <span>計画の今から、</span>
+              <span>仲間になって</span>
+              <span>ほしい。</span>
+            </strong>
             <p>{shortDate(board.trip.startDate)} 出発 — {shortDate(board.trip.endDate)} 東京戻り。3泊テントは決定、島順・予約・一人あたり費用はまだ未確定です。</p>
             <div className="people">
               {board.participants.map((person) => <span key={person.id}>{person.displayName}</span>)}
