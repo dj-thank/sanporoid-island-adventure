@@ -214,6 +214,9 @@ test("shows a sign-in gate for every site-side write control", async () => {
   assert.match(board, /三晩のテント旅に、/);
   assert.match(board, /あと1〜2人。/);
   assert.match(board, /良いところも、大変なところも、先に。/);
+  assert.match(board, /まだ予約はない。でも、やりたいことは増えてきた。/);
+  assert.match(board, /イルカか、船釣りか。海へ出る案。/);
+  assert.match(board, /これは採用済みの予定ではありません。/);
   assert.match(board, /予約はまだ0件/);
   assert.match(board, /一人あたりは再計算中/);
   assert.match(board, /気になる.+伝える/);

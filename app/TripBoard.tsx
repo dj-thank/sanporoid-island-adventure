@@ -340,6 +340,45 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
         </div>
       </section>
 
+      <section className="live-ideas" aria-labelledby="live-ideas-title">
+        <header className="live-ideas-header">
+          <p>WHAT WE KEEP TALKING ABOUT</p>
+          <div>
+            <h2 id="live-ideas-title">まだ予約はない。でも、やりたいことは増えてきた。</h2>
+            <span>Discordで実際に出ている話を、決定事項と混ぜずに置いています。</span>
+          </div>
+        </header>
+
+        <div className="live-idea-grid">
+          <article className="live-idea">
+            <small>01 / KOZUSHIMA / SEA</small>
+            <h3>朝から海へ。潜れるなら、潜りたい。</h3>
+            <p>体験ダイビングやスノーケルの店は公式掲載あり。海況、受付、テント設営の時間がそろう日だけ候補にします。</p>
+            <a href="https://kozushima.com/shop/taiken/diving/499/" target="_blank" rel="noreferrer">神津島の公式掲載を見る ↗</a>
+          </article>
+          <article className="live-idea">
+            <small>02 / NIIJIMA / WAVES</small>
+            <h3>羽伏浦で、波に入ってみたい。</h3>
+            <p>サーフィンやボディーボードの事業者が公式一覧にあります。初心者対応と所要時間を確認してから決めます。</p>
+            <a href="https://niijima-info.jp/activity/" target="_blank" rel="noreferrer">新島のアクティビティ一覧 ↗</a>
+          </article>
+          <article className="live-idea">
+            <small>03 / NIIJIMA / BOAT</small>
+            <h3>イルカか、船釣りか。海へ出る案。</h3>
+            <p>公式一覧にはイルカウォッチング、船釣り、クルージングの掲載があります。新島1泊の余白で成立するかは未確認です。</p>
+            <a href="https://niijima-info.jp/activity/" target="_blank" rel="noreferrer">候補を公式で見る ↗</a>
+          </article>
+          <article className="live-idea">
+            <small>04 / NIGHT / MOONRISE</small>
+            <h3>海から上がる月を待つ。</h3>
+            <p>Discordで出たばかりの希望です。正確な月の出、東向きの観賞場所、雲量は、場所を絞って出発直前に確認します。</p>
+            <a href="https://discord.com/channels/1535960563140796476/1535960564059213947" target="_blank" rel="noreferrer">この相談の続きをする ↗</a>
+          </article>
+        </div>
+
+        <p className="live-ideas-note"><strong>これは採用済みの予定ではありません。</strong> 車・キャンプ・船と参加人数が固まってから、全部を詰め込まず、1〜2個だけ選びます。</p>
+      </section>
+
       <section className="invite-truth" aria-labelledby="invite-truth-title">
         <header>
           <p>BEFORE YOU SAY YES</p>
