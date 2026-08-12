@@ -77,7 +77,7 @@ const tripFrame = [
   { date: "8/29", time: "DAY 1", title: "東京から神津島へ", details: "竹芝7:25発のジェット船、または調布発の飛行機。空席と神津島の宿は未確認。", state: "便を選ぶ" },
   { date: "8/30", time: "DAY 2", title: "神津島から新島へ", details: "大型客船10:30→11:45、またはジェット船13:25→14:05。島の順番は決定済み。", state: "行き先決定" },
   { date: "8/31", time: "DAY 3", title: "新島を、自転車の速さで", details: "羽伏浦、新島ガラス、夕方は湯の浜露天温泉へ。天気で順番を入れ替える。", state: "島で遊ぶ" },
-  { date: "9/1", time: "DAY 4", title: "新島から東京へ戻る", details: "船なら14:10→17:00の直行便、飛行機なら約40分。帰り方と新島の宿は未確認。", state: "便を選ぶ" },
+  { date: "9/1", time: "DAY 4", title: "新島から東京へ戻る", details: "大型客船11:55→18:40、ジェット船14:10→17:00、または飛行機。大型客船も運航予定。", state: "便を選ぶ" },
 ];
 
 const transportLegs = [
@@ -87,23 +87,24 @@ const transportLegs = [
     note: "早く島へ着くなら飛行機。荷物と価格の気楽さなら船。",
     options: [
       { mode: "ジェット船", time: "竹芝 7:25 → 10:35", price: "8,400円", detail: "手帳割引 50%" },
-      { mode: "飛行機", time: "調布 8:50 → 9:35", price: "15,400円", detail: "8月繁忙期の障害者運賃" },
+      { mode: "飛行機", time: "調布 8:50 → 9:35", price: "13,400円", detail: "障がい者運賃" },
     ],
   },
   {
     date: "8/30",
     route: "神津島 → 新島",
-    note: "ここは船だけ。朝を取るか、神津島を昼まで楽しむかで決める。",
+    note: "ここは船だけ。8/30の客船運休は東京発側で、神津島発の大型客船は運航予定。",
     options: [
-      { mode: "大型客船 2等", time: "10:30 → 11:45", price: "595円", detail: "手帳割引 50%" },
-      { mode: "ジェット船", time: "13:25 → 14:05", price: "1,225円", detail: "手帳割引 50%" },
+      { mode: "大型客船 2等", time: "10:30 → 11:45", price: "600円", detail: "手帳割引後・10円未満切上げ" },
+      { mode: "ジェット船", time: "13:25 → 14:05", price: "1,230円", detail: "手帳割引後・10円未満切上げ" },
     ],
   },
   {
     date: "9/1",
     route: "新島 → 東京",
-    note: "昼前に戻るなら飛行機。船の直行便は14:10発。",
+    note: "9/1の客船運休は東京発側。新島発は大型客船もジェット船も運航予定。",
     options: [
+      { mode: "大型客船 2等", time: "11:55 → 18:40", price: "4,340円", detail: "9月運賃・手帳割引後" },
       { mode: "ジェット船", time: "14:10 → 17:00", price: "6,640円", detail: "9月運賃・手帳割引 50%" },
       { mode: "飛行機", time: "11:00 → 11:40 ほか", price: "12,500円", detail: "通常期の障害者運賃" },
     ],
@@ -338,9 +339,9 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
           <>
             <p className="choice-intro">神津島から新島へ行くことは決定済み。残っているのは三つの区間の乗り方です。障害者手帳の割引を入れた1人分で比べました。</p>
             <div className="transport-totals" aria-label="交通費の比較">
-              <div><small>船を中心に組む</small><strong>15,635–16,265円</strong><span>1人 · 3区間</span></div>
-              <div><small>外側2区間を飛行機</small><strong>28,495–29,125円</strong><span>1人 · 島間は船</span></div>
-              <p><b>差は約12,860円。</b>時間を買う区間だけ飛行機にする混ぜ方もできます。</p>
+              <div><small>船を中心に組む</small><strong>13,340–16,270円</strong><span>1人 · 3区間</span></div>
+              <div><small>外側2区間を飛行機</small><strong>26,500–27,130円</strong><span>1人 · 島間は船</span></div>
+              <p><b>最安同士の差は13,160円。</b>時間を買う区間だけ飛行機にする混ぜ方もできます。</p>
             </div>
             <div className="transport-grid">
               {transportLegs.map((leg) => (
@@ -358,8 +359,9 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
               ))}
             </div>
             <div className="fare-notes">
-              <p><strong>9/1の時刻を訂正しました。</strong>新島9:50発は東京13:40着の直行便ではありません。大島で乗り継ぎ、東京は16:40ごろ。直行便は14:10→17:00です。</p>
-              <p><strong>手帳割引について。</strong>東海汽船は本人と介護者1名まで50%割引。予約後、窓口で手帳を提示して購入します。飛行機も本人と同便の介護者1名が対象で、電話または空港窓口で確認します。</p>
+              <p><strong>客船運休日は、方向別です。</strong>8/30と9/1に休むのは東京発の3000便。この旅で使う各島発2000便は、8/30が神津島10:30→新島11:45、9/1が新島11:55→東京18:40で運航予定です。時刻表上の予定と、当日の欠航判断は別です。</p>
+              <p><strong>9/1の直行便は2つ。</strong>大型客船11:55→18:40とジェット船14:10→17:00です。新島9:50発は東京13:40着の直行便ではありません。大島で乗り換え、東京は16:40ごろです。</p>
+              <p><strong>手帳割引について。</strong>東海汽船は本人と介護者1名まで50%割引し、10円未満は切り上げます。予約後、窓口で手帳を提示して購入します。飛行機も本人と同便の介護者1名が対象で、電話または空港窓口で確認します。</p>
             </div>
             <div className="transport-actions">
               <a href="https://www.tokaikisen.co.jp/boarding/timetable/" target="_blank" rel="noreferrer">船の時刻表を見る ↗</a>
@@ -418,10 +420,10 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
       <section className="split money-section" aria-label="お金の管理">
         <article className="cost-card">
           <div className="section-heading compact"><span>03</span><div><p>BUDGET</p><h2>いま分かるのは、交通費まで</h2></div></div>
-          <div className="cost-total"><span>船を中心に · 1人</span><strong>15,635円〜</strong></div>
+          <div className="cost-total"><span>船を中心に · 1人</span><strong>13,340円〜</strong></div>
           <dl>
-            <div><dt>船中心の3区間</dt><dd>15,635–16,265円 / 人</dd></div>
-            <div><dt>往復だけ飛行機</dt><dd>28,495–29,125円 / 人</dd></div>
+            <div><dt>船中心の3区間</dt><dd>13,340–16,270円 / 人</dd></div>
+            <div><dt>往復だけ飛行機</dt><dd>26,500–27,130円 / 人</dd></div>
             <div><dt>宿・食事・島内移動</dt><dd>これから追加</dd></div>
             <div><dt>確定済み実費</dt><dd>{yen.format(confirmedTotal)}</dd></div>
             <div><dt>{participantCount}人で均等なら</dt><dd>{yen.format(Math.round(confirmedTotal / participantCount))} / 人</dd></div>

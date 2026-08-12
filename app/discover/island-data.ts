@@ -164,7 +164,7 @@ export const islands: Island[] = [
     name: "神津島",
     reading: "こうづしま",
     english: "KŌZUSHIMA",
-    verifiedAt: "2026.08.10",
+    verifiedAt: "2026.08.12",
     oneLine: "朝は天上山、午後は海辺、夜は星空。神津島は2泊3日で楽しみたい。",
     coverLine: "天上山と星空を楽しむ2泊3日",
     shortIntro: "天上山、多幸湾、赤崎遊歩道、星空を2泊3日で回る。山と海の両方を楽しみたい2人旅に向く。",
@@ -368,7 +368,7 @@ export const islands: Island[] = [
     access: [
       { route: "調布 → 神津島", time: "約45分", copy: "飛行機。便数、運賃、手荷物上限、天候条件を予約画面で確認。", url: "https://central-air.co.jp/schedule-fee.html?stt_lang=ja" },
       { route: "竹芝 → 神津島", time: "高速船／大型客船", copy: "所要時間と運航日は季節で変動。宿を押さえてから往復を検索。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
-      { route: "神津島 → 新島", time: "8/30候補 13:25 → 14:05", copy: "2026年公式時刻表のジェット船候補。大型客船10:30→11:45もある。空席と当日の港は未確認。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
+      { route: "神津島 → 新島", time: "8/30 10:30→11:45 / 13:25→14:05", copy: "大型客船とジェット船の両方が運航予定。8/30の客船運休日は東京発側で、神津島発2000便には当てはまらない。空席と当日の港は未確認。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "島内を動く", time: "村営バス／公共ライドシェア", copy: "船・飛行機の発着後にバス時刻が組まれる。遠方へ出る日は帰路と配車を先に確保。", url: "https://www.vill.kouzushima.tokyo.jp/transport/" },
       { route: "出発当日の運航", time: "船／飛行機", copy: "発着港、欠航、条件付き運航を当日に再確認。予定より公式の運航判断を優先。", url: "https://www.tokaikisen.co.jp/schedule/" },
     ],
@@ -599,7 +599,7 @@ export const islands: Island[] = [
     name: "新島",
     reading: "にいじま",
     english: "NIIJIMA",
-    verifiedAt: "2026.08.10",
+    verifiedAt: "2026.08.12",
     oneLine: "羽伏浦を自転車で走り、ガラスを見て、夕方は海辺の温泉へ。",
     coverLine: "羽伏浦とガラスを巡る1泊2日",
     shortIntro: "羽伏浦、湯の浜露天温泉、新島ガラスを1泊2日で回る。中心部は自転車で動きやすい。",
@@ -779,7 +779,8 @@ export const islands: Island[] = [
     access: [
       { route: "竹芝 → 新島", time: "高速船／大型客船", copy: "季節で便・所要時間が変わる。東海汽船の同日検索を優先。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
       { route: "調布 → 新島", time: "飛行機", copy: "発売時期、便数、手荷物制限を予約前に確認。", url: "https://central-air.co.jp/schedule-fee.html?stt_lang=ja" },
-      { route: "神津島 → 新島", time: "8/30 13:25 → 14:05", copy: "この旅で採用した島間ルート。大型客船10:30→11:45もある。時刻と運賃は確認済み、空席と当日の港は未確認。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
+      { route: "神津島 → 新島", time: "8/30 10:30→11:45 / 13:25→14:05", copy: "この旅で採用した島間ルート。大型客船とジェット船の両方が運航予定。8/30の客船運休日は東京発側だけ。空席と当日の港は未確認。", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
+      { route: "新島 → 東京", time: "9/1 11:55→18:40 / 14:10→17:00", copy: "大型客船とジェット船の直行便がある。9/1の客船運休日は東京発側で、新島発2000便は運航予定。", url: "https://www.tokaikisen.co.jp/boarding/timetable/0913-15/" },
       { route: "出発当日の運航", time: "船／飛行機", copy: "島間移動を含め、同日の接続を運航情報で再確認。成立しなければ一島集中へ戻す。", url: "https://www.tokaikisen.co.jp/schedule/" },
     ],
     rules: [

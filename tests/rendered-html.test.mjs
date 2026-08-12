@@ -141,7 +141,7 @@ test("server-renders a mapped long-form feature for each island", async () => {
     assert.match(html, /01 \/ PLAN/);
     assert.match(html, /宿の空きを確認する/);
     assert.match(html, /天気別の候補を持つ/);
-    assert.match(html, /CHECKED 2026\.08\.10/);
+    assert.match(html, /CHECKED 2026\.08\.(10|12)/);
     assert.match(html, /公式で確認/);
     assert.match(html, /予約前と出発当日に見る公式サイト/);
     assert.doesNotMatch(html, /晴れだけを、前提にしない。/);
@@ -150,14 +150,16 @@ test("server-renders a mapped long-form feature for each island", async () => {
     assert.doesNotMatch(html, /最後は、公式情報へ。/);
     if (slug === "kozushima") {
       assert.match(html, /指定キャンプ場/);
-      assert.match(html, /8\/30候補 13:25 → 14:05/);
+      assert.match(html, /8\/30 10:30→11:45 \/ 13:25→14:05/);
+      assert.match(html, /客船運休日は東京発側/);
       assert.doesNotMatch(html, /島内キャンプは禁止/);
     }
     if (slug === "oshima") {
       assert.match(html, /8\/30候補 10:45 → 11:45/);
     }
     if (slug === "niijima") {
-      assert.match(html, /8\/30 13:25 → 14:05/);
+      assert.match(html, /8\/30 10:30→11:45 \/ 13:25→14:05/);
+      assert.match(html, /9\/1 11:55→18:40 \/ 14:10→17:00/);
       assert.doesNotMatch(html, /無料・24時間・水着着用/);
     }
   }
@@ -220,8 +222,11 @@ test("reconciles the corrected Discord route and official schedule into durable 
   assert.match(store, /ジェット船10:45→11:45/);
   assert.match(store, /大型客船10:30→11:45/);
   assert.match(board, /行き先は決まった。次は、どう渡る？/);
-  assert.match(board, /15,635–16,265円/);
-  assert.match(board, /28,495–29,125円/);
+  assert.match(board, /13,340–16,270円/);
+  assert.match(board, /客船運休日は、方向別です/);
+  assert.match(board, /大型客船 2等/);
+  assert.match(board, /11:55 → 18:40/);
+  assert.match(board, /26,500–27,130円/);
   assert.match(board, /新島9:50発は東京13:40着の直行便ではありません/);
   assert.match(board, /本人と介護者1名まで50%割引/);
 });
