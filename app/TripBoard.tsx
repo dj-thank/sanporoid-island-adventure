@@ -74,80 +74,81 @@ type Board = {
 const yen = new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 });
 
 const tripFrame = [
-  { date: "8/29", time: "DAY 1", title: "東京から神津島へ", details: "竹芝7:25発のジェット船、または調布発の飛行機。空席と神津島の宿は未確認。", state: "便を選ぶ" },
-  { date: "8/30", time: "DAY 2", title: "神津島から新島へ", details: "大型客船10:30→11:45、またはジェット船13:25→14:05。島の順番は決定済み。", state: "行き先決定" },
-  { date: "8/31", time: "DAY 3", title: "新島を、自転車の速さで", details: "羽伏浦、新島ガラス、夕方は湯の浜露天温泉へ。天気で順番を入れ替える。", state: "島で遊ぶ" },
-  { date: "9/1", time: "DAY 4", title: "新島から東京へ戻る", details: "大型客船11:55→18:40、ジェット船14:10→17:00、または飛行機。大型客船も運航予定。", state: "便を選ぶ" },
+  { date: "8/29", time: "DAY 1", title: "神津島｜多幸湾でテント泊", details: "竹芝7:25発→神津島10:35着の1420便候補。島で車を借り、多幸湾ファミリーキャンプ場へ。", state: "車が最優先" },
+  { date: "8/30", time: "DAY 2", title: "新島｜羽伏浦でテント泊", details: "神津島13:25発→新島14:05着の2430便候補。車を受け取り、16:00までにキャンプ届を出す。", state: "受付時刻が要点" },
+  { date: "8/31", time: "DAY 3", title: "大島｜トウシキでテント泊", details: "新島9:50発→大島11:45着の1420便候補。8/31は島発大型客船が休みなのでジェット船を使う。", state: "Web予約必須" },
+  { date: "9/1", time: "DAY 4", title: "大島から東京へ戻る", details: "大島発ジェット船は10:20、14:55、15:15、15:50の候補。車の返却時刻と空席を合わせる。", state: "便を選ぶ" },
 ];
 
 const transportLegs = [
   {
     date: "8/29",
     route: "東京 → 神津島",
-    note: "早く島へ着くなら飛行機。荷物と価格の気楽さなら船。",
+    note: "1420便なら10:35着。テント装備をジェット船の手荷物規定内へ収める。",
     options: [
-      { mode: "ジェット船", time: "竹芝 7:25 → 10:35", price: "8,400円", detail: "手帳割引 50%" },
-      { mode: "飛行機", time: "調布 8:50 → 9:35", price: "13,400円", detail: "障がい者運賃" },
+      { mode: "ジェット船 1420", time: "竹芝 7:25 → 神津島 10:35", price: "空席未確認", detail: "毎日運航予定" },
     ],
   },
   {
     date: "8/30",
     route: "神津島 → 新島",
-    note: "ここは船だけ。8/30の客船運休は東京発側で、神津島発の大型客船は運航予定。",
+    note: "14:05着後、車の受渡しと16:00までの羽伏浦キャンプ届を続けて行う。",
     options: [
-      { mode: "大型客船 2等", time: "10:30 → 11:45", price: "600円", detail: "手帳割引後・10円未満切上げ" },
-      { mode: "ジェット船", time: "13:25 → 14:05", price: "1,230円", detail: "手帳割引後・10円未満切上げ" },
+      { mode: "ジェット船 2430", time: "神津島 13:25 → 新島 14:05", price: "空席未確認", detail: "大型客船10:30→11:45も比較可能" },
+    ],
+  },
+  {
+    date: "8/31",
+    route: "新島 → 大島",
+    note: "8/31は島発大型客船2000便の運休日。毎日運航予定の1420便を使う。",
+    options: [
+      { mode: "ジェット船 1420", time: "新島 9:50 → 大島 11:45", price: "空席未確認", detail: "式根島・神津島経由" },
     ],
   },
   {
     date: "9/1",
-    route: "新島 → 東京",
-    note: "9/1の客船運休は東京発側。新島発は大型客船もジェット船も運航予定。",
+    route: "大島 → 東京",
+    note: "9/1の客船運休日は東京発側。大島発はジェット船4便を車返却時刻と比較する。",
     options: [
-      { mode: "大型客船 2等", time: "11:55 → 18:40", price: "4,340円", detail: "9月運賃・手帳割引後" },
-      { mode: "ジェット船", time: "14:10 → 17:00", price: "6,640円", detail: "9月運賃・手帳割引 50%" },
-      { mode: "飛行機", time: "11:00 → 11:40 ほか", price: "12,500円", detail: "通常期の障害者運賃" },
+      { mode: "ジェット船", time: "10:20 / 14:55 / 15:15 / 15:50発", price: "空席未確認", detail: "東京着12:05〜17:35" },
     ],
   },
 ] as const;
 
-const routeOptionCopy = [
+const campingNights = [
   {
-    key: "oshima",
-    match: "神津島＋伊豆大島",
-    label: "案 A / 山と火山",
-    title: "神津島のあと、大島へ",
-    hook: "天上山から三原山へ。歩く旅を二つの島でつなぐ。",
-    verdict: "便の選択肢で一歩リード",
-    schedule: [
-      { label: "最短", time: "10:45 → 11:45", mode: "ジェット船", cost: "4,620円" },
-      { label: "午後発", time: "13:25 → 15:05", mode: "ジェット船", cost: "4,620円" },
-      { label: "安く", time: "10:30 → 13:55", mode: "大型客船 2等", cost: "2,100円" },
-    ],
-    returnTrip: "9/1 大島→東京はジェット船が4便候補。10:20、14:55、15:15、15:50発。",
-    moments: ["三原山", "地層大切断面", "温泉", "元町で島ごはん"],
-    unknown: "各便の空席、神津島と大島の宿、出発当日の発着港。",
-    relatedMatch: "元町で島ごはん",
-    href: "/discover/oshima",
+    date: "8/29",
+    island: "神津島",
+    camp: "多幸湾ファミリーキャンプ場",
+    rule: "指定キャンプ場。予約と2026年夏の受入状況を確認する。指定場所以外の野営は禁止。",
+    car: "あーす／アイラナ／神津島レンタカーへ、キャンプ利用で借りられる車を先に確認。",
+    status: "最難関",
+    campUrl: "https://www.vill.kouzushima.tokyo.jp/camp/",
+    carUrl: "https://www.t-treasureislands.metro.tokyo.lg.jp/kouzushima/",
   },
   {
-    key: "niijima",
-    match: "神津島＋新島",
-    label: "案 B / 山と白い海",
-    title: "神津島のあと、新島へ",
-    hook: "天上山を歩いた次の日は、羽伏浦を自転車の速さで巡る。",
-    verdict: "移動の短さと安さが魅力",
-    schedule: [
-      { label: "安く", time: "10:30 → 11:45", mode: "大型客船 2等", cost: "1,190円" },
-      { label: "午後発", time: "13:25 → 14:05", mode: "ジェット船", cost: "2,450円" },
-    ],
-    returnTrip: "9/1 新島→東京はジェット船14:10→17:00、または大型客船11:55→18:40。",
-    moments: ["羽伏浦", "レンタサイクル", "新島ガラス", "まました温泉"],
-    unknown: "各便の空席、神津島と新島の宿、出発当日の発着港。",
-    relatedMatch: "まました温泉",
-    href: "/discover/niijima",
+    date: "8/30",
+    island: "新島",
+    camp: "都立羽伏浦野営場",
+    rule: "無料・予約不要だが、利用開始日の9:00〜16:00にキャンプ届。先着100人。貸テント・電源なし。",
+    car: "14:05着から受付終了まで1時間55分。港受渡しと装備を積める車種を予約する。",
+    status: "時刻注意",
+    campUrl: "https://www.niijima.com/soshiki/sangyoukankouka/news/2023-1026-1806-101.html",
+    carUrl: "https://niijima-info.jp/ido/",
+  },
+  {
+    date: "8/31",
+    island: "大島",
+    camp: "トウシキキャンプ場",
+    rule: "無料・Web事前予約必須。元町／岡田港から車で約20〜25分。送迎なし。",
+    car: "当日の発着港が変わっても受け取れる条件と、9/1の返却時刻を揃える。",
+    status: "予約必須",
+    campUrl: "https://www.town.oshima.tokyo.jp/soshiki/kankou/toshiki-camp.html",
+    carUrl: "https://izu-oshima.or.jp/transportation.html",
   },
 ] as const;
+
+const supersededProposalTerms = ["神津島＋伊豆大島", "神津島＋新島", "元町で島ごはん", "まました温泉"] as const;
 
 async function readJson(response: Response) {
   const data = await response.json();
@@ -187,17 +188,15 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
     };
   }, [refresh]);
 
-  const adopted = useMemo(() => board?.plans.filter((plan) => plan.status === "adopted") ?? [], [board]);
   const proposals = useMemo(() => board?.plans.filter((plan) => plan.status === "proposed") ?? [], [board]);
-  const routeIdeas = useMemo(() => proposals.filter((plan) => routeOptionCopy.some((option) => plan.title.includes(option.match))), [proposals]);
-  const attachedIdeas = useMemo(() => proposals.filter((plan) => routeOptionCopy.some((option) => plan.title.includes(option.relatedMatch))), [proposals]);
-  const otherProposals = useMemo(() => proposals.filter((plan) => !routeIdeas.includes(plan) && !attachedIdeas.includes(plan)), [attachedIdeas, proposals, routeIdeas]);
+  const otherProposals = useMemo(
+    () => proposals.filter((plan) => !supersededProposalTerms.some((term) => plan.title.includes(term))),
+    [proposals],
+  );
   const confirmedExpenses = board?.expenses.filter((expense) => expense.status === "confirmed") ?? [];
   const draftExpenses = board?.expenses.filter((expense) => expense.status === "draft") ?? [];
   const confirmedTotal = confirmedExpenses.reduce((total, expense) => total + Number(expense.amountYen), 0);
   const participantCount = Math.max(1, board?.participants.length ?? 1);
-  const reconsidering = board?.trip.status === "reconsidering";
-  const niijimaSelected = board?.trip.status === "planning" && board.trip.routeLabel === "決定｜神津島 → 新島";
 
   async function mutate(url: string, init: RequestInit) {
     setBusy(true);
@@ -285,40 +284,80 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
               <span className="status status-plan">SINGLE SOURCE OF TRUTH</span>
               <span className="last-updated">最終更新 {formatDateTime(board.trip.updatedAt)}</span>
             </div>
-            <p className="kicker">FRIENDS TRIP · {board.participants.length} PEOPLE · 3 NIGHTS</p>
-            <h1>{board.trip.title}</h1>
-            <p className="lead">{board.trip.concept}</p>
+            <p className="kicker">AUG 29 — SEP 1, 2026 · FRIENDS WELCOME</p>
+            <h1><span>三晩のテント旅に、</span><span>あと1〜2人。</span></h1>
+            <p className="lead">島を一つずつ渡り、昼は車で海と山へ、夜は指定キャンプ場で眠る3泊4日です。いまは{board.participants.length}人。完成済みのツアーへ誘うのではなく、予約前の今から一緒に旅をつくる友達を迎えたいと思っています。</p>
           </div>
 
           <aside className="decision-card" aria-label="現在の結論">
-            <span className="status status-plan">{niijimaSelected ? "行き先決定" : reconsidering ? "再調整中" : "採用中"}</span>
-            <strong>{board.trip.routeLabel}</strong>
-            <p>{shortDate(board.trip.startDate)} 出発 — {shortDate(board.trip.endDate)} 東京戻り · 交通と宿は未予約</p>
+            <span className="status status-plan">あと1〜2人、歓迎</span>
+            <strong>計画の今から、仲間になってほしい。</strong>
+            <p>{shortDate(board.trip.startDate)} 出発 — {shortDate(board.trip.endDate)} 東京戻り。3泊テントは決定、島順・予約・一人あたり費用はまだ未確定です。</p>
             <div className="people">
               {board.participants.map((person) => <span key={person.id}>{person.displayName}</span>)}
+              <span className="open-seat">＋ YOU</span>
             </div>
-            <a className="hero-action" href={niijimaSelected ? "#route-choice" : reconsidering ? "#route-choice" : viewer ? "#add" : signInPath}>
-              {niijimaSelected ? "船と飛行機を比べる" : reconsidering ? "2つの案を比べる" : viewer ? "サイトに追加する" : "ChatGPTでサインイン"}
-            </a>
+            <a className="hero-action" href="#join">この旅の正直な話を読む</a>
             <a className="hero-magazine-action" href="/discover">島旅マガジンを読む <span>→</span></a>
           </aside>
         </div>
       </header>
 
       <section className="quick-status" aria-label="旅行の進み具合">
-        <div><span className="dot confirmed" /><p><small>行き先</small>{niijimaSelected ? "神津島 → 新島で決定" : board.trip.routeLabel}</p></div>
-        <div><span className="dot pending" /><p><small>次に決める</small>往復を船にするか、飛行機にするか</p></div>
-        <div><span className="dot locked" /><p><small>まだ未確認</small>空席・宿・当日の港</p></div>
+        <div><span className="dot confirmed" /><p><small>動かさない</small>3泊テント＋島ごとのレンタカー</p></div>
+        <div><span className="dot pending" /><p><small>最有力の島順</small>神津島 → 新島 → 大島</p></div>
+        <div><span className="dot locked" /><p><small>まだ未確認</small>3台の車・キャンプ枠・船の空席</p></div>
+      </section>
+
+      <section className="welcome-section" id="join" aria-labelledby="welcome-title">
+        <div className="welcome-copy">
+          <p className="welcome-kicker">TO THE NEXT FRIENDS</p>
+          <h2 id="welcome-title">朝の海も、テントを張る時間も、みんなで旅にする。</h2>
+          <p>観光地を急いで回るだけの旅行ではありません。港で車を受け取り、食材を積み、海を見て、暗くなる前にテントを張る。うまくいかない日は、天気と船に合わせて予定を変える。その相談まで面白がれる人と行きたい旅です。</p>
+          <p>テント経験の多さより、荷物や運転、買い出し、片づけを話し合って分担できることを大切にします。分からないことは、今いるメンバーも同じように調べています。</p>
+          <div className="welcome-actions">
+            <a href="https://discord.com/channels/1535960563140796476/1535960564059213947" target="_blank" rel="noreferrer">「気になる」と伝える ↗</a>
+            <a href="/discover">8島の記事を見てみる</a>
+          </div>
+        </div>
+
+        <aside className="welcome-seat" aria-label="現在の参加メンバーと募集人数">
+          <small>CURRENT PARTY</small>
+          <div>{board.participants.map((person) => <span key={person.id}>{person.displayName}</span>)}</div>
+          <strong>あと1〜2人</strong>
+          <p>3〜4人になれば、車内もテント設営もにぎやかになる。参加人数が決まったら、車種・共同装備・一人あたり費用を人数に合わせて確定します。</p>
+          <em>参加表明の締切は、まだ決めていません。</em>
+        </aside>
+
+        <div className="welcome-scenes" aria-label="旅で出会う三つの景色">
+          <article className="welcome-scene welcome-scene-kozu"><span>01</span><div><small>神津島</small><h3>山を歩いて、星を待つ。</h3><p>天上山と多幸湾。夜は指定キャンプ場へ。</p></div></article>
+          <article className="welcome-scene welcome-scene-niijima"><span>02</span><div><small>新島</small><h3>白い海岸へ、車で抜ける。</h3><p>羽伏浦の受付は16時まで。到着後はみんなで動く。</p></div></article>
+          <article className="welcome-scene welcome-scene-oshima"><span>03</span><div><small>大島</small><h3>火山の島で、最後の一夜。</h3><p>三原山と地層を見て、トウシキにテントを張る。</p></div></article>
+        </div>
+      </section>
+
+      <section className="invite-truth" aria-labelledby="invite-truth-title">
+        <header>
+          <p>BEFORE YOU SAY YES</p>
+          <h2 id="invite-truth-title">良いところも、大変なところも、先に。</h2>
+          <span>誘うために都合の悪いことを隠しません。いま確定している事実と、これから一緒に決めたいことです。</span>
+        </header>
+        <div>
+          <article><small>決まっている</small><h3>三晩ともテント</h3><p>宿には泊まりません。指定キャンプ場を使い、島ごとに車を借り直します。毎日、撤収と設営があります。</p></article>
+          <article><small>まだ決まっていない</small><h3>島順と予約</h3><p>最有力は神津島 → 新島 → 大島。ただしキャンプ3件、車3台、船4区間がそろうまでは確定と呼びません。</p></article>
+          <article><small>お金</small><h3>一人あたりは再計算中</h3><p>予約はまだ0件です。3〜4人の参加人数、車種、船の空席、共同装備をそろえてから実額を出します。</p></article>
+          <article><small>一緒にやりたい</small><h3>相談と分担</h3><p>運転、買い出し、設営、写真、朝のコーヒー。得意なことを一つ持ち寄り、苦手なことは全員で補います。</p></article>
+        </div>
       </section>
 
       <section className="section itinerary-section" aria-labelledby="itinerary-title">
         <div className="section-heading">
           <span>01</span>
           <div><p>OUR PLAN</p><h2 id="itinerary-title">俺たちの予定</h2></div>
-          <span className="heading-note">神津島 → 新島は決定 · 便と宿は未予約</span>
+          <span className="heading-note">3晩すべてテント · 車は島ごとに借り直す</span>
         </div>
         <div className="timeline">
-          {(niijimaSelected || reconsidering ? tripFrame : adopted).map((item, index) => (
+          {tripFrame.map((item, index) => (
             <article className="timeline-item" key={"id" in item ? item.id : item.date}>
               <div className="timeline-marker" aria-hidden="true"><span>{index + 1}</span></div>
               <p className="date">{item.date || "DATE TBD"}</p>
@@ -333,16 +372,29 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
       <section className="section proposal-section" id="route-choice" aria-labelledby="proposal-title">
         <div className="section-heading">
           <span>02</span>
-          <div><p>GETTING THERE</p><h2 id="proposal-title">行き先は決まった。次は、どう渡る？</h2></div>
+          <div><p>CAMP + CAR + SHIP</p><h2 id="proposal-title">この三島で、本当に三晩張れるか</h2></div>
         </div>
-        {niijimaSelected ? (
-          <>
-            <p className="choice-intro">神津島から新島へ行くことは決定済み。残っているのは三つの区間の乗り方です。障害者手帳の割引を入れた1人分で比べました。</p>
-            <div className="transport-totals" aria-label="交通費の比較">
-              <div><small>船を中心に組む</small><strong>13,340–16,270円</strong><span>1人 · 3区間</span></div>
-              <div><small>外側2区間を飛行機</small><strong>26,500–27,130円</strong><span>1人 · 島間は船</span></div>
-              <p><b>最安同士の差は13,160円。</b>時間を買う区間だけ飛行機にする混ぜ方もできます。</p>
+        <>
+            <p className="choice-intro">固定されたのは宿泊形式です。島順はまだ最終決定ではありません。ただし、2026年のキャンプ場と8/29〜9/1の船を同時に満たす北航路の三島案として、神津島 → 新島 → 大島が最も素直に成立します。</p>
+            <div className="transport-totals" aria-label="今回固定した旅行条件">
+              <div><small>テント泊</small><strong>3晩</strong><span>宿には泊まらない</span></div>
+              <div><small>レンタカー</small><strong>3台</strong><span>島ごとに借り直す</span></div>
+              <p><b>予約はまだ0件。</b>神津島の車が最も厳しいため、そこから三つのキャンプと四区間の船を連鎖させます。</p>
             </div>
+            <p className="choice-intro"><strong>まず寝床と車。</strong> どれか一つでも取れなければ、島順を確定せずに組み直します。</p>
+            <div className="transport-grid">
+              {campingNights.map((night) => (
+                <article className="transport-leg" key={night.date}>
+                  <div className="transport-leg-heading"><span>{night.date}</span><h3>{night.island}</h3></div>
+                  <p>{night.camp}</p>
+                  <div className="transport-options">
+                    <div><span>CAMP</span><strong>{night.rule}</strong><b>{night.status}</b><a href={night.campUrl} target="_blank" rel="noreferrer">公式案内 ↗</a></div>
+                    <div><span>CAR</span><strong>{night.car}</strong><b>未予約</b><a href={night.carUrl} target="_blank" rel="noreferrer">確認先 ↗</a></div>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <p className="choice-intro"><strong>次に四区間の船。</strong> 車は船へ載せず、返却してから次の島で借ります。</p>
             <div className="transport-grid">
               {transportLegs.map((leg) => (
                 <article className="transport-leg" key={leg.date}>
@@ -359,45 +411,17 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
               ))}
             </div>
             <div className="fare-notes">
-              <p><strong>客船運休日は、方向別です。</strong>8/30と9/1に休むのは東京発の3000便。この旅で使う各島発2000便は、8/30が神津島10:30→新島11:45、9/1が新島11:55→東京18:40で運航予定です。時刻表上の予定と、当日の欠航判断は別です。</p>
-              <p><strong>9/1の直行便は2つ。</strong>大型客船11:55→18:40とジェット船14:10→17:00です。新島9:50発は東京13:40着の直行便ではありません。大島で乗り換え、東京は16:40ごろです。</p>
-              <p><strong>手帳割引について。</strong>東海汽船は本人と介護者1名まで50%割引し、10円未満は切り上げます。予約後、窓口で手帳を提示して購入します。飛行機も本人と同便の介護者1名が対象で、電話または空港窓口で確認します。</p>
+              <p><strong>客船運休日は方向別です。</strong>8/31に休むのは島発の大型客船2000便。この日は新島9:50発のジェット船1420便で、大島11:45着が成立します。</p>
+              <p><strong>9/1の運休表記は東京発側です。</strong>大島から東京へ戻るジェット船は10:20、14:55、15:15、15:50発の候補があります。予約時刻と当日の港は別途確認します。</p>
+              <p><strong>一台の車で三島は回れません。</strong>東海汽船は車両を貨物船で運び、人は同乗できず、旅行利用には勧めないと案内しています。各島で受取・返却するのが今回の前提です。</p>
+              <p><strong>テント装備はジェット船仕様にします。</strong>ジェット船は受託手荷物を扱わず、2026年時刻表にはアウトドアワゴンを持ち込めない旨もあります。装備を分解・圧縮し、規定を予約前に照合します。</p>
             </div>
             <div className="transport-actions">
               <a href="https://www.tokaikisen.co.jp/boarding/timetable/" target="_blank" rel="noreferrer">船の時刻表を見る ↗</a>
               <a href="https://www.tokaikisenyoyaku.com/app/login" target="_blank" rel="noreferrer">船の空席を見る ↗</a>
-              <a href="https://central-air.co.jp/schedule-fee.html?stt_lang=ja" target="_blank" rel="noreferrer">飛行機の時刻・運賃を見る ↗</a>
+              <a href="https://www.tokaikisen.co.jp/boarding/baggage/" target="_blank" rel="noreferrer">荷物の規定を見る ↗</a>
             </div>
-          </>
-        ) : (
-          <>
-            <p className="choice-intro">神津島は共通。8/30は大島にも新島にも移れます。空席と宿がそろうかを同じ人数で比べます。</p>
-            <div className="route-choice-grid">
-              {routeOptionCopy.map((option) => {
-                const proposal = routeIdeas.find((idea) => idea.title.includes(option.match));
-                const related = attachedIdeas.find((idea) => idea.title.includes(option.relatedMatch));
-                return (
-                  <article className={`route-choice-card ${option.key}`} key={option.key}>
-                    <div className="route-choice-top"><span>{option.label}</span><small>未採用</small></div>
-                    <h3>{option.title}</h3>
-                    <p className="route-hook">{option.hook}</p>
-                    <p className="route-verdict"><span className="dot confirmed" /><small>公式ダイヤあり</small><strong>{option.verdict}</strong></p>
-                    <div className="route-schedule" aria-label="8月30日の移動候補">
-                      {option.schedule.map((row) => <div key={`${row.time}-${row.mode}`}><small>{row.label}</small><strong>{row.time}</strong><span>{row.mode}</span><b>{row.cost}</b></div>)}
-                    </div>
-                    <p className="route-return"><strong>帰り</strong>{option.returnTrip}</p>
-                    <div className="route-moments" aria-label="この案で楽しめること">{option.moments.map((moment) => <span key={moment}>{moment}</span>)}</div>
-                    <p className="route-flow">{proposal?.details ?? "Discordの案を旅行ボードへ反映しています。"}</p>
-                    {related && <p className="route-side-idea"><strong>この案なら</strong>{related.title}。{related.details}</p>}
-                    <p className="route-unknown"><strong>先に確認</strong>{option.unknown}</p>
-                    <div className="route-source-links"><a href="https://www.tokaikisen.co.jp/boarding/timetable/" target="_blank" rel="noreferrer">公式時刻表 ↗</a><a href="https://www.tokaikisenyoyaku.com/app/login" target="_blank" rel="noreferrer">空席を確認 ↗</a></div>
-                    <a href={option.href}>{option.key === "oshima" ? "大島" : "新島"}の記事を読む <span aria-hidden="true">→</span></a>
-                  </article>
-                );
-              })}
-            </div>
-          </>
-        )}
+        </>
         {otherProposals.length ? (
           <div className="proposal-followups">
             <h3>そのほかのアイデア</h3>
@@ -419,17 +443,18 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
 
       <section className="split money-section" aria-label="お金の管理">
         <article className="cost-card">
-          <div className="section-heading compact"><span>03</span><div><p>BUDGET</p><h2>いま分かるのは、交通費まで</h2></div></div>
-          <div className="cost-total"><span>船を中心に · 1人</span><strong>13,340円〜</strong></div>
+          <div className="section-heading compact"><span>03</span><div><p>BUDGET</p><h2>三台の車まで取ってから、総額を出す</h2></div></div>
+          <div className="cost-total"><span>現在の見積もり</span><strong>再計算中</strong></div>
           <dl>
-            <div><dt>船中心の3区間</dt><dd>13,340–16,270円 / 人</dd></div>
-            <div><dt>往復だけ飛行機</dt><dd>26,500–27,130円 / 人</dd></div>
-            <div><dt>宿・食事・島内移動</dt><dd>これから追加</dd></div>
+            <div><dt>船</dt><dd>4区間 · 空席と割引を確認</dd></div>
+            <div><dt>レンタカー</dt><dd>神津島・新島・大島の3台</dd></div>
+            <div><dt>キャンプ</dt><dd>無料施設あり · 予約条件は別</dd></div>
+            <div><dt>装備・燃料・食事</dt><dd>持込と現地調達を分ける</dd></div>
             <div><dt>確定済み実費</dt><dd>{yen.format(confirmedTotal)}</dd></div>
             <div><dt>{participantCount}人で均等なら</dt><dd>{yen.format(Math.round(confirmedTotal / participantCount))} / 人</dd></div>
             <div><dt>確認待ち</dt><dd>{draftExpenses.length}件</dd></div>
           </dl>
-          <p className="footnote">手帳割引を適用した単純計算です。実際の適用条件と空席は予約時に確認します。ここには宿、食事、島内移動、調布空港・竹芝までの交通を含めていません。</p>
+          <p className="footnote">以前の二島・宿泊案の交通費は使いません。四区間の船と三台の車を同じ人数・受渡し時刻で確認してから、手帳割引、燃料、食事、装備を含む新しい見積もりを出します。</p>
         </article>
 
         <article className="expense-card">
@@ -484,10 +509,10 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
         {mode === "expense" && (
           <form className="composer-form" onSubmit={submitExpense}>
             <fieldset disabled={!viewer || busy}>
-              <label className="wide">費目<input name="title" required placeholder="例：神津島の宿代" /></label>
+              <label className="wide">費目<input name="title" required placeholder="例：神津島レンタカー代" /></label>
               <label>金額<input name="amountYen" required inputMode="numeric" type="number" min="0" placeholder="12000" /></label>
               <label>払った人<select name="payer"><option>共有</option>{board.participants.map((person) => <option key={person.id}>{person.displayName}</option>)}</select></label>
-              <label>分類<select name="category"><option>宿</option><option>船</option><option>食事</option><option>島内移動</option><option>体験</option><option>その他</option></select></label>
+              <label>分類<select name="category"><option>キャンプ</option><option>船</option><option>レンタカー</option><option>食事</option><option>装備</option><option>体験</option><option>その他</option></select></label>
               <label>日付<input name="occurredOn" type="date" /></label>
               <label className="check-label"><input name="confirmed" type="checkbox" /> 金額を確認済みにする</label>
               <button className="submit-button">{busy ? "追加中…" : "費用に追加"}</button>
@@ -510,10 +535,11 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
         <details open>
           <summary><span>まだ確定していないこと</span><small>OpenClosが次に進める</small></summary>
           <div className="details-content alternatives">
-            <p><strong>交通：</strong>8/29と9/1を船にするか、時間を買って飛行機にするか</p>
-            <p><strong>空席：</strong>June・りもの2人分を同じ便で取れるか。手帳割引の適用も予約時に確認する</p>
-            <p><strong>宿：</strong>8/29の神津島1泊、8/30・31の新島2泊を押さえる</p>
-            <p><strong>港：</strong>出発前日に当日の発着港と欠航情報をもう一度見る</p>
+            <p><strong>神津島：</strong>キャンプ利用でも借りられる車と、多幸湾の8/29予約枠</p>
+            <p><strong>新島：</strong>14:05着から16:00までに車受取と羽伏浦のキャンプ届を終えられるか</p>
+            <p><strong>大島：</strong>トウシキ8/31のWeb予約と、元町／岡田どちらでも受取可能な車</p>
+            <p><strong>船：</strong>4区間を2人分で確保し、テント装備がジェット船規定内に収まるか</p>
+            <p><strong>現地：</strong>車をテント横へ置くオートキャンプは未確認。各施設の指定駐車に従う</p>
           </div>
         </details>
         <details>
@@ -529,10 +555,11 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
           <p className="footer-title">OFFICIAL SOURCES</p>
           <div className="source-links">
             <a href="/discover">島旅マガジン<span>→</span></a>
-            <a href="https://kozushima.com/" target="_blank" rel="noreferrer">神津島観光協会<span>↗</span></a>
             <a href="https://www.tokaikisen.co.jp/boarding/timetable/" target="_blank" rel="noreferrer">2026年 時刻表<span>↗</span></a>
-            <a href="https://www.tokaikisen.co.jp/boarding/fare/2026%E5%B9%B48%E6%9C%88/" target="_blank" rel="noreferrer">8月 運賃<span>↗</span></a>
-            <a href="https://www.tokaikisen.co.jp/boarding/fare/2026%E5%B9%B49%E6%9C%88/" target="_blank" rel="noreferrer">9月 運賃<span>↗</span></a>
+            <a href="https://www.vill.kouzushima.tokyo.jp/camp/" target="_blank" rel="noreferrer">神津島 キャンプ<span>↗</span></a>
+            <a href="https://www.niijima.com/soshiki/sangyoukankouka/news/2023-1026-1806-101.html" target="_blank" rel="noreferrer">新島 キャンプ<span>↗</span></a>
+            <a href="https://www.town.oshima.tokyo.jp/soshiki/kankou/toshiki-camp.html" target="_blank" rel="noreferrer">大島 キャンプ<span>↗</span></a>
+            <a href="https://www.tokaikisen.co.jp/cargo/" target="_blank" rel="noreferrer">車両輸送の案内<span>↗</span></a>
             <a href="https://www.tokaikisen.co.jp/boarding/vacantseat/" target="_blank" rel="noreferrer">空席照会<span>↗</span></a>
           </div>
         </div>

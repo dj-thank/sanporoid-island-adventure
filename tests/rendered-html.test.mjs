@@ -81,8 +81,8 @@ test("server-renders the Island Weekend shell and metadata", async () => {
   const html = await response.text();
   assert.match(html, /<html lang="ja">/);
   assert.match(html, /俺たちの予定を読み込んでいます/);
-  assert.match(html, /俺たちの島旅｜神津島から、新島へ/);
-  assert.match(html, /決まった予定、船と飛行機の比較、費用、未確認事項/);
+  assert.match(html, /一緒に島へ行こう｜3泊4日のテント旅に、あと1〜2人/);
+  assert.match(html, /決まったことも未確定なことも正直に伝える参加案内/);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
 });
 
@@ -96,41 +96,44 @@ test("server-renders the official-source island magazine", async () => {
 
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /神津島から、/);
-  assert.match(html, /新島へ/);
-  assert.match(html, /友達との島旅/);
-  assert.match(html, /神津島 → 新島で決定/);
-  assert.match(html, /決まった順番で、空席と宿を探す/);
-  assert.match(html, /神津島のモデルコースを見る/);
-  assert.match(html, /神津島行きの飛行機を見る/);
-  assert.match(html, /島の輪郭を、旅の前に読む/);
-  assert.match(html, /水の神話、黒曜石、838年の噴火/);
-  assert.match(html, /886年の噴火、流人史、コーガ石/);
+  assert.match(html, /三晩とも、/);
+  assert.match(html, /島で眠る。/);
+  assert.match(html, /3泊テント＋各島レンタカーは固定/);
+  assert.match(html, /神津島 → 新島 → 大島/);
+  assert.match(html, /魅力の前に、泊まれるかを見る/);
+  assert.match(html, /東海汽船の8島を、漏れなく読む/);
+  for (const island of ["大島", "利島", "新島", "式根島", "神津島", "三宅島", "御蔵島", "八丈島"]) {
+    assert.match(html, new RegExp(island));
+  }
+  assert.match(html, /利島はキャンプ禁止・レンタカーなし/);
+  assert.match(html, /式根島は2026年度の野営場が継続閉場/);
+  assert.match(html, /御蔵島はキャンプ禁止で宿予約なしの上陸も不可/);
+  assert.match(html, /島発の大型客船は運休/);
+  assert.match(html, /一台を島間輸送しない/);
+  assert.match(html, /予約は、神津島の車から/);
   assert.match(html, /\/discover\/kozushima#about/);
   assert.match(html, /\/discover\/niijima#about/);
-  assert.match(html, /SIDE STORY/);
-  assert.doesNotMatch(html, /第二の島を相談中/);
-  assert.doesNotMatch(html, /採用中は「大島 → 新島」/);
-  assert.doesNotMatch(html, /現在SSOTに入っている竹芝→大島→新島/);
-  assert.doesNotMatch(html, /EDITORIAL VISUAL/);
-  assert.doesNotMatch(html, /island-scenes-v1\.png/);
-  assert.doesNotMatch(html, /東京から、三つの別世界へ。/);
-  assert.doesNotMatch(html, /予約は、旅の順番で。/);
   assert.match(html, /www\.tokaikisenyoyaku\.com\/app\/login/);
-  assert.match(html, /niijima-info\.jp\/stay/);
-  assert.match(html, /kozushima\.com\/yado-list/);
-  assert.match(html, /予約はまだしていません/);
+  assert.match(html, /vill\.kouzushima\.tokyo\.jp\/camp/);
+  assert.match(html, /まだ予約・購入はしていません/);
+  assert.doesNotMatch(html, /神津島 → 新島で決定/);
+  assert.doesNotMatch(html, /決まった順番で、空席と宿を探す/);
 });
 
 test("server-renders a mapped long-form feature for each island", async () => {
   const worker = await loadWorker();
   const expectations = [
-    ["kozushima", /神津島の夜は星空観察を1晩入れる/, /星空保護区/, /晴れて風が弱い日：天上山へ/, /白・青・黒を1人1色で撮る/, /天上山・港・海岸の位置を確認する/],
-    ["oshima", /地層大切断面は車を止めて見たい/, /地層大切断面/, /雨の日：ジオノスと温泉へ/, /火山の黒を3枚ずつ撮る/, /三原山・南部・2つの港を確認する/],
-    ["niijima", /羽伏浦は自転車で好きな場所まで/, /湯の浜露天温泉/, /雨の日：ガラス施設と島の土産を探す/, /好きなモヤイ像を1体選ぶ/, /羽伏浦・本村・港の位置を確認する/],
+    ["kozushima", /車の確保が最難関/, /多幸湾ファミリーキャンプ場/, /星空保護区/],
+    ["oshima", /テント＋車が成立/, /トウシキキャンプ場/, /地層大切断面/],
+    ["niijima", /テント＋車が成立/, /都立羽伏浦野営場/, /当日9:00〜16:00受付/],
+    ["toshima", /固定条件と両立しない/, /キャンプ・野宿禁止/, /約20万本の椿/],
+    ["shikinejima", /野営場が継続閉場/, /式根島地区の野営場/, /地鉈温泉/],
+    ["miyakejima", /2026営業を電話確認/, /大久保浜キャンプ場/, /雄山/],
+    ["mikurajima", /テント泊禁止/, /宿泊予約のない上陸と日帰り観光も不可/, /野生のミナミハンドウイルカ/],
+    ["hachijojima", /テント＋車が成立/, /底土野営場/, /黄八丈/],
   ];
 
-  for (const [slug, feature, place, condition, mission, mapTitle] of expectations) {
+  for (const [slug, verdict, camp, feature] of expectations) {
     const response = await worker.fetch(
       new Request(`http://localhost/discover/${slug}`, { headers: { accept: "text/html" } }),
       runtime,
@@ -138,21 +141,15 @@ test("server-renders a mapped long-form feature for each island", async () => {
     );
     assert.equal(response.status, 200);
     const html = await response.text();
+    assert.match(html, verdict);
+    assert.match(html, camp);
     assert.match(html, feature);
-    assert.match(html, place);
-    assert.match(html, condition);
-    assert.match(html, mission);
-    assert.match(html, mapTitle);
     assert.match(html, /01 \/ PLAN/);
-    assert.match(html, /宿の空きを確認する/);
+    assert.match(html, /(キャンプ条件を確認する|対象外の理由を確認する)/);
     assert.match(html, /天気別の候補を持つ/);
     assert.match(html, /CHECKED 2026\.08\.(10|12)/);
     assert.match(html, /公式で確認/);
     assert.match(html, /予約前と出発当日に見る公式サイト/);
-    assert.doesNotMatch(html, /晴れだけを、前提にしない。/);
-    assert.doesNotMatch(html, /こう回る。ただし、島に従う。/);
-    assert.doesNotMatch(html, /まず、島の形を頭に入れる。/);
-    assert.doesNotMatch(html, /最後は、公式情報へ。/);
     if (slug === "kozushima") {
       assert.match(html, /神々が水を分け、火山が島を重ねた/);
       assert.match(html, /18\.58 km²/);
@@ -160,12 +157,12 @@ test("server-renders a mapped long-form feature for each island", async () => {
       assert.match(html, /神津島のかつお釣り行事/);
       assert.match(html, /神津島は838年にできた？/);
       assert.match(html, /指定キャンプ場/);
-      assert.match(html, /8\/30 10:30→11:45 \/ 13:25→14:05/);
+      assert.match(html, /8\/30.+13:25→14:05/);
       assert.match(html, /客船運休日は東京発側/);
       assert.doesNotMatch(html, /島内キャンプは禁止/);
     }
     if (slug === "oshima") {
-      assert.match(html, /8\/30候補 10:45 → 11:45/);
+      assert.match(html, /8\/31 9:50→11:45/);
     }
     if (slug === "niijima") {
       assert.match(html, /白い火山が、暮らしの形と色を決めた/);
@@ -173,8 +170,8 @@ test("server-renders a mapped long-form feature for each island", async () => {
       assert.match(html, /1,333人の流人を、島はどう受け止めたか/);
       assert.match(html, /コーガ石は普通の軽石？/);
       assert.match(html, /くさやは腐った魚？/);
-      assert.match(html, /8\/30 10:30→11:45 \/ 13:25→14:05/);
-      assert.match(html, /9\/1 11:55→18:40 \/ 14:10→17:00/);
+      assert.match(html, /8\/30 13:25→14:05/);
+      assert.match(html, /8\/31 9:50→11:45/);
       assert.doesNotMatch(html, /無料・24時間・水着着用/);
     }
   }
@@ -210,40 +207,42 @@ test("shows a sign-in gate for every site-side write control", async () => {
 
   assert.match(page, /getChatGPTUser/);
   assert.match(page, /chatGPTSignInPath\("\/#add"\)/);
-  assert.match(board, /ChatGPTでサインイン/);
+  assert.match(board, /サインインして追加する/);
   assert.match(board, /<fieldset disabled=\{!viewer \|\| busy\}>/);
   assert.match(board, /disabled=\{!viewer \|\| busy\}/);
   assert.match(board, /href="\/discover"/);
+  assert.match(board, /三晩のテント旅に、/);
+  assert.match(board, /あと1〜2人。/);
+  assert.match(board, /良いところも、大変なところも、先に。/);
+  assert.match(board, /予約はまだ0件/);
+  assert.match(board, /一人あたりは再計算中/);
+  assert.match(board, /気になる.+伝える/);
   assert.match(store, /oai-authenticated-user-id/);
   assert.match(store, /return null;/);
   assert.match(store, /throw new Error\("BOT_UNAUTHORIZED"\)/);
 });
 
-test("reconciles the corrected Discord route and official schedule into durable state", async () => {
+test("reconciles the fixed camping decision and official schedule into durable state", async () => {
   const [store, board] = await Promise.all([
     readFile(new URL("../db/store.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/TripBoard.tsx", import.meta.url), "utf8"),
   ]);
 
-  assert.match(store, /決定｜神津島 → 新島/);
+  assert.match(store, /決定｜3泊すべて指定キャンプ場＋各島レンタカー/);
   assert.match(store, /selectTripRoute/);
-  assert.match(store, /status = 'rejected'.+id <>/);
   assert.match(store, /reconcile:discord-route-choice:v2/);
   assert.match(store, /reconcile:official-schedule:2026-08-10/);
   assert.match(store, /reconcile:discord-niijima-decision:2026-08-12:v1/);
+  assert.match(store, /reconcile:three-tent-nights-and-rental-cars:2026-08-12:v1/);
   assert.match(store, /budget_min_yen = 0, budget_max_yen = 0/);
-  assert.match(store, /神津島＋伊豆大島｜天上山から火山へ/);
-  assert.match(store, /神津島＋新島｜山のあと、白い海へ/);
-  assert.match(store, /ジェット船10:45→11:45/);
-  assert.match(store, /大型客船10:30→11:45/);
-  assert.match(board, /行き先は決まった。次は、どう渡る？/);
-  assert.match(board, /13,340–16,270円/);
-  assert.match(board, /客船運休日は、方向別です/);
-  assert.match(board, /大型客船 2等/);
-  assert.match(board, /11:55 → 18:40/);
-  assert.match(board, /26,500–27,130円/);
-  assert.match(board, /新島9:50発は東京13:40着の直行便ではありません/);
-  assert.match(board, /本人と介護者1名まで50%割引/);
+  assert.match(store, /検討中｜神津島 → 新島 → 大島/);
+  assert.match(board, /3泊テントは決定、島順・予約・一人あたり費用はまだ未確定/);
+  assert.match(board, /多幸湾ファミリーキャンプ場/);
+  assert.match(board, /都立羽伏浦野営場/);
+  assert.match(board, /トウシキキャンプ場/);
+  assert.match(board, /島発大型客船2000便の運休日/);
+  assert.match(board, /9\/1の運休表記は東京発側/);
+  assert.match(board, /人は同乗できず、旅行利用には勧めない/);
 });
 
 test("an adopted Discord route updates the trip-level SSOT before the agent can report success", async () => {
@@ -288,9 +287,14 @@ test("an adopted Discord route updates the trip-level SSOT before the agent can 
   const body = await response.json();
   assert.equal(body.board.trip.status, "planning");
   assert.equal(body.board.trip.routeLabel, "決定｜神津島 → 新島");
+  assert.match(body.board.trip.concept, /三晩とも指定キャンプ場でテント泊/);
+  assert.match(body.board.trip.concept, /島ごとにレンタカー/);
   assert.equal(body.ok, true);
   assert.equal(body.receipt.routeVerified, true);
   assert.equal(body.receipt.actionCount, 1);
   const adoptedRoutes = db.database.prepare("SELECT title FROM plan_entries WHERE status = 'adopted'").all();
-  assert.deepEqual(adoptedRoutes.map((row) => row.title), ["決定｜神津島 → 新島"]);
+  assert.deepEqual(new Set(adoptedRoutes.map((row) => row.title)), new Set([
+    "決定｜3泊すべて指定キャンプ場＋各島レンタカー",
+    "決定｜神津島 → 新島",
+  ]));
 });

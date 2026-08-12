@@ -20,18 +20,18 @@ export async function generateMetadata(): Promise<Metadata> {
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const metadataBase = new URL(`${protocol}://${host}`);
   return {
-    title: "俺たちの島旅｜神津島から、新島へ",
-    description: "8月29日から9月1日、神津島から新島へ。決まった予定、船と飛行機の比較、費用、未確認事項を一画面で共有します。",
+  title: "一緒に島へ行こう｜3泊4日のテント旅に、あと1〜2人",
+  description: "8月29日から9月1日。三晩すべて指定キャンプ場で眠り、島ごとに車を借りる友達旅行。決まったことも未確定なことも正直に伝える参加案内です。",
     metadataBase,
     openGraph: {
-      title: "俺たちの島旅｜神津島から、新島へ",
-      description: "行き先は神津島→新島で決定。次は船と飛行機、宿を決める友達との旅行SSOT。",
+    title: "一緒に島へ行こう｜3泊4日のテント旅に、あと1〜2人",
+    description: "3泊テント＋島ごとのレンタカー。予約前の今から一緒に旅をつくる友達を迎えるページです。",
       type: "website",
     },
     twitter: {
       card: "summary",
-      title: "俺たちの島旅｜神津島から、新島へ",
-      description: "行き先は神津島→新島で決定。次は船と飛行機、宿を決める友達との旅行SSOT。",
+    title: "一緒に島へ行こう｜3泊4日のテント旅に、あと1〜2人",
+    description: "決まったことも、まだ決まっていないことも正直に。友達との島旅の参加案内です。",
     },
   };
 }

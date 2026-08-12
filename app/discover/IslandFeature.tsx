@@ -3,7 +3,7 @@ import Image from "next/image";
 import IslandDossierFeature from "./IslandDossierFeature";
 import IslandMap from "./IslandMap";
 import { islandDossiers } from "./island-dossiers";
-import { islands, type Island, type Photo } from "./island-data";
+import { campReadinessBySlug, islands, type Island, type Photo } from "./island-data";
 import styles from "./discover.module.css";
 
 function Credit({ photo }: { photo: Photo }) {
@@ -26,6 +26,8 @@ export default function IslandFeature({ island }: { island: Island }) {
   const others = islands.filter((candidate) => candidate.slug !== island.slug);
   const tripShape = island.itinerary.length === 3 ? "2泊3日" : "1泊2日";
   const dossier = island.slug === "kozushima" || island.slug === "niijima" ? islandDossiers[island.slug] : null;
+  const camp = campReadinessBySlug[island.slug];
+  const campEligible = camp.status === "route-candidate" || camp.status === "camp-possible" || camp.status === "confirm-first";
 
   return (
     <main className={`${styles.magazine} ${styles.featurePage} ${styles[`${island.slug}Theme`]}`}>
@@ -40,7 +42,7 @@ export default function IslandFeature({ island }: { island: Island }) {
           <a href="#conditions">天気別</a>
           <a href="#stories">見どころ</a>
           <a href="#route">旅程</a>
-          <a href="#food">宿・食</a>
+          <a href="#food">食・キャンプ</a>
           <a href="#access">交通</a>
         </nav>
         <a className={styles.ssotNav} href="/">俺たちの予定</a>
@@ -74,6 +76,21 @@ export default function IslandFeature({ island }: { island: Island }) {
         ))}
       </section>
 
+      <section className={`${styles.campVerdict} ${styles[`campVerdict_${camp.status.replace("-", "_")}`]}`} aria-labelledby="camp-verdict-title">
+        <div>
+          <small>3 NIGHTS / TENT + RENTAL CAR</small>
+          <span>{camp.badge}</span>
+          <h2 id="camp-verdict-title">{camp.verdict}</h2>
+        </div>
+        <a href={camp.campUrl} target="_blank" rel="noreferrer">
+          <small>CAMP</small><strong>{camp.campground}</strong><p>{camp.campRule}</p><b>公式根拠 ↗</b>
+        </a>
+        <a href={camp.carUrl} target="_blank" rel="noreferrer">
+          <small>CAR</small><strong>{camp.car}</strong><p>{camp.carRule}</p><b>確認先 ↗</b>
+        </a>
+        <p>{campEligible ? "テント泊は指定施設だけ。車をテント横へ置けるオートキャンプとは限らないため、駐車位置と搬入方法は各施設へ確認します。" : "この島の魅力記事は残しますが、今回の固定条件を曲げて候補へ入れることはしません。"}</p>
+      </section>
+
       {dossier && <IslandDossierFeature island={island} dossier={dossier} />}
 
       <section className={styles.featureOpening}>
@@ -91,12 +108,12 @@ export default function IslandFeature({ island }: { island: Island }) {
         <div className={styles.planningIntro}>
           <p className={styles.eyebrow}>01 / PLAN</p>
           <h2 id="planning-title">{island.sectionTitles.plan}</h2>
-          <p>島旅は宿と復路が決まると組みやすい。次に朝・昼・夜の大枠を置き、天気や海況に合わせて立ち寄り先を選ぶ。</p>
+          <p>今回の旅では、指定キャンプ場、島ごとのレンタカー、復路の三つがそろって初めて成立します。現在の三島案は各島一晩。下の長めのモデルは、島を深く知るための参考として予定表と分けています。</p>
         </div>
         <div className={styles.planningActions}>
           <a className={styles.planningAction} href={island.stays[0].url} target="_blank" rel="noreferrer">
-            <small>01 / STAY</small>
-            <strong>宿の空きを確認する</strong>
+            <small>01 / CAMP STATUS</small>
+            <strong>{campEligible ? "キャンプ条件を確認する" : "対象外の理由を確認する"}</strong>
             <p>{island.stays[0].copy}</p>
             <em>{island.stays[0].cta}</em>
           </a>
@@ -108,8 +125,8 @@ export default function IslandFeature({ island }: { island: Island }) {
           </a>
           <a className={styles.planningAction} href="#route">
             <small>03 / ROUTE</small>
-            <strong>{tripShape}の流れを見る</strong>
-            <p>移動時間を詰め込みすぎず、同じ方面の場所をまとめて回る。</p>
+            <strong>{tripShape}の参考ルートを見る</strong>
+            <p>島だけをゆっくり訪ねる場合の流れ。今回の一晩には必要な部分だけを抜き出す。</p>
             <em>旅程へ進む</em>
           </a>
           <a className={styles.planningAction} href="#access">
@@ -213,7 +230,7 @@ export default function IslandFeature({ island }: { island: Island }) {
           <div className={styles.sectionIndex}><span>05</span><p>ROUTE</p></div>
           <p className={styles.eyebrow}>ITINERARY</p>
           <h2>{island.sectionTitles.route}</h2>
-          <p>まずは時間帯ごとの流れを決める。天気、風、海況、運航が変わったら、近い場所どうしで順番を入れ替える。</p>
+          <p>島だけを深く味わう場合の参考ルートです。天気、風、海況、運航が変わったら、近い場所どうしで順番を入れ替えます。</p>
         </div>
         <div className={styles.dayRoutes}>
           {island.itinerary.map((day) => (
@@ -230,7 +247,7 @@ export default function IslandFeature({ island }: { island: Island }) {
             </article>
           ))}
         </div>
-        <p className={styles.routeDisclaimer}>この旅程は検討用です。船便、営業日、予約が決まった予定だけをSSOTへ反映します。</p>
+        <p className={styles.routeDisclaimer}>これは各島の記事用モデルです。現在の三島一晩ずつの予定へ丸ごと採用せず、船便、営業日、予約が決まった部分だけをSSOTへ反映します。</p>
       </section>
 
       <section className={styles.foodStaySection} id="food">
@@ -245,8 +262,8 @@ export default function IslandFeature({ island }: { island: Island }) {
           </div>
         </div>
         <div className={styles.stayColumn}>
-          <div className={styles.sectionIndex}><span>07</span><p>SLEEP</p></div>
-          <p className={styles.eyebrow}>STAY</p>
+          <div className={styles.sectionIndex}><span>07</span><p>CAMP / STAY</p></div>
+          <p className={styles.eyebrow}>WHERE THE NIGHT WORKS</p>
           <h2>{island.sectionTitles.stay}</h2>
           <div className={styles.stayList}>
             {island.stays.map((stay) => (
@@ -304,7 +321,7 @@ export default function IslandFeature({ island }: { island: Island }) {
       <footer className={styles.footer}>
         <div><span>OPENClOS</span><strong>ISLAND WEEKEND</strong></div>
         <nav>
-          <a href="/discover">三島特集トップ</a>
+          <a href="/discover">全8島特集トップ</a>
           <a href="/">俺たちの予定</a>
           <ExternalLink href="https://discord.com/channels/1535960563140796476/1535960564059213947">Discordで相談</ExternalLink>
         </nav>

@@ -349,6 +349,104 @@
   box-shadow: 0 0 0 4px rgba(241, 83, 53, 0.22);
 }
 
+.campMatrixSection,
+.allIslandLibrary {
+  padding: 126px max(28px, calc((100vw - 1420px) / 2));
+  background: var(--white);
+}
+.campMatrixSection > header,
+.allIslandLibrary > header {
+  display: grid;
+  grid-template-columns: 0.32fr 1fr 0.68fr;
+  gap: clamp(30px, 5vw, 78px);
+  align-items: end;
+  margin-bottom: 68px;
+}
+.campMatrixSection > header .sectionIndex,
+.allIslandLibrary > header .sectionIndex { align-self: start; color: var(--red); }
+.campMatrixSection > header h2,
+.allIslandLibrary > header h2 {
+  margin: 18px 0 0;
+  font-size: clamp(48px, 6.3vw, 94px);
+  letter-spacing: -0.09em;
+  line-height: 0.94;
+}
+.campMatrixSection > header > p,
+.allIslandLibrary > header > p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.9; }
+
+.campMatrix { border-top: 3px solid var(--ink); }
+.campMatrix > article {
+  display: grid;
+  grid-template-columns: 0.7fr 0.78fr 1.28fr 1.24fr;
+  min-height: 164px;
+  border-bottom: 1px solid var(--line);
+}
+.campMatrix > article > * { min-width: 0; padding: 24px; border-right: 1px solid var(--line); }
+.campMatrix > article > *:last-child { border-right: 0; }
+.campMatrix a { text-decoration: none; }
+.campMatrixIsland { display: flex; flex-direction: column; justify-content: center; }
+.campMatrixIsland small,
+.campMatrix article > div small,
+.campMatrix article > a:not(.campMatrixIsland) small { color: var(--red); font-family: var(--font-geist-mono), monospace; font-size: 7px; font-weight: 900; letter-spacing: 0.1em; }
+.campMatrixIsland strong { margin-top: 8px; font-size: clamp(34px, 3.7vw, 58px); letter-spacing: -0.08em; line-height: 0.92; }
+.campMatrixIsland span { align-self: flex-start; margin-top: 18px; padding: 5px 8px; color: var(--white); background: var(--ink); font-size: 7px; font-weight: 900; }
+.campMatrix article > div,
+.campMatrix article > a:not(.campMatrixIsland) { display: flex; flex-direction: column; justify-content: center; }
+.campMatrix article > div strong,
+.campMatrix article > a:not(.campMatrixIsland) strong { display: block; margin-top: 10px; font-size: 16px; letter-spacing: -0.035em; }
+.campMatrix article > a:not(.campMatrixIsland) p { margin: 10px 0 0; color: var(--muted); font-size: 10px; line-height: 1.7; }
+.campMatrix_route_candidate { background: rgba(217, 235, 79, 0.18); }
+.campMatrix_route_candidate .campMatrixIsland span { color: var(--ink); background: var(--acid); }
+.campMatrix_closed,
+.campMatrix_prohibited { color: #6f7471; background: #f0eee8; }
+.campMatrix_closed .campMatrixIsland span,
+.campMatrix_prohibited .campMatrixIsland span { background: var(--red); }
+.campMatrix_confirm_first { background: rgba(243, 182, 83, 0.15); }
+.campDecisionNote {
+  display: grid;
+  grid-template-columns: 0.35fr 1.2fr auto;
+  gap: 30px;
+  align-items: center;
+  margin-top: 26px;
+  padding: 26px 28px;
+  color: var(--white);
+  background: var(--ink);
+}
+.campDecisionNote strong { color: var(--acid); font-size: 14px; }
+.campDecisionNote p { margin: 0; color: rgba(255, 255, 255, 0.67); font-size: 10px; line-height: 1.8; }
+.campDecisionNote a { display: inline-flex; gap: 16px; padding-bottom: 4px; border-bottom: 1px solid currentColor; font-size: 9px; font-weight: 900; text-decoration: none; white-space: nowrap; }
+
+.operationStrip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  color: var(--white);
+  background: var(--red);
+}
+.operationStrip article { min-height: 230px; padding: clamp(28px, 4vw, 56px); border-right: 1px solid rgba(255, 255, 255, 0.26); }
+.operationStrip small { font-family: var(--font-geist-mono), monospace; font-size: 9px; font-weight: 900; letter-spacing: 0.12em; }
+.operationStrip strong { display: block; margin-top: 38px; font-size: clamp(20px, 2.2vw, 32px); letter-spacing: -0.055em; line-height: 1.1; }
+.operationStrip p { margin: 17px 0 0; color: rgba(255, 255, 255, 0.75); font-size: 10px; line-height: 1.75; }
+
+.allIslandLibrary { background: #ece8de; }
+.routeBand { display: flex; justify-content: space-between; gap: 24px; align-items: baseline; margin-top: 58px; padding: 15px 0; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--line); }
+.routeBand span { color: var(--red); font-family: var(--font-geist-mono), monospace; font-size: 8px; font-weight: 900; letter-spacing: 0.12em; }
+.routeBand p { margin: 0; color: var(--muted); font-size: 10px; }
+.allIslandGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 1px; background: rgba(17, 21, 20, 0.22); }
+.allIslandGridSouth { grid-template-columns: repeat(3, 1fr); }
+.allIslandCard { position: relative; min-width: 0; background: var(--white); }
+.allIslandCard > a { display: block; height: 100%; text-decoration: none; }
+.allIslandCard figure { position: relative; height: 300px; margin: 0; overflow: hidden; }
+.allIslandCard figure img { position: absolute; inset: 0; height: 100%; object-fit: cover; transition: transform 500ms ease; }
+.allIslandCard:hover figure img { transform: scale(1.035); }
+.allIslandCard > a > div { display: flex; min-height: 330px; flex-direction: column; padding: 30px; }
+.allIslandCard > a > div > span { color: var(--red); font-family: var(--font-geist-mono), monospace; font-size: 8px; font-weight: 900; letter-spacing: 0.1em; }
+.allIslandCard h3 { margin: 13px 0 0; font-size: clamp(48px, 5vw, 78px); letter-spacing: -0.09em; line-height: 0.9; }
+.allIslandCard strong { display: block; margin-top: 26px; font-size: 17px; letter-spacing: -0.04em; line-height: 1.35; }
+.allIslandCard p { margin: 15px 0 0; color: var(--muted); font-size: 10px; line-height: 1.75; }
+.allIslandCard small { align-self: flex-start; margin-top: 24px; padding: 6px 8px; color: var(--ink); background: var(--acid); font-size: 7px; font-weight: 900; }
+.allIslandCard b { margin-top: auto; padding-top: 26px; color: var(--red); font-size: 9px; }
+.allIslandCard > .photoCredit { top: 278px; bottom: auto; z-index: 3; }
+
 .sectionIndex {
   display: flex;
   gap: 10px;
@@ -1016,6 +1114,51 @@
 .featureFactStrip span { margin-top: 5px; color: rgba(255, 255, 255, 0.48); font-size: 8px; }
 .niijimaTheme .featureFactStrip strong { color: #9ddce0; }
 
+.campVerdict {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.55fr) repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  padding: 1px max(28px, calc((100vw - 1360px) / 2));
+  color: var(--white);
+  background: #27302d;
+}
+.campVerdict > div,
+.campVerdict > a {
+  min-height: 210px;
+  padding: clamp(24px, 3vw, 42px);
+  background: var(--ink);
+}
+.campVerdict > div { display: flex; flex-direction: column; justify-content: space-between; }
+.campVerdict > div small,
+.campVerdict > a small {
+  color: var(--acid);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+.campVerdict > div span {
+  align-self: flex-start;
+  margin-top: 24px;
+  padding: 7px 10px;
+  color: var(--ink);
+  background: var(--acid);
+  font-size: 8px;
+  font-weight: 900;
+}
+.campVerdict h2 { margin: 20px 0 0; font-size: clamp(30px, 3vw, 48px); letter-spacing: -0.07em; line-height: 1; }
+.campVerdict > a { display: flex; flex-direction: column; text-decoration: none; transition: background 180ms ease; }
+.campVerdict > a:hover { background: #1d2522; }
+.campVerdict > a strong { display: block; margin-top: 22px; font-size: clamp(19px, 2vw, 28px); letter-spacing: -0.045em; }
+.campVerdict > a p { margin: 15px 0 24px; color: rgba(255, 255, 255, 0.64); font-size: 11px; line-height: 1.75; }
+.campVerdict > a b { margin-top: auto; color: var(--acid); font-size: 9px; }
+.campVerdict > p { grid-column: 1 / -1; margin: 0; padding: 16px 22px; color: rgba(255, 255, 255, 0.72); background: #27302d; font-size: 10px; line-height: 1.7; }
+.campVerdict_closed > div span,
+.campVerdict_prohibited > div span { color: var(--white); background: var(--red); }
+.campVerdict_closed > div small,
+.campVerdict_prohibited > div small { color: #ff917c; }
+.campVerdict_confirm_first > div span { background: #f3b653; }
+
 .featureOpening {
   display: grid;
   grid-template-columns: 0.28fr 1fr 0.72fr;
@@ -1457,6 +1600,16 @@
   .bookingSection { gap: 60px; }
   .bookingRow { grid-template-columns: 34px 1fr auto 18px; }
   .bookingRow p { grid-column: 2 / 4; }
+  .campMatrixSection > header,
+  .allIslandLibrary > header { grid-template-columns: 0.2fr 1fr 0.8fr; }
+  .campMatrix > article { grid-template-columns: 0.7fr 1.3fr; }
+  .campMatrix > article > *:nth-child(2) { border-right: 0; }
+  .campMatrix > article > *:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .operationStrip { grid-template-columns: 1fr 1fr; }
+  .operationStrip article:nth-child(2) { border-right: 0; }
+  .operationStrip article:nth-child(n+3) { border-top: 1px solid rgba(255, 255, 255, 0.26); }
+  .allIslandGrid { grid-template-columns: 1fr 1fr; }
+  .allIslandGridSouth { grid-template-columns: repeat(3, 1fr); }
   .featureHeroCopy h1 { font-size: clamp(94px, 18vw, 210px); }
   .featureOpening,
   .featureMapHead { grid-template-columns: 0.22fr 1fr 0.78fr; }
@@ -1523,6 +1676,13 @@
   .coverMosaic { min-height: 720px; border-top: 1px solid rgba(255, 255, 255, 0.22); border-left: 0; }
   .truthStrip { grid-template-columns: 1fr auto; }
   .truthStrip > p { grid-column: 1 / 3; grid-row: 2; }
+  .campMatrixSection > header,
+  .allIslandLibrary > header { grid-template-columns: 1fr; align-items: start; }
+  .campMatrixSection > header > p,
+  .allIslandLibrary > header > p { max-width: 620px; }
+  .campDecisionNote { grid-template-columns: 1fr; align-items: start; }
+  .campDecisionNote a { justify-self: start; }
+  .allIslandGridSouth { grid-template-columns: 1fr 1fr; }
   .mapSection { grid-template-columns: 1fr; }
   .mapSection > .sectionIndex { margin-bottom: 20px; }
   .mapCopy { max-width: 670px; }
@@ -1553,6 +1713,8 @@
   .featureHeroCopy { bottom: 128px; }
   .featureHeroCopy h1 { font-size: clamp(88px, 24vw, 178px); }
   .featureFactStrip { grid-template-columns: 1fr 1fr; }
+  .campVerdict { grid-template-columns: 1fr 1fr; }
+  .campVerdict > div { grid-column: 1 / -1; min-height: 175px; }
   .featureFactStrip div:nth-child(3) { border-left: 1px solid rgba(255, 255, 255, 0.18); }
   .featureOpening,
   .featureMapHead,
@@ -1633,8 +1795,28 @@
   .truthStrip { grid-template-columns: 1fr; padding: 24px 20px; }
   .truthStrip > p { grid-column: 1; grid-row: auto; }
   .truthStrip > a { justify-self: start; }
+  .campMatrixSection > header,
+  .allIslandLibrary > header { margin-bottom: 46px; }
+  .campMatrixSection > header h2,
+  .allIslandLibrary > header h2 { font-size: clamp(43px, 13vw, 62px); }
+  .campMatrix > article { grid-template-columns: 1fr; }
+  .campMatrix > article > * { border-right: 0; border-top: 1px solid var(--line); }
+  .campMatrix > article > *:first-child { border-top: 0; }
+  .campMatrixIsland { min-height: 150px; }
+  .operationStrip { grid-template-columns: 1fr; }
+  .operationStrip article { min-height: 0; border-right: 0; border-top: 1px solid rgba(255, 255, 255, 0.26); }
+  .operationStrip article:first-child { border-top: 0; }
+  .operationStrip strong { margin-top: 24px; }
+  .routeBand { align-items: flex-start; flex-direction: column; }
+  .allIslandGrid,
+  .allIslandGridSouth { grid-template-columns: 1fr; }
+  .allIslandCard figure { height: 260px; }
+  .allIslandCard > a > div { min-height: 300px; padding: 26px 22px; }
+  .allIslandCard > .photoCredit { top: 238px; }
   .mapSection,
   .chooseSection,
+  .campMatrixSection,
+  .allIslandLibrary,
   .dossierPortal,
   .bookingSection,
   .editorNote { padding: 90px 20px; }
@@ -1683,6 +1865,10 @@
   .featureHeroActions a { min-height: 44px; padding: 0 10px; font-size: 10px; }
   .featureFactStrip { padding: 0 20px; }
   .featureFactStrip div { min-height: 105px; padding: 20px 14px; }
+  .campVerdict { grid-template-columns: 1fr; padding: 1px 20px; }
+  .campVerdict > div,
+  .campVerdict > a { grid-column: 1; min-height: 0; padding: 28px 22px; }
+  .campVerdict > p { grid-column: 1; font-size: 11px; }
   .dossierPortal > header h2,
   .dossierSectionHead h2 { font-size: clamp(43px, 13vw, 62px); }
   .dossierPortalTabs { grid-template-columns: 1fr; margin-top: 52px; }
