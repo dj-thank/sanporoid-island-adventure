@@ -103,6 +103,11 @@ test("server-renders the official-source island magazine", async () => {
   assert.match(html, /決まった順番で、空席と宿を探す/);
   assert.match(html, /神津島のモデルコースを見る/);
   assert.match(html, /神津島行きの飛行機を見る/);
+  assert.match(html, /島の輪郭を、旅の前に読む/);
+  assert.match(html, /水の神話、黒曜石、838年の噴火/);
+  assert.match(html, /886年の噴火、流人史、コーガ石/);
+  assert.match(html, /\/discover\/kozushima#about/);
+  assert.match(html, /\/discover\/niijima#about/);
   assert.match(html, /SIDE STORY/);
   assert.doesNotMatch(html, /第二の島を相談中/);
   assert.doesNotMatch(html, /採用中は「大島 → 新島」/);
@@ -149,6 +154,11 @@ test("server-renders a mapped long-form feature for each island", async () => {
     assert.doesNotMatch(html, /まず、島の形を頭に入れる。/);
     assert.doesNotMatch(html, /最後は、公式情報へ。/);
     if (slug === "kozushima") {
+      assert.match(html, /神々が水を分け、火山が島を重ねた/);
+      assert.match(html, /18\.58 km²/);
+      assert.match(html, /黒曜石は、旅行者より先に海を渡っていた/);
+      assert.match(html, /神津島のかつお釣り行事/);
+      assert.match(html, /神津島は838年にできた？/);
       assert.match(html, /指定キャンプ場/);
       assert.match(html, /8\/30 10:30→11:45 \/ 13:25→14:05/);
       assert.match(html, /客船運休日は東京発側/);
@@ -158,6 +168,11 @@ test("server-renders a mapped long-form feature for each island", async () => {
       assert.match(html, /8\/30候補 10:45 → 11:45/);
     }
     if (slug === "niijima") {
+      assert.match(html, /白い火山が、暮らしの形と色を決めた/);
+      assert.match(html, /23\.87 km²/);
+      assert.match(html, /1,333人の流人を、島はどう受け止めたか/);
+      assert.match(html, /コーガ石は普通の軽石？/);
+      assert.match(html, /くさやは腐った魚？/);
       assert.match(html, /8\/30 10:30→11:45 \/ 13:25→14:05/);
       assert.match(html, /9\/1 11:55→18:40 \/ 14:10→17:00/);
       assert.doesNotMatch(html, /無料・24時間・水着着用/);

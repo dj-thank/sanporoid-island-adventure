@@ -2,12 +2,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import IslandMap from "./IslandMap";
+import { islandDossiers } from "./island-dossiers";
 import { bookingLinks, islands, overviewPoints, overviewRoutes, type Photo } from "./island-data";
 import styles from "./discover.module.css";
 
 export const metadata: Metadata = {
-  title: "神津島から、新島へ｜ISLAND WEEKEND",
-  description: "8月29日から9月1日、神津島から新島へ。地図、モデルコース、雨の日、食、宿、交通、公式予約先をまとめた友達との島旅ガイド。",
+  title: "神津島・新島 大特集｜ISLAND WEEKEND",
+  description: "神津島と新島の歴史、火山地質、大きさ、暮らし、文化、雑学を公的資料から読む大型特集。地図、モデルコース、宿、交通も掲載。",
 };
 
 function Credit({ photo }: { photo: Photo }) {
@@ -37,6 +38,7 @@ export default function DiscoverPage() {
           <strong>ISLAND WEEKEND</strong>
         </a>
         <nav aria-label="島旅マガジン">
+          <a href="#island-library">島を知る</a>
           <a href="/discover/kozushima">神津島</a>
           <a href="/discover/oshima">大島</a>
           <a href="/discover/niijima">新島</a>
@@ -57,7 +59,7 @@ export default function DiscoverPage() {
           <p className={styles.coverDeck}>8月29日に神津島へ渡り、30日に新島へ。山と星の夜から、白い海と自転車の二日間へつなぐ3泊4日です。大島の記事も、次の旅のために残しました。</p>
           <div className={styles.coverActions}>
             <a href="#map">決まったルートを地図で見る</a>
-            <a href="/discover/kozushima">まず神津島を読む</a>
+            <a href="/discover/kozushima#about">神津島の歴史から読む</a>
           </div>
         </div>
 
@@ -93,6 +95,43 @@ export default function DiscoverPage() {
         </div>
         <p>8/30に<strong>神津島から新島へ</strong>移る予定を採用しました。船か飛行機か、空席と宿はこれから決めます。</p>
         <a href="/">現在の予定を見る <b aria-hidden="true">→</b></a>
+      </section>
+
+      <section className={styles.dossierPortal} id="island-library" aria-labelledby="island-library-title">
+        <header>
+          <div className={styles.sectionIndex}><span>00</span><p>THE BIG ISLAND FILE</p></div>
+          <div>
+            <p className={styles.eyebrow}>NEW / HISTORY, GEOLOGY &amp; CULTURE</p>
+            <h2 id="island-library-title">島の輪郭を、旅の前に読む</h2>
+          </div>
+          <p>神津島は水配り伝説と黒曜石、新島は流人史とコーガ石。景色の名前を覚える前に、その場所ができた理由から始めます。</p>
+        </header>
+        <nav className={styles.dossierPortalTabs} aria-label="読む島を選ぶ">
+          {[
+            { island: kozushima, dossier: islandDossiers.kozushima, number: "01" },
+            { island: niijima, dossier: islandDossiers.niijima, number: "02" },
+          ].map(({ island, dossier, number }) => (
+            <article key={island.slug}>
+              <a href={`/discover/${island.slug}#about`}>
+                <Image src={dossier.portrait.src} alt={dossier.portrait.alt} fill sizes="(max-width: 820px) 100vw, 50vw" />
+                <span className={styles.dossierPortalShade} />
+                <div className={styles.dossierPortalTop}><small>{number} / ISLAND DOSSIER</small><b>OPEN FEATURE ↗</b></div>
+                <div className={styles.dossierPortalCopy}>
+                  <p>{island.english}</p>
+                  <h3>{island.name}</h3>
+                  <strong>{dossier.tabLine}</strong>
+                  <span>{dossier.atlas.slice(0, 3).map((fact) => `${fact.value} ${fact.label}`).join(" / ")}</span>
+                </div>
+              </a>
+              <Credit photo={dossier.portrait} />
+            </article>
+          ))}
+        </nav>
+        <div className={styles.dossierPortalNote}>
+          <strong>読むのに約8分 / 島</strong>
+          <p>基礎データ、火山地質、歴史年表、暮らし、文化、雑学、現地で確かめる場所まで。自治体・国土地理院・文化庁などの公的資料をもとに編集しました。</p>
+          <a href="#map">旅程と地図へ進む <b aria-hidden="true">↓</b></a>
+        </div>
       </section>
 
       <section className={styles.mapSection} id="map">

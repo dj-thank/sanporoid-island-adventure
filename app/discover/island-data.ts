@@ -88,7 +88,7 @@ export type Island = {
   official: { label: string; url: string }[];
 };
 
-const photos = {
+export const photos = {
   kozushimaAerial: {
     src: "/photos/kozushima-aerial.jpg",
     alt: "海に浮かぶ神津島を上空から見た全景",

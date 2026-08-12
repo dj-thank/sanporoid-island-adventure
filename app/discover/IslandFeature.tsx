@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-html-link-for-pages -- vinext Link navigation crashes at runtime; hard navigation is intentional. */
 import Image from "next/image";
+import IslandDossierFeature from "./IslandDossierFeature";
 import IslandMap from "./IslandMap";
+import { islandDossiers } from "./island-dossiers";
 import { islands, type Island, type Photo } from "./island-data";
 import styles from "./discover.module.css";
 
@@ -23,6 +25,7 @@ function ExternalLink({ href, children, className }: { href: string; children: R
 export default function IslandFeature({ island }: { island: Island }) {
   const others = islands.filter((candidate) => candidate.slug !== island.slug);
   const tripShape = island.itinerary.length === 3 ? "2泊3日" : "1泊2日";
+  const dossier = island.slug === "kozushima" || island.slug === "niijima" ? islandDossiers[island.slug] : null;
 
   return (
     <main className={`${styles.magazine} ${styles.featurePage} ${styles[`${island.slug}Theme`]}`}>
@@ -32,6 +35,7 @@ export default function IslandFeature({ island }: { island: Island }) {
           <strong>ISLAND WEEKEND</strong>
         </a>
         <nav aria-label="特集内ナビゲーション">
+          {dossier && <a className={styles.dossierNavLink} href="#about">島を知る</a>}
           <a href="#map">地図</a>
           <a href="#conditions">天気別</a>
           <a href="#stories">見どころ</a>
@@ -57,7 +61,7 @@ export default function IslandFeature({ island }: { island: Island }) {
         <div className={styles.featureHeroBottom}>
           <p>{island.oneLine}</p>
           <div className={styles.featureHeroActions}>
-            <a href="#plan">最初に決めること</a>
+            <a href={dossier ? "#about" : "#plan"}>{dossier ? "島の歴史から読む" : "最初に決めること"}</a>
             <a href="#map">スポット地図を見る</a>
           </div>
         </div>
@@ -69,6 +73,8 @@ export default function IslandFeature({ island }: { island: Island }) {
           <div key={fact.label}><strong>{fact.value}</strong><span>{fact.label}</span></div>
         ))}
       </section>
+
+      {dossier && <IslandDossierFeature island={island} dossier={dossier} />}
 
       <section className={styles.featureOpening}>
         <div className={styles.sectionIndex}><span>00</span><p>TRIP PROFILE</p></div>
