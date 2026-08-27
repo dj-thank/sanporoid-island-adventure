@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { formatDistance, haversineMeters } from "./geoMath";
 import { anchorsFor, currentFactsFor, experiencesFor, islandCurrentFacts, islandExperiencePack, type TripIslandSlug } from "./islandKnowledge";
 import styles from "./island-field-guide.module.css";
 
@@ -49,16 +50,4 @@ export default function IslandFieldGuide({ island, islandName, currentPosition }
       {visibleEntries.length === 0 && <p className={styles.empty}>一致する候補はありません。検索語を短くしてください。</p>}
     </section>
   );
-}
-
-function haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const radians = (value: number) => value * Math.PI / 180;
-  const deltaLat = radians(lat2 - lat1);
-  const deltaLon = radians(lon2 - lon1);
-  const value = Math.sin(deltaLat / 2) ** 2 + Math.cos(radians(lat1)) * Math.cos(radians(lat2)) * Math.sin(deltaLon / 2) ** 2;
-  return 6_371_000 * 2 * Math.atan2(Math.sqrt(value), Math.sqrt(1 - value));
-}
-
-function formatDistance(meters: number) {
-  return meters < 1000 ? `${Math.round(meters / 10) * 10}m` : `${(meters / 1000).toFixed(1)}km`;
 }

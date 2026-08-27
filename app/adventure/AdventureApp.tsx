@@ -5,6 +5,7 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { islandsBySlug, type Island } from "../discover/island-data";
 import CesiumIslandMap from "./CesiumIslandMap";
+import { formatDistance, haversineMeters } from "./geoMath";
 import IslandFieldGuide from "./IslandFieldGuide";
 import { answerFromExperiencePack, enrichMapPointsWithResearch, officialAnchorMapPoints, type TripIslandSlug } from "./islandKnowledge";
 import StarGuide from "./StarGuide";
@@ -268,19 +269,6 @@ export default function AdventureApp() {
       <footer className={styles.footer}><img src="/sanporoid/avatar_treasure_01.webp" alt="宝箱を見つけたさんぽろいど" /><div><strong>旅は、行った場所の数ではなく、見つけた証拠で残る。</strong><p>運航、海況、立入、温泉、宿泊は現地掲示と公式案内を優先してください。</p></div></footer>
     </main>
   );
-}
-
-function haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const toRadians = (value: number) => value * Math.PI / 180;
-  const earthRadius = 6_371_000;
-  const deltaLat = toRadians(lat2 - lat1);
-  const deltaLon = toRadians(lon2 - lon1);
-  const a = Math.sin(deltaLat / 2) ** 2 + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(deltaLon / 2) ** 2;
-  return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-function formatDistance(meters: number) {
-  return meters < 1000 ? `${Math.round(meters / 10) * 10}m` : `${(meters / 1000).toFixed(1)}km`;
 }
 
 async function averagePhotoColor(file: File) {
