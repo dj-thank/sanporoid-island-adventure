@@ -89,6 +89,31 @@ export default function IslandMap({ center, zoom, points, routes = [], label, to
         const copy = document.createElement("p");
         copy.textContent = point.summary;
         popup.append(kicker, title, copy);
+        if (point.researchedFacts?.length) {
+          const factsTitle = document.createElement("b");
+          factsTitle.textContent = "調査で確認できたこと";
+          const facts = document.createElement("ul");
+          point.researchedFacts.forEach((fact) => {
+            const item = document.createElement("li");
+            item.textContent = fact;
+            facts.append(item);
+          });
+          popup.append(factsTitle, facts);
+        }
+        if (point.cautions?.length) {
+          const warning = document.createElement("p");
+          warning.textContent = `当日確認: ${point.cautions.join("、")}`;
+          warning.setAttribute("role", "note");
+          popup.append(warning);
+        }
+        point.sources?.slice(0, 3).forEach((source) => {
+          const link = document.createElement("a");
+          link.href = source.url;
+          link.target = "_blank";
+          link.rel = "noreferrer";
+          link.textContent = `${source.label} ↗`;
+          popup.append(link);
+        });
 
         marker.bindPopup(popup).bindTooltip(point.title, { direction: "top", offset: [0, -7] }).addTo(map);
       });

@@ -5,9 +5,10 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import IslandMap from "../discover/IslandMap";
 import { islandsBySlug, type Island } from "../discover/island-data";
+import IslandFieldGuide from "./IslandFieldGuide";
+import { answerFromExperiencePack, enrichMapPointsWithResearch, officialAnchorMapPoints, type TripIslandSlug } from "./islandKnowledge";
+import StarGuide from "./StarGuide";
 import styles from "./adventure.module.css";
-
-type TripIslandSlug = "kozushima" | "niijima" | "shikinejima";
 
 type Checkpoint = {
   id: string;
@@ -62,6 +63,7 @@ export default function AdventureApp() {
   const [island, setIsland] = useState<TripIslandSlug>("kozushima");
   const [completed, setCompleted] = useState<string[]>([]);
   const [distances, setDistances] = useState<Record<string, number>>({});
+  const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null);
   const [locationMessage, setLocationMessage] = useState("現在地はまだ端末内で取得していません");
   const [photos, setPhotos] = useState<PhotoEntry[]>([]);
   const [answer, setAnswer] = useState("");
@@ -88,6 +90,7 @@ export default function AdventureApp() {
     [distances, island],
   );
   const completedCount = selectedCheckpoints.filter((checkpoint) => completed.includes(checkpoint.id)).length;
+  const mapPoints = useMemo(() => [...enrichMapPointsWithResearch(island, selectedIsland.spots), ...officialAnchorMapPoints(island)], [island, selectedIsland.spots]);
   const tideState = photos.length === 0 ? "未観測" : ["静潮", "逆潮", "星隠し"][photos.length % 3];
 
   function locateNearby() {
@@ -98,6 +101,7 @@ export default function AdventureApp() {
     setLocationMessage("端末内で近いチェックポイントを計算しています…");
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
+        setCurrentPosition([coords.latitude, coords.longitude]);
         const next = Object.fromEntries(checkpoints.map((checkpoint) => [checkpoint.id, haversineMeters(coords.latitude, coords.longitude, ...checkpoint.position)]));
         setDistances(next);
         setLocationMessage("近い順に並べました。現在地の数値は保存・送信していません。");
@@ -213,12 +217,13 @@ export default function AdventureApp() {
         <div className={styles.mapPanel}>
           <div className={styles.mapHeading}><div><small>SANPOROID MAP</small><h2>{selectedIsland.name}の冒険地図</h2></div><button onClick={locateNearby}>近くを探す</button></div>
           <div className={styles.mapWrap}>
-            <IslandMap center={selectedIsland.mapCenter} zoom={selectedIsland.mapZoom} points={selectedIsland.spots} label={`${selectedIsland.name}のさんぽろいど地図`} />
+            <IslandMap center={selectedIsland.mapCenter} zoom={selectedIsland.mapZoom} points={mapPoints} label={`${selectedIsland.name}のさんぽろいど地図`} />
             <img className={styles.mapCompanion} src="/sanporoid/avatar_idle_e_01.webp" alt="地図のさんぽろいど" />
             <img className={styles.arrivalRing} src="/sanporoid/arrival_ring.webp" alt="" />
           </div>
           <p className={styles.locationMessage}>{locationMessage}</p>
           <p className={styles.privacyNote}>正確な現在地は端末内の距離計算だけに使い、サイト・Bot・OpenAIへ送りません。</p>
+          <IslandFieldGuide island={island} islandName={selectedIsland.name} currentPosition={currentPosition} />
         </div>
 
         <div className={styles.missionPanel}>
@@ -246,11 +251,13 @@ export default function AdventureApp() {
         {photos.length === 0 ? <div className={styles.photoEmpty}><img src="/sanporoid/avatar_treasure_01.webp" alt="宝箱を見つけたさんぽろいど" /><p>チェックポイントへ到着すると写真ミッションが解放されます。<br />海、岩、湯気、道の曲がり方が図鑑の標本になります。</p></div> : <div className={styles.photoGrid}>{photos.map((photo) => <figure key={photo.id} style={{ "--oddity-color": photo.color } as React.CSSProperties}><img src={photo.url} alt={`${photo.checkpointTitle}で撮った標本`} /><figcaption><small>{photo.islandName} · {photo.checkpointTitle}</small><strong>{photo.tag}</strong><span>ISLAND EVIDENCE / LOCAL ONLY</span></figcaption></figure>)}</div>}
       </section>
 
+      <StarGuide key={selectedIsland.slug} fallbackPosition={selectedIsland.mapCenter} islandName={selectedIsland.name} />
+
       <section className={styles.guideSection}>
         <div className={styles.guideIntro}><small>ISLAND GUIDE LLM</small><h2>島のことを聞く</h2><p>アプリ内の島情報を先に使い、APIキーが入力された一回だけOpenAIへ問い合わせます。APIキーは保存しません。</p></div>
         <form onSubmit={askIsland} className={styles.guideForm}>
           <label>質問<textarea name="question" required rows={3} placeholder={`${selectedIsland.name}で雨の日にできることは？`} /></label>
-          <div><label>OpenAI APIキー<input name="apiKey" type="password" autoComplete="off" placeholder="入力しなければオフライン回答" /></label><label>モデル<select name="model" defaultValue="gpt-5.4-mini"><option>gpt-5.4-mini</option><option>gpt-5.4</option><option>gpt-5-mini</option></select></label></div>
+          <div><label>OpenAI APIキー（任意）<input name="apiKey" type="password" autoComplete="off" placeholder="入力しなければローカル回答" /></label><label>モデル<select name="model" defaultValue="gpt-5.6-luna"><option>gpt-5.6-luna</option><option>gpt-5.6-terra</option><option>gpt-5.4-mini</option></select></label></div>
           <p>キーはこの入力欄と一回の通信だけで使い、ブラウザ保存・D1・R2・ログへ残しません。公開アクセスでは利用せず、ChatGPTサインイン済みの所有者だけが接続できます。</p>
           <button disabled={asking}>{asking ? "島へ聞いています…" : "島ガイドに聞く"}</button>
           {askError && <p className={styles.error} role="alert">{askError}</p>}
@@ -304,6 +311,9 @@ function rgbToHue(r: number, g: number, b: number) {
 }
 
 function offlineAnswer(question: string, island: Island) {
+  if (island.slug === "kozushima" || island.slug === "niijima" || island.slug === "shikinejima") {
+    return answerFromExperiencePack(question, island.slug);
+  }
   const lower = question.toLowerCase();
   if (/雨|天気|風/.test(question)) return `${island.name}では、${island.conditionPlans.map((plan) => `${plan.label}なら「${plan.title}」`).join("、")}が候補です。当日の運航・立入・営業情報を優先してください。`;
   if (/食|ごはん|料理|名物/.test(question)) return `${island.name}の候補は、${island.food.slice(0, 4).map((item) => item.title).join("、")}です。営業日と売切れは現地で確認してください。`;

@@ -1,0 +1,39 @@
+.starGuide { max-width: 1176px; margin: 0 auto 36px; color: #f4f1e8; background: #050a12; border: 1px solid #27374a; box-shadow: 0 28px 70px rgba(0,0,0,.28); }
+.starGuide.nightRed { color: #ffb4a6; background: #090000; border-color: #44110c; filter: brightness(var(--night-dim, .38)); transition: filter .2s ease; }
+.starGuide > header { display: flex; justify-content: space-between; gap: 24px; padding: 30px; border-bottom: 1px solid rgba(255,255,255,.14); }
+.starGuide header small { color: #87bfff; font-weight: 900; letter-spacing: .15em; }
+.nightRed header small { color: #ff6350; }
+.starGuide h2 { margin: 7px 0; font-size: clamp(30px, 4vw, 55px); }
+.starGuide header p { max-width: 670px; margin: 0; color: #9fb2c7; line-height: 1.75; }
+.nightRed header p { color: #c9796d; }
+.starActions { display: flex; gap: 8px; align-items: center; }
+.starActions button { padding: 12px 15px; color: inherit; background: transparent; border: 1px solid currentColor; border-radius: 999px; font-weight: 800; cursor: pointer; }
+.skyViewport { position: relative; height: min(70vh, 590px); min-height: 430px; margin: 22px; overflow: hidden; border: 1px solid rgba(135,191,255,.35); border-radius: 20px; background: radial-gradient(circle at 50% 100%, #18304e, #060a13 64%); }
+.nightRed .skyViewport { border-color: rgba(255,99,80,.4); background: radial-gradient(circle at 50% 100%, #2c0805, #050000 64%); }
+.skyViewport::before { content: ""; position: absolute; inset: 0; opacity: .35; background-image: radial-gradient(circle, #fff 0 1px, transparent 1.5px); background-size: 83px 71px; }
+.nightRed .skyViewport::before { background-image: radial-gradient(circle, #ff8b79 0 1px, transparent 1.5px); }
+.compassLine { position: absolute; z-index: 4; inset: auto 16px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+.compassLine strong { font-size: 18px; }
+.altitudeLine { position: absolute; left: 0; right: 0; border-top: 1px dashed rgba(255,255,255,.12); color: rgba(255,255,255,.32); font-size: 9px; font-style: normal; }
+.star { position: absolute; z-index: 3; transform: translate(-50%, 50%); }
+.star > b { display: block; width: var(--star-size); height: var(--star-size); background: #fff; border-radius: 50%; box-shadow: 0 0 12px #87bfff; }
+.nightRed .star > b { background: #ff8b79; box-shadow: 0 0 12px #ff321b; }
+.star > span { position: absolute; left: 12px; top: -8px; width: max-content; font-size: 11px; font-weight: 800; }
+.star small { display: block; color: #8ea0b4; font-size: 9px; }
+.nightRed .star small { color: #a84b40; }
+.reticle { position: absolute; z-index: 5; left: 50%; top: 50%; width: 70px; height: 70px; border: 1px solid rgba(255,255,255,.56); border-radius: 50%; transform: translate(-50%, -50%); }
+.reticle span:first-child { position: absolute; left: 50%; top: -15px; bottom: -15px; border-left: 1px solid rgba(255,255,255,.36); }
+.reticle span:last-child { position: absolute; top: 50%; left: -15px; right: -15px; border-top: 1px solid rgba(255,255,255,.36); }
+.starReadout { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; padding: 0 22px 22px; }
+.starReadout article, .starReadout aside { padding: 22px; border: 1px solid rgba(255,255,255,.14); border-radius: 14px; }
+.starReadout small { color: #87bfff; font-weight: 900; letter-spacing: .12em; }
+.nightRed .starReadout small { color: #ff6350; }
+.starReadout h3 { margin: 8px 0 3px; font-size: 27px; }
+.starReadout article strong { color: #87bfff; }
+.nightRed .starReadout article strong { color: #ff6350; }
+.starReadout p { color: #9fb2c7; line-height: 1.65; }
+.nightRed .starReadout p { color: #c9796d; }
+.starReadout label { display: grid; grid-template-columns: 88px 1fr 54px; gap: 10px; align-items: center; margin-top: 12px; font-size: 12px; font-weight: 800; }
+.starGuide > footer { padding: 18px 28px; color: #9fb2c7; border-top: 1px solid rgba(255,255,255,.14); font-size: 12px; line-height: 1.6; }
+.nightRed > footer { color: #c9796d; }
+@media (max-width: 760px) { .starGuide { margin-inline: 12px; } .starGuide > header { display: grid; } .starActions { flex-wrap: wrap; } .starReadout { grid-template-columns: 1fr; } .skyViewport { margin: 12px; min-height: 480px; } }

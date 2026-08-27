@@ -245,6 +245,12 @@ test("server-renders the installable Sanporoid island adventure", async () => {
   assert.match(html, /APIキーは保存しません/);
   assert.match(html, /\/sanporoid\/avatar_treasure_01\.webp/);
   assert.match(html, /写真は端末内だけで解析/);
+  assert.match(html, /真夜中の星空コンパス/);
+  assert.match(html, /スマートフォンを向ける/);
+  assert.match(html, /あれが何座/);
+  assert.match(html, /開拓フィールドノート/);
+  assert.match(html, /SANPOROID ISLAND INTELLIGENCE/);
+  assert.match(html, /候補 ≠ 安全確認済みルート/);
 });
 
 test("keeps the PWA shell offline without caching private API data", async () => {
@@ -263,6 +269,34 @@ test("keeps the PWA shell offline without caching private API data", async () =>
   assert.match(guideRoute, /getChatGPTUser/);
   assert.match(guideRoute, /store:\s*false/);
   assert.doesNotMatch(guideRoute, /console\.(?:log|error).*api/i);
+});
+
+test("computes the night sky locally and requests sensor permission explicitly", async () => {
+  const starGuide = await readFile(new URL("../app/adventure/StarGuide.tsx", import.meta.url), "utf8");
+  assert.match(starGuide, /DeviceOrientationEvent/);
+  assert.match(starGuide, /requestPermission/);
+  assert.match(starGuide, /deviceorientationabsolute/);
+  assert.match(starGuide, /navigator\.geolocation\.getCurrentPosition/);
+  assert.match(starGuide, /2440587\.5/);
+  assert.match(starGuide, /北極星/);
+  assert.doesNotMatch(starGuide, /fetch\(/);
+});
+
+test("imports every researched trip-island candidate into the map and LLM context", async () => {
+  const [rawPack, mapKnowledge, guideRoute] = await Promise.all([
+    readFile(new URL("../app/adventure/island-experience-pack.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/islandKnowledge.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/island-guide/route.ts", import.meta.url), "utf8"),
+  ]);
+  const pack = JSON.parse(rawPack);
+  assert.equal(pack.experienceCount, 19);
+  assert.equal(pack.anchorCount, 3);
+  assert.deepEqual(Object.fromEntries(["神津島", "新島", "式根島"].map((name) => [name, pack.experiences.filter((entry) => entry.island === name).length])), { 神津島: 7, 新島: 5, 式根島: 7 });
+  assert.equal(pack.experiences.every((entry) => entry.officialSources.length > 0 && entry.sharedTransportGate), true);
+  assert.match(mapKnowledge, /enrichMapPointsWithResearch/);
+  assert.match(mapKnowledge, /cautions/);
+  assert.match(guideRoute, /researchedExperiences/);
+  assert.match(guideRoute, /安全確認済み連続ルートではない/);
 });
 
 test("gives the Bot a scoped read-only trip and island context", async () => {
@@ -287,6 +321,9 @@ test("gives the Bot a scoped read-only trip and island context", async () => {
   assert.match(payload.trip.lodging, /神津島 → 新島 → 新島/);
   assert.match(payload.trip.pending, /神津島キャンプ場は朝確認/);
   assert.deepEqual(payload.islands.map((island) => island.name), ["神津島", "新島", "式根島"]);
+  assert.deepEqual(payload.islands.map((island) => island.researchedExperienceCount), [7, 5, 7]);
+  assert.equal(payload.researchPack.experienceCount, 19);
+  assert.match(payload.researchPack.safetyBoundary, /not verified continuous walking routes/);
   assert.equal(payload.writeCapabilities, false);
 });
 

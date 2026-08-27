@@ -13,6 +13,9 @@ export type MapPoint = {
   label: string;
   position: LatLng;
   summary: string;
+  researchedFacts?: string[];
+  cautions?: string[];
+  sources?: Array<{ label: string; url: string }>;
 };
 
 export type MapRoute = {

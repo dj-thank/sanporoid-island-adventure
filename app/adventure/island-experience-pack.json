@@ -1,0 +1,1525 @@
+{
+  "schemaVersion": 1,
+  "sourceSnapshotThrough": "2026-08-17",
+  "sourceState": "LOCAL_STAGING_ONLY",
+  "safetyBoundary": "These are evidence-backed exploration candidates, not verified continuous walking routes. Recheck transport, closures, weather, tides, opening and pedestrian access on the day.",
+  "experienceCount": 19,
+  "anchorCount": 3,
+  "experiences": [
+    {
+      "id": "tokyo-niijima-port-village-onsen",
+      "island": "新島",
+      "title": "新島港から湯の浜露天温泉へ往復する到着日候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "新島港"
+      ],
+      "orderedStops": [
+        "新島港",
+        "湯の浜露天温泉",
+        "新島港"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "海路・空路とも天候で運休し得るため当日運航を再確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://www.niijima.com/kankou/files/R6A4niijima.pdf",
+          "authority": "新島村"
+        },
+        {
+          "url": "https://niijima.com/shoukai/access/index.html",
+          "authority": "新島村"
+        },
+        {
+          "url": "https://www.niijima.com/facility/hotsprings/onsen_yunohama.html",
+          "authority": "新島村"
+        },
+        {
+          "url": "https://www.niijima.com/facility/spa/onsenrodge/kinrinshisetsu.html",
+          "authority": "新島村"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T15:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "high_waves"
+      ],
+      "bestFit": [
+        "arrival_day",
+        "village",
+        "coast",
+        "onsen"
+      ],
+      "lighting": "unknown",
+      "resupply": "village_recheck",
+      "walking": {
+        "status": "official_one_way_access_unverified_geometry",
+        "distance_m": null,
+        "duration_min": null,
+        "official_one_way_duration_min": 10,
+        "official_access_from": "新島港",
+        "official_access_to": "湯の浜露天温泉",
+        "geometry_status": "not_available",
+        "pedestrian_legality_status": "not_machine_verified",
+        "dead_end_status": "unknown"
+      },
+      "evidenceStatus": "partial_fail_closed",
+      "supportedFacts": [
+        "新島港から徒歩約10分",
+        "無料・終日、清掃6–9時を除く・水着必須"
+      ],
+      "constraints": [
+        "足湯部分の現行開放未確認",
+        "帰船締切と往復歩道未確認"
+      ],
+      "sharedTransportGate": "船・航空・着岸港・帰路を対象日当日に再確認。ふれあいバスは1日3便、夏季等は周遊目的利用不可。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-niijima-habushiura-art",
+      "island": "新島",
+      "title": "羽伏浦・コーガ石・アートを目的地にする半日候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "新島港",
+        "新島空港"
+      ],
+      "orderedStops": [
+        "新島空港",
+        "石の動物園",
+        "都立羽伏浦公園",
+        "羽伏浦海岸"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "無料巡回バスは臨時時刻表を確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://www.niijima.com/kankou/files/R6A4niijima.pdf",
+          "authority": "新島村"
+        },
+        {
+          "url": "https://niijima.com/shoukai/access/tounai.html",
+          "authority": "新島村"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "high_waves",
+        "strong_wind"
+      ],
+      "bestFit": [
+        "art",
+        "coast",
+        "half_day"
+      ],
+      "lighting": "daylight_only_until_verified",
+      "resupply": "unknown",
+      "walking": {
+        "status": "unverified",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "route_blocked_unresolved",
+      "supportedFacts": [
+        "ガラスミュージアムは2026年再開",
+        "向山林道は復旧完了まで全面通行止め"
+      ],
+      "constraints": [
+        "林道解除告知未確認",
+        "羽伏浦とアート施設の連続徒歩線未成立"
+      ],
+      "sharedTransportGate": "船・航空・着岸港・帰路を対象日当日に再確認。ふれあいバスは1日3便、夏季等は周遊目的利用不可。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-shikine-port-beach-onsen",
+      "island": "式根島",
+      "title": "港・泊海水浴場・天然温泉を小さくつなぐ候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "野伏港",
+        "式根島港"
+      ],
+      "orderedStops": [
+        "野伏港",
+        "泊海水浴場",
+        "松が下雅湯",
+        "憩の家"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "発着港と連絡船にしきの当日運航を確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://www.niijima.com/kankou/pamphlet/files/shikine.pdf",
+          "authority": "新島村"
+        },
+        {
+          "url": "https://www.niijima.com/facility/hotsprings/onsen_shikine_ikoinoyu.html",
+          "authority": "新島村"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "slippery",
+        "high_waves"
+      ],
+      "bestFit": [
+        "short_walk",
+        "beach",
+        "onsen"
+      ],
+      "lighting": "night_coast_not_recommended",
+      "resupply": "settlement_recheck",
+      "walking": {
+        "status": "unverified",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "partial_supported",
+      "supportedFacts": [
+        "泊は野伏港から徒歩5分",
+        "露天温泉は水着必須"
+      ],
+      "constraints": [
+        "港→泊→温泉の全歩行線なし",
+        "売店・ライフガードは夏期のみ",
+        "潮・波・清掃"
+      ],
+      "sharedTransportGate": "野伏港着岸と連絡船・東海汽船の対象日運航を再確認。宿を事前確保し、タクシーの存在を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-shikine-jinata-onsen-loop",
+      "island": "式根島",
+      "title": "地鉈温泉・湯加減の穴・憩の家を巡る湯めぐり候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "野伏港",
+        "式根島港"
+      ],
+      "orderedStops": [
+        "憩の家",
+        "湯加減の穴",
+        "地鉈温泉",
+        "憩の家"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "潮位・清掃・温泉休館日・帰路を確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://www.niijima.com/kankou/shikinejima/spot/ikoinoie.html",
+          "authority": "新島村"
+        },
+        {
+          "url": "https://www.niijima.com/kankou/pamphlet/files/shikinejimafuroku.pdf",
+          "authority": "新島村"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "slippery",
+        "high_waves",
+        "darkness"
+      ],
+      "bestFit": [
+        "onsen",
+        "geology",
+        "slow_day"
+      ],
+      "lighting": "daylight_only",
+      "resupply": "bring_water",
+      "walking": {
+        "status": "unverified",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "supported_with_constraints",
+      "supportedFacts": [
+        "地鉈は無料24時間・源泉80度",
+        "湯加減の穴で温度確認"
+      ],
+      "constraints": [
+        "潮で適温が変動",
+        "夜間外灯少・足元注意",
+        "ループ歩行線なし"
+      ],
+      "sharedTransportGate": "野伏港着岸と連絡船・東海汽船の対象日運航を再確認。宿を事前確保し、タクシーの存在を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-kozushima-west-coast-walk",
+      "island": "神津島",
+      "title": "神津島観光協会公式 西海岸ウォーキング",
+      "planKind": "official_model_route",
+      "officialRouteClaim": true,
+      "arrivalVariants": [
+        "神津島港"
+      ],
+      "orderedStops": [
+        "まっちゃーれセンター",
+        "えんま洞",
+        "石材アート歩道",
+        "うず巻岩",
+        "かたふた岬",
+        "沢尻湾フォトスタンド",
+        "沢尻湾",
+        "神津島温泉保養センター",
+        "めいし遊歩道",
+        "メッポー山",
+        "ぶっとおし岩",
+        "長浜（五色浜）",
+        "たたみが鼻",
+        "名組ドンタクハウス・トロッコ跡",
+        "赤崎遊歩道"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "当日の着岸港が多幸湾ならこの候補は使用しない"
+      },
+      "officialSources": [
+        {
+          "url": "https://kozushima.com/tour/tourroute/318/",
+          "authority": "神津島観光協会"
+        },
+        {
+          "url": "https://www.vill.kouzushima.tokyo.jp/kankou/",
+          "authority": "神津島村"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "high_waves"
+      ],
+      "bestFit": [
+        "arrival_day",
+        "history",
+        "sunset"
+      ],
+      "lighting": "unknown",
+      "resupply": "village_recheck",
+      "walking": {
+        "status": "official_ordered_unverified_geometry",
+        "distance_m": 5500,
+        "duration_min": 150
+      },
+      "evidenceStatus": "supported_with_operational_constraints",
+      "supportedFacts": [
+        "公式5.5km・2時間30分",
+        "商店なし・雨風時中止"
+      ],
+      "constraints": [
+        "当日天候・帰路・バス最終未確認"
+      ],
+      "sharedTransportGate": "前浜港・多幸湾の当日決定と季節別村営バス時刻を再確認。一般論から最終便を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-kozushima-akasaki-onsen",
+      "island": "神津島",
+      "title": "赤崎遊歩道と温泉を組み合わせる北西海岸候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "神津島港",
+        "多幸湾"
+      ],
+      "orderedStops": [
+        "赤崎遊歩道",
+        "みずがしり親水公園",
+        "神津島温泉保養センター"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "村営バス・温泉・帰港便を当日確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://www.vill.kouzushima.tokyo.jp/kankou/",
+          "authority": "神津島村"
+        },
+        {
+          "url": "https://www.t-treasureislands.metro.tokyo.lg.jp/spotlist/kouzu/453192-akasaki-promenade.html",
+          "authority": "東京都"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "slippery",
+        "high_waves",
+        "strong_wind"
+      ],
+      "bestFit": [
+        "sea",
+        "boardwalk",
+        "onsen"
+      ],
+      "lighting": "daylight_only",
+      "resupply": "bring_water",
+      "walking": {
+        "status": "unverified",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "supported_seasonal_schedule_gated",
+      "supportedFacts": [
+        "赤崎木道約500m",
+        "温泉11–20時・最終19時・水曜休"
+      ],
+      "constraints": [
+        "売店夏期のみ",
+        "潮位・波・対象日バス未確認"
+      ],
+      "sharedTransportGate": "前浜港・多幸湾の当日決定と季節別村営バス時刻を再確認。一般論から最終便を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-kozushima-tenjozan",
+      "island": "神津島",
+      "title": "天上山は現行通行止めを分離した登山候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "神津島港",
+        "多幸湾",
+        "神津島空港"
+      ],
+      "orderedStops": [
+        "黒島登山口",
+        "天上山山域",
+        "黒島登山口"
+      ],
+      "returnGate": {
+        "kind": "mountain_and_transport",
+        "recheck_required": true,
+        "note": "下山時刻・帰路・通行止め範囲を確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://www.vill.kouzushima.tokyo.jp/2026-0414/",
+          "authority": "神津島村"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "rockfall",
+        "slippery",
+        "exposed_ridge"
+      ],
+      "bestFit": [
+        "mountain"
+      ],
+      "lighting": "daylight_only",
+      "resupply": "bring_water",
+      "walking": {
+        "status": "unverified",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "closed_route_with_detour",
+      "supportedFacts": [
+        "2026-04-09に不入が沢付近から頂上ルート一部通行止め",
+        "ババ池経由迂回"
+      ],
+      "constraints": [
+        "旧5時間モデルをそのまま使用不可",
+        "解除・迂回現況・日没・天候未確認"
+      ],
+      "sharedTransportGate": "前浜港・多幸湾の当日決定と季節別村営バス時刻を再確認。一般論から最終便を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-niijima-rain-culture",
+      "island": "新島",
+      "title": "雨・暑さ・水着なしの日の博物館とコーガ石文化候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "新島港",
+        "新島空港"
+      ],
+      "orderedStops": [
+        "新島村博物館",
+        "砂んごいの道",
+        "石の動物園または予約済み文化体験"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "博物館・体験施設の開館日と帰路を先に確定"
+      },
+      "officialSources": [
+        {
+          "url": "https://niijima.com/facility/community/hakubutsukan/goannai.html",
+          "authority": "新島村"
+        },
+        {
+          "url": "https://niijima-info.jp/historical/",
+          "authority": "新島村観光案内所"
+        },
+        {
+          "url": "https://niijima-info.jp/spot/2442/",
+          "authority": "新島村観光案内所"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "rain_surface",
+        "private_property_respect"
+      ],
+      "bestFit": [
+        "rain",
+        "heat",
+        "culture",
+        "low_mobility",
+        "no_swimsuit"
+      ],
+      "lighting": "daylight",
+      "resupply": "village_recheck",
+      "walking": {
+        "status": "unverified",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "supported_with_schedule_gaps",
+      "supportedFacts": [
+        "博物館9–17時・月曜休",
+        "ガラスセンター10–16:30・火曜休・体験予約優先"
+      ],
+      "constraints": [
+        "二施設の休館曜日が異なる",
+        "施設間徒歩線・臨時休館未確認"
+      ],
+      "sharedTransportGate": "船・航空・着岸港・帰路を対象日当日に再確認。ふれあいバスは1日3便、夏季等は周遊目的利用不可。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-shikine-nobuse-tomari",
+      "island": "式根島",
+      "title": "野伏港から泊海水浴場への公式短時間アクセス",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "野伏港"
+      ],
+      "orderedStops": [
+        "野伏港",
+        "泊海水浴場",
+        "野伏港"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "当日の発着港・海況・帰船時刻を確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://shikinejima.tokyo/play/beach/tomari_beach/",
+          "authority": "式根島観光協会"
+        },
+        {
+          "url": "https://www.islandaccess.metro.tokyo.lg.jp/stations/nobuse_port/",
+          "authority": "東京都産業労働局 東京宝島うみそら便"
+        },
+        {
+          "url": "https://www.islandaccess.metro.tokyo.lg.jp/island/shikinejima/",
+          "authority": "東京都産業労働局 東京宝島うみそら便"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "high_waves"
+      ],
+      "bestFit": [
+        "arrival_day",
+        "short_walk",
+        "beach"
+      ],
+      "lighting": "daylight",
+      "resupply": "summer_only_shop_recheck",
+      "walking": {
+        "status": "official_time_unverified_geometry",
+        "distance_m": null,
+        "duration_min": null,
+        "official_one_way_duration_min": 5,
+        "official_access_from": "野伏港",
+        "official_access_to": "泊海水浴場",
+        "official_access_evidence": "式根島観光協会と東京都公式が野伏港から徒歩約5分と記載",
+        "geometry_status": "not_available",
+        "pedestrian_legality_status": "not_machine_verified",
+        "dead_end_status": "unknown",
+        "note": "公式記載は野伏港から泊海水浴場まで片道約5分。往復所要、距離、線形、歩道属性は推定しない"
+      },
+      "evidenceStatus": "partial_supported",
+      "supportedFacts": [
+        "野伏港から泊徒歩5分",
+        "にしきは予約不要"
+      ],
+      "constraints": [
+        "着岸・ダイヤは日付と天候依存",
+        "荷物・歩道現況未確認"
+      ],
+      "sharedTransportGate": "野伏港着岸と連絡船・東海汽船の対象日運航を再確認。宿を事前確保し、タクシーの存在を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-shikine-rain-indoor-bath",
+      "island": "式根島",
+      "title": "雨・水着なしの日の憩の家候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "野伏港",
+        "式根島港"
+      ],
+      "orderedStops": [
+        "当日確認済み交通または宿",
+        "憩の家",
+        "当日確認済み帰路"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "水曜休館・木曜短縮・最終受付と帰路を確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://shikinejima.tokyo/hotspring/ikoinoie/",
+          "authority": "式根島観光協会"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "transport_gap"
+      ],
+      "bestFit": [
+        "rain",
+        "indoor",
+        "no_swimsuit",
+        "low_mobility"
+      ],
+      "lighting": "facility_hours_only",
+      "resupply": "village_recheck",
+      "walking": {
+        "status": "unverified",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "supported_with_schedule_gaps",
+      "supportedFacts": [
+        "屋内で天候非依存・水着不要",
+        "10–20時、最終19:30、水曜休、木曜15時から"
+      ],
+      "constraints": [
+        "臨時休館・混雑・施設までの歩行線未確認"
+      ],
+      "sharedTransportGate": "野伏港着岸と連絡船・東海汽船の対象日運航を再確認。宿を事前確保し、タクシーの存在を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "user_selected_public_origin",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-kozushima-port-village-short",
+      "island": "神津島",
+      "title": "前浜港着限定の集落・前浜短時間候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "神津島港"
+      ],
+      "orderedStops": [
+        "神津島港",
+        "まっちゃーれセンター",
+        "前浜海岸",
+        "神津島港"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "多幸湾着なら使用せず、当日出港地と荷物預かり終了時刻を確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://kozushima.com/access/",
+          "authority": "神津島観光協会"
+        },
+        {
+          "url": "https://www.vill.kouzushima.tokyo.jp/kankou/",
+          "authority": "神津島村"
+        },
+        {
+          "url": "https://kozushima.com/kanko/umi/beach/292/",
+          "authority": "神津島観光協会"
+        },
+        {
+          "url": "https://kozushima.com/newsite/wp-content/uploads/2025/10/tabitohibi.pdf",
+          "authority": "神津島観光協会"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T15:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "high_waves",
+        "port_switch"
+      ],
+      "bestFit": [
+        "arrival_day",
+        "short_walk",
+        "village",
+        "coast"
+      ],
+      "lighting": "daylight",
+      "resupply": "village_before_walk",
+      "walking": {
+        "status": "official_one_way_access_unverified_geometry",
+        "distance_m": null,
+        "duration_min": null,
+        "official_one_way_duration_min": 8,
+        "official_access_from": "神津島港",
+        "official_access_to": "前浜海岸",
+        "geometry_status": "not_available",
+        "pedestrian_legality_status": "not_machine_verified",
+        "dead_end_status": "unknown"
+      },
+      "evidenceStatus": "partial_no_exact_route",
+      "supportedFacts": [
+        "前浜港から観光協会徒歩約5分",
+        "手荷物預かり"
+      ],
+      "constraints": [
+        "多幸湾着なら不成立",
+        "候補固有の距離・順序なし"
+      ],
+      "sharedTransportGate": "前浜港・多幸湾の当日決定と季節別村営バス時刻を再確認。一般論から最終便を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-niijima-stone-village-story",
+      "island": "新島",
+      "title": "コーガ石と白砂の集落を物語順に歩く文化候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "新島港",
+        "新島空港"
+      ],
+      "orderedStops": [
+        "新島村博物館",
+        "砂んごいの道",
+        "親水公園",
+        "石の動物園"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "博物館の休館、文化体験の予約、帰路を到着後に確定"
+      },
+      "officialSources": [
+        {
+          "url": "https://niijima-info.jp/historical/",
+          "authority": "新島村観光案内所"
+        },
+        {
+          "url": "https://niijima.com/facility/community/hakubutsukan/goannai.html",
+          "authority": "新島村"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "road_traffic",
+        "private_property_respect",
+        "rain_surface"
+      ],
+      "bestFit": [
+        "history",
+        "architecture",
+        "culture",
+        "quiet"
+      ],
+      "lighting": "daylight",
+      "resupply": "village_recheck",
+      "walking": {
+        "status": "designed_order_unverified_geometry",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "insufficient_fail_closed",
+      "supportedFacts": [
+        "コーガ石文化の公式説明",
+        "ふれあいバス1日3便"
+      ],
+      "constraints": [
+        "物語順の公式徒歩路なし",
+        "夏季等はバス周遊利用不可",
+        "私有地配慮"
+      ],
+      "sharedTransportGate": "船・航空・着岸港・帰路を対象日当日に再確認。ふれあいバスは1日3便、夏季等は周遊目的利用不可。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-niijima-departure-footbath-buffer",
+      "island": "新島",
+      "title": "帰船前に湯の浜の足湯だけ使う短時間バッファ候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "新島港"
+      ],
+      "orderedStops": [
+        "新島港",
+        "湯の浜露天温泉の足湯",
+        "新島港"
+      ],
+      "returnGate": {
+        "kind": "hard_departure_buffer",
+        "recheck_required": true,
+        "note": "乗船締切を先に固定し、清掃・荒天時は港待機へ切替"
+      },
+      "officialSources": [
+        {
+          "url": "https://www.niijima.com/facility/hotsprings/onsen_yunohama.html",
+          "authority": "新島村"
+        },
+        {
+          "url": "https://www.tokaikisen.co.jp/boarding/",
+          "authority": "東海汽船"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "high_waves",
+        "departure_cutoff"
+      ],
+      "bestFit": [
+        "departure_day",
+        "short_walk",
+        "no_swimsuit",
+        "recovery"
+      ],
+      "lighting": "daylight_or_facility_check",
+      "resupply": "port_or_village_recheck",
+      "walking": {
+        "status": "official_one_way_access_unverified_geometry",
+        "distance_m": null,
+        "duration_min": null,
+        "official_one_way_duration_min": 10
+      },
+      "evidenceStatus": "partial_fail_closed",
+      "supportedFacts": [
+        "港から徒歩約10分"
+      ],
+      "constraints": [
+        "足湯単独の現行状態未確認",
+        "当日船・乗船締切・復路未確認"
+      ],
+      "sharedTransportGate": "船・航空・着岸港・帰路を対象日当日に再確認。ふれあいバスは1日3便、夏季等は周遊目的利用不可。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-shikine-cove-geology-day",
+      "island": "式根島",
+      "title": "泊・中の浦・石白川で入り江の違いを見る海岸候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "野伏港"
+      ],
+      "orderedStops": [
+        "野伏港",
+        "泊海水浴場",
+        "中の浦海水浴場",
+        "石白川海水浴場",
+        "集落の補給地点"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "海況、監視員、各浜の階段、帰船時刻を確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://shikinejima.tokyo/play/beach/tomari_beach/",
+          "authority": "式根島観光協会"
+        },
+        {
+          "url": "https://shikinejima.tokyo/play/beach/nakanoura_beach/",
+          "authority": "式根島観光協会"
+        },
+        {
+          "url": "https://shikinejima.tokyo/play/beach/ishijirogawa_beach/",
+          "authority": "式根島観光協会"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "high_waves",
+        "slippery",
+        "stairs",
+        "heat"
+      ],
+      "bestFit": [
+        "geology",
+        "beach",
+        "photography",
+        "half_day"
+      ],
+      "lighting": "daylight_only",
+      "resupply": "settlement_before_longer_leg",
+      "walking": {
+        "status": "designed_order_unverified_geometry",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "partial_supported",
+      "supportedFacts": [
+        "3海岸の個別公式説明と設備"
+      ],
+      "constraints": [
+        "3地点周遊線・距離なし",
+        "地質解説の一次根拠不足",
+        "階段・海況・夏期設備"
+      ],
+      "sharedTransportGate": "野伏港着岸と連絡船・東海汽船の対象日運航を再確認。宿を事前確保し、タクシーの存在を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-shikine-oura-sunset-buffer",
+      "island": "式根島",
+      "title": "大浦の夕景を見て暗くなる前に戻る候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "野伏港",
+        "式根島港"
+      ],
+      "orderedStops": [
+        "集落の当日確認済み出発点",
+        "大浦海水浴場",
+        "日没前の同一出発点"
+      ],
+      "returnGate": {
+        "kind": "sunset_and_transport",
+        "recheck_required": true,
+        "note": "日没前の帰着余裕、街灯、宿送迎または帰路を先に確定"
+      },
+      "officialSources": [
+        {
+          "url": "https://shikinejima.tokyo/play/beach/oura_beach/",
+          "authority": "式根島観光協会"
+        },
+        {
+          "url": "https://shikinejima.tokyo/play/star/",
+          "authority": "式根島観光協会"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "darkness",
+        "few_streetlights",
+        "coast",
+        "strong_wind"
+      ],
+      "bestFit": [
+        "sunset",
+        "quiet",
+        "photography"
+      ],
+      "lighting": "return_before_dark",
+      "resupply": "bring_water",
+      "walking": {
+        "status": "designed_order_unverified_geometry",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "partial_supported",
+      "supportedFacts": [
+        "大浦は公式夕景地点"
+      ],
+      "constraints": [
+        "日没後の照明・帰路・交通なし",
+        "売店・ライフガード夏期のみ"
+      ],
+      "sharedTransportGate": "野伏港着岸と連絡船・東海汽船の対象日運航を再確認。宿を事前確保し、タクシーの存在を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "user_selected_public_origin",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-shikine-matsugashita-gentle-onsen",
+      "island": "式根島",
+      "title": "潮位依存を避けて松が下雅湯を中心にする温泉候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "野伏港",
+        "式根島港"
+      ],
+      "orderedStops": [
+        "当日確認済み集落出発点",
+        "松が下雅湯",
+        "憩の家または同一出発点"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "清掃、海況、帰路を確認し、地鉈温泉は追加しない"
+      },
+      "officialSources": [
+        {
+          "url": "https://www.gotokyo.org/jp/spot/316/index.html",
+          "authority": "東京都公式観光サイト"
+        },
+        {
+          "url": "https://shikinejima.tokyo/hotspring/ikoinoie/",
+          "authority": "式根島観光協会"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "coast",
+        "slippery",
+        "high_waves"
+      ],
+      "bestFit": [
+        "onsen",
+        "slow_day",
+        "lower_tide_dependency"
+      ],
+      "lighting": "daylight",
+      "resupply": "bring_water",
+      "walking": {
+        "status": "designed_order_unverified_geometry",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "supported_with_constraints",
+      "supportedFacts": [
+        "潮位非依存・無料24時間",
+        "足湯は水着なしでも可"
+      ],
+      "constraints": [
+        "清掃・メンテナンス",
+        "夜間足元",
+        "バリアフリー未証明"
+      ],
+      "sharedTransportGate": "野伏港着岸と連絡船・東海汽船の対象日運航を再確認。宿を事前確保し、タクシーの存在を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "user_selected_public_origin",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-kozushima-village-crosses-view",
+      "island": "神津島",
+      "title": "港・集落・十字架の展望をつなぐ歴史候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "神津島港"
+      ],
+      "orderedStops": [
+        "神津島港",
+        "まっちゃーれセンター",
+        "はるか展望台",
+        "ありま展望台",
+        "神津島港"
+      ],
+      "returnGate": {
+        "kind": "scheduled_transport",
+        "recheck_required": true,
+        "note": "多幸湾着なら使用せず、急坂・帰船余裕を確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://www.tokyo-walkingmap.metro.tokyo.lg.jp/map/course_detail?id=148",
+          "authority": "東京都"
+        },
+        {
+          "url": "https://www.vill.kouzushima.tokyo.jp/transport/",
+          "authority": "神津島村"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-17T00:00:00+09:00",
+        "status": "current"
+      },
+      "hazards": [
+        "steep_slope",
+        "road_traffic",
+        "strong_wind",
+        "heat",
+        "departure_cutoff"
+      ],
+      "bestFit": [
+        "history",
+        "view",
+        "village",
+        "half_day"
+      ],
+      "lighting": "daylight",
+      "resupply": "village_before_climb",
+      "walking": {
+        "status": "designed_round_trip_from_official_outbound_unverified_geometry",
+        "distance_m": null,
+        "duration_min": null,
+        "official_outbound_distance_m": 2700,
+        "official_outbound_duration_min": 41
+      },
+      "evidenceStatus": "insufficient_exact_identity",
+      "supportedFacts": [
+        "村内史跡公式地図"
+      ],
+      "constraints": [
+        "候補名との一意対応なし",
+        "現行通行・固定ルートなし"
+      ],
+      "sharedTransportGate": "前浜港・多幸湾の当日決定と季節別村営バス時刻を再確認。一般論から最終便を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-kozushima-rain-onsen-reset",
+      "island": "神津島",
+      "title": "雨の日に温泉と集落へ絞る回復候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "神津島港",
+        "多幸湾"
+      ],
+      "orderedStops": [
+        "当日着岸港",
+        "当日確認済み村営バス",
+        "神津島温泉保養センター",
+        "集落または宿"
+      ],
+      "returnGate": {
+        "kind": "bus_and_facility_hours",
+        "recheck_required": true,
+        "note": "村営バス、温泉休館、最終受付、帰路を確認"
+      },
+      "officialSources": [
+        {
+          "url": "https://www.vill.kouzushima.tokyo.jp/transport/",
+          "authority": "神津島村"
+        },
+        {
+          "url": "https://www.vill.kouzushima.tokyo.jp/2025-0925/",
+          "authority": "神津島村"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "bus_gap",
+        "facility_closure",
+        "strong_wind"
+      ],
+      "bestFit": [
+        "rain",
+        "recovery",
+        "low_mobility",
+        "onsen"
+      ],
+      "lighting": "facility_hours_only",
+      "resupply": "village_recheck",
+      "walking": {
+        "status": "transport_assisted_experience_unverified_last_mile",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "partial_no_weather_safe_route",
+      "supportedFacts": [
+        "温泉営業時間の公式告知"
+      ],
+      "constraints": [
+        "雨天安全徒歩路なし",
+        "西海岸は雨風時中止",
+        "対象日バス未確認"
+      ],
+      "sharedTransportGate": "前浜港・多幸湾の当日決定と季節別村営バス時刻を再確認。一般論から最終便を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "selected_arrival_variant_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    },
+    {
+      "id": "tokyo-kozushima-takou-arrival-reset",
+      "island": "神津島",
+      "title": "多幸湾着の日は周遊を捨てて集落へ移る到着候補",
+      "planKind": "designed_experience",
+      "officialRouteClaim": false,
+      "arrivalVariants": [
+        "多幸湾"
+      ],
+      "orderedStops": [
+        "多幸湾",
+        "当日確認済み村営バスまたは宿送迎",
+        "まっちゃーれセンター",
+        "宿または集落の補給地点"
+      ],
+      "returnGate": {
+        "kind": "port_variant_and_bus",
+        "recheck_required": true,
+        "note": "船連動バスまたは宿送迎が成立しない場合は港周辺待機"
+      },
+      "officialSources": [
+        {
+          "url": "https://kozushima.com/access/",
+          "authority": "神津島観光協会"
+        },
+        {
+          "url": "https://www.vill.kouzushima.tokyo.jp/transport/",
+          "authority": "神津島村"
+        }
+      ],
+      "freshness": {
+        "retrieved_at": "2026-08-16T00:00:00+00:00",
+        "status": "current"
+      },
+      "hazards": [
+        "port_switch",
+        "bus_gap",
+        "luggage",
+        "strong_wind"
+      ],
+      "bestFit": [
+        "arrival_day",
+        "port_switch",
+        "low_stress"
+      ],
+      "lighting": "arrival_time_dependent",
+      "resupply": "village_after_transfer",
+      "walking": {
+        "status": "transport_connection_plan_not_walking_route",
+        "distance_m": null,
+        "duration_min": null
+      },
+      "evidenceStatus": "supported_port_variant_transport_gated",
+      "supportedFacts": [
+        "前浜・多幸湾は当日決定",
+        "船接続の村営バス・季節別時刻表"
+      ],
+      "constraints": [
+        "対象日最終便・帰路・荷物接続未確認"
+      ],
+      "sharedTransportGate": "前浜港・多幸湾の当日決定と季節別村営バス時刻を再確認。一般論から最終便を推測しない。",
+      "sourceCheckedAt": "2026-08-17",
+      "missingGates": [
+        "current_safety",
+        "current_weather",
+        "departure_day_transport",
+        "human_field_receipt",
+        "official_public_pedestrian_entrance",
+        "verified_walking_route"
+      ],
+      "fieldExperience": "not_verified"
+    }
+  ],
+  "anchors": [
+    {
+      "id": "island-official:a37d8d1e30fae0ee",
+      "island": "新島",
+      "name": "新島村博物館",
+      "category": "museum",
+      "position": [
+        34.378151,
+        139.254898
+      ],
+      "precision": "official_facility_destination_point_not_entrance",
+      "source": {
+        "provider": "国土交通省P05または東京都・自治体オープンデータ",
+        "url": "https://www.opendata.metro.tokyo.lg.jp/kyouiku/R3/skseti_56.csv",
+        "license": "CC BY 4.0; source-specific review required",
+        "source_updated_at": "2025-12-12"
+      },
+      "missingGates": [
+        "exact_pedestrian_entrance",
+        "verified_pedestrian_receipt",
+        "current_closure",
+        "current_operation_or_opening",
+        "weather_safety",
+        "rights_preflight",
+        "human_acceptance"
+      ]
+    },
+    {
+      "id": "island-official:58a5850321e398ad",
+      "island": "新島",
+      "name": "新島いきいき広場",
+      "category": "sports_ground",
+      "position": [
+        34.377769,
+        139.253525
+      ],
+      "precision": "official_facility_destination_point_not_entrance",
+      "source": {
+        "provider": "国土交通省P05または東京都・自治体オープンデータ",
+        "url": "https://www.opendata.metro.tokyo.lg.jp/kyouiku/R3/skseti_56.csv",
+        "license": "CC BY 4.0; source-specific review required",
+        "source_updated_at": "2025-12-12"
+      },
+      "missingGates": [
+        "exact_pedestrian_entrance",
+        "verified_pedestrian_receipt",
+        "current_closure",
+        "current_operation_or_opening",
+        "weather_safety",
+        "rights_preflight",
+        "human_acceptance"
+      ]
+    },
+    {
+      "id": "island-official:c37808315803cc38",
+      "island": "式根島",
+      "name": "式根島福祉センター",
+      "category": "welfare_facility",
+      "position": [
+        34.324557,
+        139.21806
+      ],
+      "precision": "official_facility_destination_point_not_entrance",
+      "source": {
+        "provider": "国土交通省P05または東京都・自治体オープンデータ",
+        "url": "https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P05.html",
+        "license": "CC BY 4.0; source-specific review required",
+        "source_updated_at": "2022"
+      },
+      "missingGates": [
+        "exact_pedestrian_entrance",
+        "verified_pedestrian_receipt",
+        "current_closure",
+        "current_operation_or_opening",
+        "weather_safety",
+        "rights_preflight",
+        "human_acceptance"
+      ]
+    }
+  ]
+}

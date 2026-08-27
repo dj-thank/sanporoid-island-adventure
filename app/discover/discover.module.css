@@ -576,6 +576,10 @@
 .mapFrame :global(.island-map-popup small) { color: var(--red); font-family: var(--font-geist-mono), monospace; font-size: 7px; font-weight: 900; letter-spacing: 0.1em; }
 .mapFrame :global(.island-map-popup strong) { margin-top: 4px; font-size: 14px; }
 .mapFrame :global(.island-map-popup p) { margin: 6px 0 0; color: #626964; font-size: 9px; line-height: 1.55; }
+.mapFrame :global(.island-map-popup b) { margin-top: 8px; color: #17323a; font-size: 9px; }
+.mapFrame :global(.island-map-popup ul) { margin: 4px 0; padding-left: 16px; }
+.mapFrame :global(.island-map-popup li) { color: #4f666d; font-size: 9px; line-height: 1.5; }
+.mapFrame :global(.island-map-popup a) { margin-top: 5px; color: #0c6573; font-size: 9px; font-weight: 900; }
 
 .chooseSection {
   padding: 126px max(28px, calc((100vw - 1360px) / 2));

@@ -1,8 +1,9 @@
 import { getChatGPTUser } from "../../chatgpt-auth";
+import { experiencesFor, type TripIslandSlug } from "../../adventure/islandKnowledge";
 import { islandsBySlug, type Island } from "../../discover/island-data";
 
 const allowedIslands = new Set<Island["slug"]>(["kozushima", "niijima", "shikinejima"]);
-const allowedModels = new Set(["gpt-5.4-mini", "gpt-5.4", "gpt-5-mini"]);
+const allowedModels = new Set(["gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.4-mini"]);
 
 export async function POST(request: Request) {
   const user = await getChatGPTUser();
@@ -22,12 +23,13 @@ export async function POST(request: Request) {
   const input = payload as { island?: string; question?: string; model?: string };
   const slug = input.island as Island["slug"];
   const question = String(input.question ?? "").trim().slice(0, 600);
-  const model = allowedModels.has(String(input.model)) ? String(input.model) : "gpt-5.4-mini";
+  const model = allowedModels.has(String(input.model)) ? String(input.model) : "gpt-5.6-luna";
   if (!allowedIslands.has(slug) || !question) {
     return Response.json({ error: "島と質問を確認してください" }, { status: 400 });
   }
 
   const island = islandsBySlug[slug];
+  const researchedExperiences = experiencesFor(slug as TripIslandSlug);
   const context = [
     `島: ${island.name} (${island.english})`,
     `概要: ${island.shortIntro}`,
@@ -35,6 +37,16 @@ export async function POST(request: Request) {
     `基本情報: ${island.facts.map((fact) => `${fact.label}=${fact.value}`).join(" / ")}`,
     `候補スポット: ${island.spots.map((spot) => `${spot.title}: ${spot.summary}`).join(" / ")}`,
     `写真ミッション: ${island.friendMissions.map((mission) => `${mission.title}: ${mission.copy}`).join(" / ")}`,
+    `Sanporoid全国・関東調査からの島別候補（${researchedExperiences.length}件、候補であり安全確認済み連続ルートではない）:\n${researchedExperiences.map((entry) => [
+      `- ${entry.title}`,
+      `順番候補=${entry.orderedStops.join(" → ")}`,
+      `公式根拠=${entry.supportedFacts.join("、") || "地点情報のみ"}`,
+      `制約=${entry.constraints.join("、") || "当日確認"}`,
+      `危険=${entry.hazards.join("、") || "未特定"}`,
+      `運用ゲート=${entry.sharedTransportGate}`,
+      `確認日=${entry.sourceCheckedAt ?? "未記録"}`,
+      `公式URL=${entry.officialSources.map((source) => source.url).join(" ")}`,
+    ].join(" | ")).join("\n")}`,
     `安全ルール: ${island.rules.join(" / ")}`,
     `公式確認先: ${island.official.map((source) => `${source.label} ${source.url}`).join(" / ")}`,
   ].join("\n");

@@ -1,0 +1,34 @@
+.fieldGuide { margin: 18px; color: #17323a; background: #f7f2e9; border: 1px solid rgba(23,50,58,.16); border-radius: 16px; overflow: clip; }
+.fieldGuide > header { display: grid; grid-template-columns: 1.25fr .75fr; gap: 30px; align-items: end; padding: 32px; }
+.fieldGuide header small { color: #e76f51; font-weight: 900; letter-spacing: .14em; }
+.fieldGuide h2 { margin: 7px 0; font-size: clamp(28px, 4vw, 48px); }
+.fieldGuide header p { max-width: 720px; margin: 0; color: #52696f; line-height: 1.75; }
+.fieldGuide header label { display: grid; gap: 8px; font-size: 12px; font-weight: 900; }
+.fieldGuide input { width: 100%; padding: 13px; border: 1px solid rgba(23,50,58,.3); border-radius: 10px; background: #fff; font: inherit; }
+.safetyBand { display: flex; gap: 18px; align-items: baseline; padding: 17px 28px; color: #fff9e9; background: #743221; }
+.safetyBand strong { flex: 0 0 auto; }
+.safetyBand span { font-size: 12px; line-height: 1.65; }
+.anchorRail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 18px 18px 0; }
+.anchorRail article { display: grid; gap: 5px; padding: 15px; background: #e8f1ed; border: 1px solid #b7ccc3; border-radius: 12px; }
+.anchorRail small { color: #33705d; font-weight: 900; letter-spacing: .1em; }
+.anchorRail span { color: #52696f; font-size: 11px; line-height: 1.5; }
+.anchorRail a, .sources a { color: #0c6573; font-size: 12px; font-weight: 900; }
+.experienceGrid { display: grid; gap: 10px; padding: 18px; }
+.experienceCard { border: 1px solid rgba(23,50,58,.16); border-radius: 14px; background: #f7f2e9; overflow: clip; }
+.experienceCard summary { display: flex; justify-content: space-between; gap: 20px; align-items: center; padding: 18px 20px; cursor: pointer; list-style-position: outside; }
+.experienceCard summary > span { display: grid; gap: 5px; }
+.experienceCard summary small { color: #0c6573; font-size: 10px; font-weight: 900; letter-spacing: .1em; }
+.experienceCard summary strong { font-size: 19px; }
+.experienceCard summary b { flex: 0 0 auto; padding: 7px 10px; color: #743221; background: #f5d7c8; border-radius: 999px; font-size: 11px; }
+.cardBody { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 20px 20px; border-top: 1px solid rgba(23,50,58,.12); }
+.cardBody > div { padding-top: 14px; }
+.cardBody h3 { margin: 0 0 8px; font-size: 13px; }
+.cardBody p, .cardBody li { color: #52696f; font-size: 12px; line-height: 1.7; }
+.cardBody ol, .cardBody ul { margin: 0; padding-left: 20px; }
+.warning { padding: 14px !important; background: #fff0e7; border-radius: 10px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; align-content: start; }
+.tags span { padding: 6px 8px; color: #743221; background: #f2d8cb; border-radius: 999px; font-size: 10px; font-weight: 900; }
+.sources { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.sources small { margin-left: auto; color: #708186; }
+.empty { margin: 0; padding: 24px; text-align: center; }
+@media (max-width: 760px) { .fieldGuide { margin: 12px; } .fieldGuide > header, .cardBody { grid-template-columns: 1fr; } .anchorRail { grid-template-columns: 1fr; } .safetyBand { display: grid; gap: 5px; } .experienceCard summary { align-items: flex-start; } .sources small { width: 100%; margin-left: 0; } }
