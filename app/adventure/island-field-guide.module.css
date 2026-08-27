@@ -8,6 +8,14 @@
 .safetyBand { display: flex; gap: 18px; align-items: baseline; padding: 17px 28px; color: #fff9e9; background: #743221; }
 .safetyBand strong { flex: 0 0 auto; }
 .safetyBand span { font-size: 12px; line-height: 1.65; }
+.currentGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 18px 18px 0; }
+.currentGrid article { display: grid; gap: 7px; padding: 16px; color: #17323a; background: #fffdf4; border-left: 5px solid #e76f51; border-radius: 10px; }
+.currentGrid small { color: #b34b34; font-size: 9px; font-weight: 900; letter-spacing: .08em; }
+.currentGrid ul { margin: 0; padding-left: 18px; }
+.currentGrid li, .currentGrid p { margin: 0; color: #52696f; font-size: 11px; line-height: 1.6; }
+.currentGrid p { padding: 8px; background: #fff0e7; border-radius: 7px; }
+.currentGrid article > div { display: flex; flex-wrap: wrap; gap: 9px; }
+.currentGrid a { color: #0c6573; font-size: 10px; font-weight: 900; }
 .anchorRail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 18px 18px 0; }
 .anchorRail article { display: grid; gap: 5px; padding: 15px; background: #e8f1ed; border: 1px solid #b7ccc3; border-radius: 12px; }
 .anchorRail small { color: #33705d; font-weight: 900; letter-spacing: .1em; }
@@ -31,4 +39,4 @@
 .sources { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 .sources small { margin-left: auto; color: #708186; }
 .empty { margin: 0; padding: 24px; text-align: center; }
-@media (max-width: 760px) { .fieldGuide { margin: 12px; } .fieldGuide > header, .cardBody { grid-template-columns: 1fr; } .anchorRail { grid-template-columns: 1fr; } .safetyBand { display: grid; gap: 5px; } .experienceCard summary { align-items: flex-start; } .sources small { width: 100%; margin-left: 0; } }
+@media (max-width: 760px) { .fieldGuide { margin: 12px; } .fieldGuide > header, .currentGrid, .cardBody { grid-template-columns: 1fr; } .anchorRail { grid-template-columns: 1fr; } .safetyBand { display: grid; gap: 5px; } .experienceCard summary { align-items: flex-start; } .sources small { width: 100%; margin-left: 0; } }

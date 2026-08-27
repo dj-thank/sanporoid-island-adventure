@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { anchorsFor, experiencesFor, islandExperiencePack, type TripIslandSlug } from "./islandKnowledge";
+import { anchorsFor, currentFactsFor, experiencesFor, islandCurrentFacts, islandExperiencePack, type TripIslandSlug } from "./islandKnowledge";
 import styles from "./island-field-guide.module.css";
 
 const hazardNames: Record<string, string> = {
@@ -13,6 +13,7 @@ const hazardNames: Record<string, string> = {
 export default function IslandFieldGuide({ island, islandName, currentPosition }: { island: TripIslandSlug; islandName: string; currentPosition: [number, number] | null }) {
   const [query, setQuery] = useState("");
   const entries = experiencesFor(island);
+  const currentFacts = currentFactsFor(island);
   const anchors = anchorsFor(island);
   const visibleEntries = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -27,6 +28,9 @@ export default function IslandFieldGuide({ island, islandName, currentPosition }
         <label>地点・温泉・海岸を検索<input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="例：温泉、港、夕景" /></label>
       </header>
       <div className={styles.safetyBand} role="note"><strong>候補 ≠ 安全確認済みルート</strong><span>当日の運航・着岸港・通行止め・天候・海況・潮位・営業・歩行入口を再確認してください。位置情報は近さの計算にだけ使用します。</span></div>
+      <div className={styles.currentGrid} aria-label={`${islandName}の現行公式情報`}>
+        {currentFacts.map((entry) => <article key={entry.id}><small>{entry.category} · CHECKED {islandCurrentFacts.checkedAt}</small><strong>{entry.title}</strong><ul>{entry.facts.map((fact) => <li key={fact}>{fact}</li>)}</ul><p>{entry.cautions.join(" / ")}</p><div>{entry.sources.map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.url}>{source.label}</a>)}</div></article>)}
+      </div>
       {anchors.length > 0 && <div className={styles.anchorRail} aria-label="公式座標アンカー">
         {anchors.map((anchor) => <article key={anchor.id}><small>OFFICIAL OPEN DATA</small><strong>{anchor.name}</strong><span>{currentPosition ? `現在地から約${formatDistance(haversineMeters(...currentPosition, ...(anchor.position as [number, number])))} · ` : ""}目的地点座標（入口ではありません）</span><a href={anchor.source.url} target="_blank" rel="noreferrer">出典を見る</a></article>)}
       </div>}

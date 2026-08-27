@@ -1,5 +1,5 @@
 import { getTripBoard, requireBot } from "../../../../db/store";
-import { experiencesFor, islandExperiencePack } from "../../../adventure/islandKnowledge";
+import { currentFactsFor, experiencesFor, islandCurrentFacts, islandExperiencePack } from "../../../adventure/islandKnowledge";
 import { islandsBySlug } from "../../../discover/island-data";
 
 const tripIslandSlugs = ["kozushima", "niijima", "shikinejima"] as const;
@@ -36,6 +36,7 @@ export async function GET(request: Request) {
           spots: island.spots.map((spot) => ({ title: spot.title, label: spot.label, summary: spot.summary })),
           rules: island.rules,
           official: island.official,
+          currentOfficialFacts: currentFactsFor(slug),
           researchedExperienceCount: researchedExperiences.length,
           researchedExperiences: researchedExperiences.map((entry) => ({
             id: entry.id,
@@ -56,6 +57,8 @@ export async function GET(request: Request) {
         experienceCount: islandExperiencePack.experienceCount,
         anchorCount: islandExperiencePack.anchorCount,
         safetyBoundary: islandExperiencePack.safetyBoundary,
+        currentFactsCheckedAt: islandCurrentFacts.checkedAt,
+        currentFactCount: islandCurrentFacts.facts.length,
       },
       world: {
         title: "欠けた潮星",

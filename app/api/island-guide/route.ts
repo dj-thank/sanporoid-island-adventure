@@ -1,5 +1,5 @@
 import { getChatGPTUser } from "../../chatgpt-auth";
-import { experiencesFor, type TripIslandSlug } from "../../adventure/islandKnowledge";
+import { currentFactsFor, experiencesFor, islandCurrentFacts, type TripIslandSlug } from "../../adventure/islandKnowledge";
 import { islandsBySlug, type Island } from "../../discover/island-data";
 
 const allowedIslands = new Set<Island["slug"]>(["kozushima", "niijima", "shikinejima"]);
@@ -30,6 +30,7 @@ export async function POST(request: Request) {
 
   const island = islandsBySlug[slug];
   const researchedExperiences = experiencesFor(slug as TripIslandSlug);
+  const currentFacts = currentFactsFor(slug as TripIslandSlug);
   const context = [
     `島: ${island.name} (${island.english})`,
     `概要: ${island.shortIntro}`,
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
     `基本情報: ${island.facts.map((fact) => `${fact.label}=${fact.value}`).join(" / ")}`,
     `候補スポット: ${island.spots.map((spot) => `${spot.title}: ${spot.summary}`).join(" / ")}`,
     `写真ミッション: ${island.friendMissions.map((mission) => `${mission.title}: ${mission.copy}`).join(" / ")}`,
+    `現行公式情報（${islandCurrentFacts.checkedAt}確認）:\n${currentFacts.map((entry) => `- ${entry.category}｜${entry.title}｜事実=${entry.facts.join("、")}｜注意=${entry.cautions.join("、")}｜出典=${entry.sources.map((source) => source.url).join(" ")}`).join("\n")}`,
     `Sanporoid全国・関東調査からの島別候補（${researchedExperiences.length}件、候補であり安全確認済み連続ルートではない）:\n${researchedExperiences.map((entry) => [
       `- ${entry.title}`,
       `順番候補=${entry.orderedStops.join(" → ")}`,

@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-08-28",
+  "facts": [
+    {
+      "id": "kozu-camp-current",
+      "island": "神津島",
+      "category": "宿泊・キャンプ",
+      "title": "指定キャンプ場以外の野営は禁止",
+      "status": "morning_confirmation_required",
+      "relatedNames": ["多幸湾"],
+      "facts": ["村の案内に掲載されるキャンプ場は都立多幸湾公園ファミリーキャンプ場とジョイキャンプだいじんこ", "多幸湾ファミリーキャンプ場を除く区域は条例上のキャンプ・野宿禁止区域"],
+      "cautions": ["今回の受入可否は朝に確認", "空き・予約・営業を確定扱いしない"],
+      "sources": [{"label": "神津島村 キャンプ場利用案内", "url": "https://www.vill.kouzushima.tokyo.jp/camp/"}]
+    },
+    {
+      "id": "kozu-tenjo-current",
+      "island": "神津島",
+      "category": "山・通行",
+      "title": "天上山は一部通行止め、夜間入山を避ける",
+      "status": "partial_closure_current",
+      "relatedNames": ["天上山"],
+      "facts": ["不入が沢付近から頂上へ向かう一部区間は崩落のおそれで通行止め", "公式案内は日没から日の出まで天上山への入山を控えるよう案内"],
+      "cautions": ["現地案内と最新迂回情報を優先", "星空観察のために夜間登山しない"],
+      "sources": [{"label": "神津島観光協会 通行禁止区間", "url": "https://kozushima.com/info/%E5%A4%A9%E4%B8%8A%E5%B1%B1%E7%99%BB%E5%B1%B1%E9%81%93%E3%80%80%E9%80%9A%E8%A1%8C%E6%AD%A2%E3%82%81%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6/"}, {"label": "神津島 星空観察マナー", "url": "https://kozushima.com/newsite/wp-content/uploads/2024/09/Kozu_fin.pdf"}]
+    },
+    {
+      "id": "kozu-stars-current",
+      "island": "神津島",
+      "category": "星空",
+      "title": "星空保護区と、足元の安全・光害マナー",
+      "status": "official_guidance",
+      "relatedNames": ["よたね広場", "前浜海岸", "多幸湾"],
+      "facts": ["神津島は2020年12月に星空保護区へ認定", "よたね広場は集落から徒歩圏でトイレ・自動販売機がある公式観賞地点", "満月前後は見える星が少なくなる"],
+      "cautions": ["ライトを持ち足元に注意", "不要な灯りとレーザーポインターを避ける", "海鳥を照らさない"],
+      "sources": [{"label": "神津島まるごとプラネタリウム", "url": "https://kozushima.com/star/"}, {"label": "よたね広場", "url": "https://kozushima.com/star/info/%E3%82%88%E3%81%9F%E3%81%AD%E5%BA%83%E5%A0%B4/"}]
+    },
+    {
+      "id": "kozu-emergency-current",
+      "island": "神津島",
+      "category": "医療・防災",
+      "title": "診療所と津波・火山ハザードをオフライン確認",
+      "status": "official_emergency_reference",
+      "relatedNames": ["神津島港", "前浜海岸", "多幸湾"],
+      "facts": ["神津島村診療所は総合診療を行い電話は24時間接続", "診療所電話 04992-8-1121", "村は津波浸水・土砂・火山の防災マップを公開"],
+      "cautions": ["緊急時はアプリの観光情報より119・現地放送・避難誘導を優先"],
+      "sources": [{"label": "神津島村 病気になったときには", "url": "https://www.vill.kouzushima.tokyo.jp/images/2025/06/20250618-byouki.pdf"}, {"label": "神津島村 防災", "url": "https://www.vill.kouzushima.tokyo.jp/bousai/"}]
+    },
+    {
+      "id": "niijima-camp-current",
+      "island": "新島",
+      "category": "宿泊・キャンプ",
+      "title": "羽伏浦野営場は通年・先着の当日受付",
+      "status": "official_current_rules",
+      "relatedNames": ["羽伏浦海岸", "新島スポーツ広場"],
+      "facts": ["予約不要・通年利用", "利用開始日の9:00〜16:00にクラブハウスでキャンプ届", "先着順・1日100名・連続5泊6日まで・無料", "トイレ・炊事場・水シャワーはあるが電源と貸テント販売はない"],
+      "cautions": ["木曜開始は翌日に届出", "大荷物を村営バスに載せられない", "島内の野宿は禁止"],
+      "sources": [{"label": "新島村 羽伏浦野営場", "url": "https://www.niijima.com/soshiki/sangyoukankouka/news/2023-1026-1806-101.html"}]
+    },
+    {
+      "id": "niijima-art-current",
+      "island": "新島",
+      "category": "文化・雨天",
+      "title": "コーガ石とガラス文化を雨天ルートに",
+      "status": "official_current_facility",
+      "relatedNames": ["新島ガラスアートセンター", "新島村博物館"],
+      "facts": ["ガラスアートセンターは10:00〜16:30、火曜・年末年始休、12:00〜13:00休憩", "絵付け体験は要予約", "現代ガラスアートミュージアムは2026年4月にリニューアルオープン", "新島村博物館は2026年の企画展示を案内"],
+      "cautions": ["体験・展示の当日開館と予約枠を確認"],
+      "sources": [{"label": "新島村 ガラスアートセンター", "url": "https://niijima.com/facility/community/glassartcenter.html"}, {"label": "新島村 ミュージアム再開", "url": "https://www.niijima.com/soshiki/sangyoukankouka/news/2026-0417-1405-101.html"}, {"label": "新島村博物館", "url": "https://www.niijima.com/facility/community/hakubutsukan/"}]
+    },
+    {
+      "id": "niijima-emergency-current",
+      "island": "新島",
+      "category": "医療・防災",
+      "title": "本村診療所と津波避難図",
+      "status": "official_emergency_reference",
+      "relatedNames": ["新島港", "前浜海岸"],
+      "facts": ["本村診療所は平日午前、受付8:30〜11:30・診療9:00〜12:00", "休診時間の急患連絡は04992-5-0083", "新島村は津波ハザードマップと避難場所を公開"],
+      "cautions": ["緊急時は119・現地放送・避難誘導を優先"],
+      "sources": [{"label": "新島村 診療案内", "url": "https://niijima.com/facility/health-center_clinic/shinryoujo/annai/index.html"}, {"label": "新島村 津波ハザードマップ", "url": "https://www.niijima.com/bousai/bousai_map.html"}]
+    },
+    {
+      "id": "niijima-summer-current",
+      "island": "新島",
+      "category": "海・夏期ルール",
+      "title": "2026年夏期ルールは8月31日まで",
+      "status": "current_2026_notice",
+      "relatedNames": ["羽伏浦海岸", "前浜海岸"],
+      "facts": ["新島地区の令和8年夏期申し合わせ期間は7月18日〜8月31日"],
+      "cautions": ["海岸図面・遊泳・採取・火気等の現地ルールを確認"],
+      "sources": [{"label": "新島村 令和8年夏期申し合わせ", "url": "https://niijima.com/soshiki/sangyoukankouka/news/2026-0809-1517-27.html"}]
+    },
+    {
+      "id": "shikine-camp-current",
+      "island": "式根島",
+      "category": "宿泊・キャンプ",
+      "title": "式根島の野営場は継続閉場、野宿禁止",
+      "status": "current_closed",
+      "relatedNames": ["野伏港", "大浦海水浴場"],
+      "facts": ["新島村の現行案内は管理体制の都合により式根島地区の野営場を継続閉場中としている", "新島・式根島とも島内の野宿は禁止"],
+      "cautions": ["古いパンフレットの開場期間を現行情報として使わない", "今回は日帰りで新島へ戻る"],
+      "sources": [{"label": "新島村 野営場現行案内", "url": "https://www.niijima.com/soshiki/sangyoukankouka/news/2023-1026-1806-101.html"}]
+    },
+    {
+      "id": "shikine-onsen-stars-current",
+      "island": "式根島",
+      "category": "温泉・星空",
+      "title": "地鉈温泉と星空は暗さ・潮・足元をセットで",
+      "status": "official_guidance",
+      "relatedNames": ["地鉈温泉", "泊海水浴場", "神引展望台", "野伏港"],
+      "facts": ["地鉈温泉は無料・24時間・水着着用、源泉約80度で潮により適温が変化", "式根島観光協会は神引展望台・出会い橋・大浦・泊・野伏港・小の口公園を星空地点として案内"],
+      "cautions": ["夜道は街灯が少ないためライト必携", "二人以上で行動", "住民への騒音を避ける", "地鉈は足元と湯温を確認"],
+      "sources": [{"label": "式根島 地鉈温泉", "url": "https://shikinejima.tokyo/hotspring/jinata/"}, {"label": "式根島 星空", "url": "https://shikinejima.tokyo/play/star/"}]
+    },
+    {
+      "id": "shikine-emergency-current",
+      "island": "式根島",
+      "category": "医療・防災",
+      "title": "式根島診療所と津波避難図",
+      "status": "official_emergency_reference",
+      "relatedNames": ["野伏港", "泊海水浴場", "石白川海水浴場"],
+      "facts": ["式根島診療所は平日午前、受付8:30〜11:30・診療9:00〜12:00", "休診時間の急患連絡は04992-7-0019", "新島村ハザードマップに式根島の津波避難経路と施設が掲載"],
+      "cautions": ["緊急時は119・現地放送・避難誘導を優先"],
+      "sources": [{"label": "新島村 診療案内", "url": "https://niijima.com/facility/health-center_clinic/shinryoujo/annai/index.html"}, {"label": "新島村 津波ハザードマップ", "url": "https://www.niijima.com/bousai/bousai_map.html"}]
+    },
+    {
+      "id": "shikine-summer-current",
+      "island": "式根島",
+      "category": "海・夏期ルール",
+      "title": "2026年式根島夏期ルールは7〜9月",
+      "status": "current_2026_notice",
+      "relatedNames": ["泊海水浴場", "大浦海水浴場", "中の浦海水浴場", "石白川海水浴場"],
+      "facts": ["令和8年式根島地区夏期申し合わせ期間は7月〜9月", "公式海水浴案内は採取禁止・火気禁止・危険生物に触れない・ライフガード指示を案内"],
+      "cautions": ["ライフガードや売店は夏期のみでも毎日の配置を保証しない", "海況と現地掲示を優先"],
+      "sources": [{"label": "新島村 令和8年夏期申し合わせ", "url": "https://niijima.com/soshiki/sangyoukankouka/news/2026-0809-1517-27.html"}, {"label": "式根島 海水浴", "url": "https://shikinejima.tokyo/play/beach/"}]
+    }
+  ]
+}

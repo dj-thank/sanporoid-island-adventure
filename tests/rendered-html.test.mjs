@@ -251,6 +251,9 @@ test("server-renders the installable Sanporoid island adventure", async () => {
   assert.match(html, /開拓フィールドノート/);
   assert.match(html, /SANPOROID ISLAND INTELLIGENCE/);
   assert.match(html, /候補 ≠ 安全確認済みルート/);
+  assert.match(html, /指定キャンプ場以外の野営は禁止/);
+  assert.match(html, /CHECKED/);
+  assert.match(html, /2026-08-28/);
 });
 
 test("keeps the PWA shell offline without caching private API data", async () => {
@@ -283,16 +286,21 @@ test("computes the night sky locally and requests sensor permission explicitly",
 });
 
 test("imports every researched trip-island candidate into the map and LLM context", async () => {
-  const [rawPack, mapKnowledge, guideRoute] = await Promise.all([
+  const [rawPack, rawCurrentFacts, mapKnowledge, guideRoute] = await Promise.all([
     readFile(new URL("../app/adventure/island-experience-pack.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/island-current-facts.json", import.meta.url), "utf8"),
     readFile(new URL("../app/adventure/islandKnowledge.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/api/island-guide/route.ts", import.meta.url), "utf8"),
   ]);
   const pack = JSON.parse(rawPack);
+  const currentFacts = JSON.parse(rawCurrentFacts);
   assert.equal(pack.experienceCount, 19);
   assert.equal(pack.anchorCount, 3);
   assert.deepEqual(Object.fromEntries(["神津島", "新島", "式根島"].map((name) => [name, pack.experiences.filter((entry) => entry.island === name).length])), { 神津島: 7, 新島: 5, 式根島: 7 });
   assert.equal(pack.experiences.every((entry) => entry.officialSources.length > 0 && entry.sharedTransportGate), true);
+  assert.equal(currentFacts.checkedAt, "2026-08-28");
+  assert.equal(currentFacts.facts.length, 12);
+  assert.equal(currentFacts.facts.every((entry) => entry.sources.length > 0 && entry.cautions.length > 0), true);
   assert.match(mapKnowledge, /enrichMapPointsWithResearch/);
   assert.match(mapKnowledge, /cautions/);
   assert.match(guideRoute, /researchedExperiences/);
@@ -323,6 +331,7 @@ test("gives the Bot a scoped read-only trip and island context", async () => {
   assert.deepEqual(payload.islands.map((island) => island.name), ["神津島", "新島", "式根島"]);
   assert.deepEqual(payload.islands.map((island) => island.researchedExperienceCount), [7, 5, 7]);
   assert.equal(payload.researchPack.experienceCount, 19);
+  assert.equal(payload.researchPack.currentFactCount, 12);
   assert.match(payload.researchPack.safetyBoundary, /not verified continuous walking routes/);
   assert.equal(payload.writeCapabilities, false);
 });
