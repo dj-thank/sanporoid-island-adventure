@@ -5,6 +5,7 @@
 .toolbar strong { font-size: 15px; }
 .toolbar > div:last-child { display: flex; gap: 7px; }
 .toolbar button { padding: 9px 11px; color: #fffdf4; background: transparent; border: 1px solid rgba(255,255,255,.42); border-radius: 999px; font-size: 11px; font-weight: 900; cursor: pointer; }
+.toolbar button:disabled { opacity: .55; cursor: default; }
 .viewport { width: 100%; height: min(68vh, 640px); min-height: 500px; background: radial-gradient(circle, #214b59, #06171d); }
 .viewport :global(.cesium-viewer-bottom) { font-size: 9px; }
 .viewport :global(.cesium-widget-credits) { font-size: 9px; }

@@ -288,6 +288,8 @@ test("uses Cesium as the adventure map with a token-free mobile fallback", async
   assert.match(component, /GridImageryProvider/);
   assert.match(component, /requestRenderMode:\s*true/);
   assert.match(component, /resolutionScale/);
+  assert.match(component, /IntersectionObserver/);
+  assert.match(component, /3D起動/);
   assert.match(component, /currentPosition/);
   assert.doesNotMatch(component, /Ion\.defaultAccessToken\s*=/);
   assert.match(viteConfig, /cesiumStatic/);

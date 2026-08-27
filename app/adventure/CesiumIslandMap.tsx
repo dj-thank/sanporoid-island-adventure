@@ -21,12 +21,27 @@ const pointColors: Record<string, string> = {
 };
 
 export default function CesiumIslandMap({ center, islandName, points, currentPosition, onRequestLocation }: Props) {
+  const shellRef = useRef<HTMLElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewerRef = useRef<CesiumViewer | null>(null);
   const cesiumRef = useRef<typeof import("cesium") | null>(null);
   const [selected, setSelected] = useState<MapPoint | null>(null);
-  const [status, setStatus] = useState("3D地図を準備しています…");
+  const [status, setStatus] = useState("地図までスクロールするか「3D起動」を押すと読み込みます。");
   const [mode, setMode] = useState<"3D" | "2D">("3D");
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    const shell = shellRef.current;
+    if (!shell || typeof IntersectionObserver === "undefined") {
+      const fallback = window.setTimeout(() => setShouldLoad(true), 0);
+      return () => window.clearTimeout(fallback);
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setShouldLoad(true); observer.disconnect(); }
+    }, { rootMargin: "300px" });
+    observer.observe(shell);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -34,7 +49,7 @@ export default function CesiumIslandMap({ center, islandName, points, currentPos
     let imageryErrorListener: (() => void) | undefined;
 
     async function initialize() {
-      if (!containerRef.current || viewerRef.current) return;
+      if (!shouldLoad || !containerRef.current || viewerRef.current) return;
       try {
         const Cesium = await import("cesium");
         if (cancelled || !containerRef.current) return;
@@ -97,7 +112,7 @@ export default function CesiumIslandMap({ center, islandName, points, currentPos
       viewerRef.current = null;
       cesiumRef.current = null;
     };
-  }, [center, points]);
+  }, [center, points, shouldLoad]);
 
   useEffect(() => {
     const Cesium = cesiumRef.current;
@@ -135,10 +150,10 @@ export default function CesiumIslandMap({ center, islandName, points, currentPos
   }
 
   return (
-    <section className={styles.cesiumShell} aria-label={`${islandName}のCesium開拓地図`}>
+    <section ref={shellRef} className={styles.cesiumShell} aria-label={`${islandName}のCesium開拓地図`}>
       <div className={styles.toolbar}>
         <div><small>CESIUM 3D ISLAND EXPLORER</small><strong>{islandName} · {points.length}地点レイヤー</strong></div>
-        <div><button onClick={onRequestLocation}>現在地</button><button onClick={resetView}>島全体</button><button onClick={toggleMode}>{mode === "3D" ? "2Dへ" : "3Dへ"}</button></div>
+        <div><button onClick={() => setShouldLoad(true)} disabled={shouldLoad}>{shouldLoad ? "3D読込済み" : "3D起動"}</button><button onClick={onRequestLocation}>現在地</button><button onClick={resetView}>島全体</button><button onClick={toggleMode}>{mode === "3D" ? "2Dへ" : "3Dへ"}</button></div>
       </div>
       <div className={styles.viewport} ref={containerRef} />
       <p className={styles.status} aria-live="polite">{status}</p>
