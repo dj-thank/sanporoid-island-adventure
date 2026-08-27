@@ -1,0 +1,241 @@
+.appShell {
+  min-height: 100vh;
+  color: #17323a;
+  background: #f8f4f0;
+  overflow: hidden;
+}
+
+.hero {
+  position: relative;
+  min-height: 620px;
+  padding: 24px clamp(22px, 5vw, 76px) 64px;
+  color: #fffdf4;
+  background:
+    linear-gradient(115deg, rgba(14, 55, 62, 0.98), rgba(12, 101, 115, 0.82) 52%, rgba(108, 159, 182, 0.5)),
+    url("/photos/kozushima-tako.jpg") center / cover;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.28;
+  background-image: linear-gradient(rgba(255,255,255,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.09) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+.hero nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,.3);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.hero nav a { color: inherit; text-decoration: none; }
+.hero nav span { margin-left: auto; color: #d6ea4b; }
+
+.heroCopy {
+  position: relative;
+  z-index: 2;
+  max-width: 850px;
+  margin: clamp(76px, 11vw, 140px) 0 0;
+}
+
+.heroCopy p, .heroCopy span { margin: 0; font-size: 12px; font-weight: 800; letter-spacing: .14em; }
+.heroCopy p { color: #d6ea4b; }
+.heroCopy h1 { margin: 16px 0 6px; font-size: clamp(58px, 10vw, 140px); line-height: .88; letter-spacing: -.08em; }
+.heroCopy strong { display: block; color: #ffd9a6; font-size: clamp(22px, 3.4vw, 44px); }
+.heroCopy span { display: block; max-width: 580px; margin-top: 22px; line-height: 1.8; letter-spacing: .02em; }
+
+.heroCompanion {
+  position: absolute;
+  z-index: 2;
+  right: clamp(20px, 7vw, 110px);
+  bottom: 38px;
+  width: min(29vw, 330px);
+  text-align: center;
+}
+
+.heroCompanion > img:first-child { position: relative; z-index: 2; width: 100%; image-rendering: auto; filter: drop-shadow(0 18px 24px rgba(0,0,0,.24)); }
+.heroShadow { position: absolute; left: 16%; bottom: 36px; width: 70%; opacity: .46; }
+.heroCompanion p { position: relative; z-index: 3; margin: -5px 0 0; padding: 12px 16px; color: #17323a; background: #fffdf4; border: 2px solid #17323a; border-radius: 16px; font-size: 13px; font-weight: 800; }
+
+.dayTabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 1220px;
+  margin: -28px auto 0;
+  padding: 0 22px;
+  position: relative;
+  z-index: 4;
+}
+
+.dayTabs button {
+  display: grid;
+  gap: 5px;
+  min-height: 124px;
+  padding: 22px;
+  text-align: left;
+  color: #17323a;
+  background: #fffdf4;
+  border: 1px solid rgba(23,50,58,.18);
+  cursor: pointer;
+}
+
+.dayTabs button:first-child { border-radius: 18px 0 0 18px; }
+.dayTabs button:last-child { border-radius: 0 18px 18px 0; }
+.dayTabs .activeTab { color: #fffdf4; background: #0c6573; transform: translateY(-8px); box-shadow: 0 16px 36px rgba(12,101,115,.22); }
+.dayTabs small { color: #e76f51; font-weight: 900; letter-spacing: .12em; }
+.dayTabs strong { font-size: 26px; }
+.dayTabs span { font-size: 12px; opacity: .78; }
+
+.worldBrief {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 22px;
+  max-width: 1176px;
+  margin: 40px auto 0;
+  padding: 0 22px;
+}
+
+.worldLead { grid-row: span 2; padding: 30px; color: #fffdf4; background: #17323a; border-radius: 18px; }
+.worldLead small, .chapterGrid span, .roleRail > span { color: #d6ea4b; font-size: 10px; font-weight: 900; letter-spacing: .14em; }
+.worldLead h2 { margin: 12px 0; font-size: clamp(32px, 4vw, 56px); line-height: 1.02; }
+.worldLead p { color: #d8e4e2; line-height: 1.85; }
+.worldLead dl { display: grid; gap: 8px; margin: 24px 0 0; }
+.worldLead dl div { display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; border-top: 1px solid rgba(255,255,255,.16); }
+.worldLead dt { color: #a9bfbb; }
+.worldLead dd { margin: 0; font-weight: 900; }
+.chapterGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.chapterGrid article { padding: 20px; background: #fffdf4; border: 1px solid rgba(23,50,58,.16); border-radius: 15px; }
+.chapterGrid span { color: #e76f51; }
+.chapterGrid h3 { margin: 9px 0; font-size: 21px; }
+.chapterGrid p { margin: 0; color: #53686e; font-size: 13px; line-height: 1.7; }
+.roleRail { display: grid; grid-template-columns: auto repeat(4, 1fr); gap: 8px; align-items: stretch; }
+.roleRail > span { display: grid; place-items: center; padding: 10px; color: #17323a; writing-mode: vertical-rl; }
+.roleRail div { display: grid; gap: 4px; padding: 13px; color: #17323a; background: #d6ea4b; border-radius: 12px; }
+.roleRail b { font-size: 10px; }
+.roleRail strong { font-size: 15px; }
+.roleRail small { font-size: 10px; line-height: 1.45; }
+
+.mapMissionSection {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(340px, .85fr);
+  gap: 24px;
+  max-width: 1220px;
+  margin: 42px auto 0;
+  padding: 0 22px 80px;
+}
+
+.mapPanel, .missionPanel, .photoLab, .guideSection {
+  border: 1px solid rgba(23,50,58,.16);
+  background: #fffdf4;
+  box-shadow: 0 24px 60px rgba(23,50,58,.08);
+}
+
+.mapHeading, .missionPanel > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  border-bottom: 1px solid rgba(23,50,58,.14);
+}
+
+.mapHeading small, .missionPanel header small, .photoLab header small, .guideIntro small { color: #e76f51; font-weight: 900; letter-spacing: .14em; }
+.mapHeading h2, .missionPanel h2, .photoLab h2, .guideIntro h2 { margin: 4px 0 0; font-size: clamp(25px, 3vw, 42px); }
+.mapHeading button { padding: 12px 18px; color: #fff; background: #0c6573; border: 0; border-radius: 999px; font-weight: 800; cursor: pointer; }
+.mapWrap { position: relative; margin: 18px; border: 4px solid #17323a; border-radius: 18px; overflow: hidden; }
+.mapWrap :global(.leaflet-tile-pane) { filter: saturate(.78) sepia(.13) brightness(1.04); }
+.mapWrap :global(.leaflet-container) { min-height: 520px; background: #aecfe2; }
+.mapCompanion { position: absolute; z-index: 550; right: 22px; bottom: 20px; width: 104px; pointer-events: none; filter: drop-shadow(0 10px 12px rgba(0,0,0,.2)); }
+.arrivalRing { position: absolute; z-index: 540; right: 26px; bottom: 10px; width: 96px; opacity: .72; pointer-events: none; }
+.locationMessage { margin: 0 22px 6px; font-weight: 800; }
+.privacyNote { margin: 0 22px 22px; color: #5d7278; font-size: 12px; line-height: 1.6; }
+
+.missionPanel header > span { display: grid; place-items: center; width: 64px; height: 64px; color: #fff; background: #17323a; border-radius: 50%; font-weight: 900; }
+.checkpointList { display: grid; gap: 12px; padding: 16px; }
+.checkpointList article { position: relative; padding: 18px; border: 1px solid rgba(23,50,58,.16); border-radius: 15px; background: #f8f4f0; }
+.checkpointList article.completed { border-color: #6a9944; background: #eef5e5; }
+.checkpointTop { display: flex; justify-content: space-between; color: #0c6573; font-size: 11px; font-weight: 900; letter-spacing: .1em; }
+.checkpointList h3 { margin: 10px 0 4px; font-size: 24px; }
+.checkpointList article > strong { display: block; color: #e76f51; }
+.checkpointList article > p { margin: 8px 0 14px; color: #4f666d; line-height: 1.65; }
+.checkpointActions { display: flex; gap: 8px; }
+.checkpointActions button, .checkpointActions label { flex: 1; padding: 11px; border: 1px solid #17323a; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 900; cursor: pointer; }
+.checkpointActions button { color: #fff; background: #17323a; }
+.checkpointActions label { color: #17323a; background: #fffdf4; }
+.checkpointActions label.locked { opacity: .35; cursor: not-allowed; }
+.checkpointActions input { display: none; }
+.reward { display: block; margin-top: 12px; color: #6a9944; font-weight: 900; letter-spacing: .08em; }
+
+.photoLab, .guideSection { max-width: 1176px; margin: 0 auto 36px; }
+.photoLab > header { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: end; padding: 34px; border-bottom: 1px solid rgba(23,50,58,.14); }
+.photoLab header p { margin: 0; color: #4f666d; line-height: 1.8; }
+.photoEmpty { display: flex; align-items: center; justify-content: center; gap: 32px; min-height: 260px; padding: 32px; text-align: left; }
+.photoEmpty img { width: 150px; }
+.photoEmpty p { max-width: 520px; line-height: 1.9; font-weight: 700; }
+.photoGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 18px; }
+.photoGrid figure { position: relative; min-height: 330px; margin: 0; overflow: hidden; background: #17323a; border: 6px solid var(--oddity-color); }
+.photoGrid figure > img { width: 100%; height: 330px; object-fit: cover; }
+.photoGrid figcaption { position: absolute; inset: auto 0 0; padding: 50px 16px 16px; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.86)); }
+.photoGrid figcaption small, .photoGrid figcaption span { display: block; font-size: 10px; font-weight: 900; letter-spacing: .1em; }
+.photoGrid figcaption strong { display: block; margin: 4px 0; font-size: 25px; }
+
+.guideSection { display: grid; grid-template-columns: .75fr 1.25fr; }
+.guideIntro { padding: 34px; color: #fffdf4; background: #0c6573; }
+.guideIntro p { line-height: 1.8; }
+.guideForm { display: grid; gap: 14px; padding: 28px; }
+.guideForm label { display: grid; gap: 7px; font-size: 12px; font-weight: 900; }
+.guideForm > div { display: grid; grid-template-columns: 1fr 180px; gap: 10px; }
+.guideForm textarea, .guideForm input, .guideForm select { width: 100%; padding: 12px; border: 1px solid rgba(23,50,58,.3); border-radius: 9px; background: #fff; font: inherit; }
+.guideForm > p { margin: 0; color: #5d7278; font-size: 11px; line-height: 1.6; }
+.guideForm button { padding: 14px; color: #fff; background: #17323a; border: 0; border-radius: 10px; font-weight: 900; cursor: pointer; }
+.guideForm button:disabled { opacity: .5; }
+.error { color: #9d2c19 !important; font-weight: 800; }
+.answer { grid-column: 1 / -1; padding: 24px 34px; border-top: 1px solid rgba(23,50,58,.14); background: #f1eadf; line-height: 1.9; white-space: pre-wrap; }
+
+.footer { display: flex; align-items: center; justify-content: center; gap: 28px; padding: 56px 24px 70px; color: #fffdf4; background: #17323a; }
+.footer img { width: 130px; }
+.footer strong { display: block; font-size: clamp(22px, 3vw, 38px); }
+.footer p { color: #b8c9c7; }
+
+@media (max-width: 880px) {
+  .hero { min-height: 700px; }
+  .heroCompanion { width: 190px; right: 20px; }
+  .heroCopy { margin-top: 70px; max-width: 560px; }
+  .mapMissionSection, .guideSection { grid-template-columns: 1fr; }
+  .photoGrid { grid-template-columns: repeat(2, 1fr); }
+  .worldBrief { grid-template-columns: 1fr; }
+  .worldLead { grid-row: auto; }
+  .roleRail { grid-template-columns: repeat(2, 1fr); }
+  .roleRail > span { grid-column: 1 / -1; writing-mode: horizontal-tb; }
+}
+
+@media (max-width: 620px) {
+  .hero { min-height: 740px; }
+  .hero nav { gap: 12px; font-size: 10px; }
+  .hero nav span { display: none; }
+  .heroCopy h1 { font-size: 63px; }
+  .heroCompanion { width: 160px; }
+  .dayTabs { grid-template-columns: 1fr; margin-top: -18px; }
+  .dayTabs button, .dayTabs button:first-child, .dayTabs button:last-child { border-radius: 13px; }
+  .dayTabs .activeTab { transform: translateX(8px); }
+  .worldBrief { padding-inline: 12px; }
+  .chapterGrid { grid-template-columns: 1fr; }
+  .mapMissionSection { padding-inline: 12px; }
+  .mapWrap :global(.leaflet-container) { min-height: 430px; }
+  .photoLab, .guideSection { margin-inline: 12px; }
+  .photoLab > header { grid-template-columns: 1fr; gap: 12px; }
+  .photoGrid { grid-template-columns: 1fr; }
+  .guideForm > div { grid-template-columns: 1fr; }
+  .footer { align-items: flex-start; }
+  .footer img { width: 90px; }
+}

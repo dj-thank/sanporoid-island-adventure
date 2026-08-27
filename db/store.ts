@@ -33,6 +33,8 @@ const DISCORD_ROUTE_RECONCILIATION = "reconcile:discord-route-choice:v2";
 const OFFICIAL_SCHEDULE_RECONCILIATION = "reconcile:official-schedule:2026-08-10";
 const DISCORD_NIIJIMA_DECISION_RECONCILIATION = "reconcile:discord-niijima-decision:2026-08-12:v1";
 const CAMPING_DECISION_RECONCILIATION = "reconcile:three-tent-nights-and-rental-cars:2026-08-12:v1";
+const CONFIRMED_THREE_ISLAND_ROUTE_RECONCILIATION = "reconcile:confirmed-route-kozushima-niijima-shikinejima:2026-08-28:v1";
+const CONFIRMED_LODGING_RECONCILIATION = "reconcile:confirmed-lodging-kozushima-niijima-niijima:2026-08-28:v1";
 const FIXED_CAMPING_PLAN_TITLE = "決定｜3泊すべて指定キャンプ場＋各島レンタカー";
 const FIXED_CAMPING_CONCEPT = "友達との3泊4日。三晩とも指定キャンプ場でテント泊し、島ごとにレンタカーを借りる。宿泊形式は決定、島の順番は予約成立後に確定する。";
 const FIXED_CAMPING_DETAILS = "宿には泊まらない。指定場所以外の野営はせず、三晩とも公式のキャンプ施設を使う。車は旅客船へ載せず、各島で受取・返却する。";
@@ -188,9 +190,47 @@ export async function ensureTripStore() {
   await reconcileDiscordNiijimaDecision(db, tripId);
   await reconcileCampingDecision(db, tripId);
   await enforceCampingDecision(db, tripId);
+  await reconcileConfirmedThreeIslandRoute(db, tripId);
+  await reconcileConfirmedLodging(db, tripId);
 
   await db.prepare("PRAGMA optimize").run();
   return { db, tripId };
+}
+
+async function reconcileConfirmedThreeIslandRoute(db: D1Database, tripId: number) {
+  const alreadyReconciled = await db
+    .prepare("SELECT id FROM activity WHERE external_id = ?")
+    .bind(CONFIRMED_THREE_ISLAND_ROUTE_RECONCILIATION)
+    .first();
+  if (alreadyReconciled) return;
+
+  const routeLabel = "決定｜神津島 → 新島 → 式根島";
+  const concept = "友達との3泊4日。8/29神津島、8/30新島、8/31式根島の順番は決定。8/31式根島は日帰り、8/31も新島泊。神津島キャンプは朝確認し、船便・空席・当日の港は公式情報を再確認する。";
+  const details = "8/29に神津島へ入り、8/30に新島へ移動。8/31は連絡船にしきで式根島を日帰りし、16:00発で新島へ戻る。宿泊は神津島、新島、新島。";
+
+  await db.batch([
+    db.prepare("UPDATE trips SET concept = ?, route_label = ?, status = 'planning', budget_min_yen = 0, budget_max_yen = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+      .bind(concept, routeLabel, tripId),
+    db.prepare("UPDATE plan_entries SET status = 'rejected', updated_at = CURRENT_TIMESTAMP WHERE trip_id = ? AND status = 'adopted' AND title LIKE '決定｜神津島%' AND title <> ?")
+      .bind(tripId, routeLabel),
+    db.prepare("INSERT INTO plan_entries (trip_id, date, time, title, details, status, source, sort_order, cost_yen, created_by) SELECT ?, '8/29–9/1', '', ?, ?, 'adopted', 'voice', 1, 0, 'OpenClos' WHERE NOT EXISTS (SELECT 1 FROM plan_entries WHERE trip_id = ? AND title = ?)")
+      .bind(tripId, routeLabel, details, tripId, routeLabel),
+  ]);
+  await addActivity(tripId, "route-confirmed", `${routeLabel}を現行SSOTへ反映。式根島は指定宿泊先が必要`, "OpenClos", CONFIRMED_THREE_ISLAND_ROUTE_RECONCILIATION);
+}
+
+async function reconcileConfirmedLodging(db: D1Database, tripId: number) {
+  const alreadyReconciled = await db.prepare("SELECT id FROM activity WHERE external_id = ?").bind(CONFIRMED_LODGING_RECONCILIATION).first();
+  if (alreadyReconciled) return;
+  const lodgingTitle = "決定｜宿泊は神津島 → 新島 → 新島";
+  const details = "新島の宿泊先は確保済み（詳細は公開しない）。8/31は式根島へ日帰りし、新島へ戻る。神津島キャンプ場は朝Botが受入状況を確認する。";
+  await db.batch([
+    db.prepare("UPDATE trips SET concept = ?, route_label = ?, status = 'planning', updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+      .bind("8/29神津島、8/30新島、8/31式根島。宿泊は神津島 → 新島 → 新島。式根島は日帰りで、神津島キャンプは朝確認中。", "決定｜神津島 → 新島 → 式根島", tripId),
+    db.prepare("INSERT INTO plan_entries (trip_id, date, time, title, details, status, source, sort_order, cost_yen, created_by) SELECT ?, '8/29–9/1', '', ?, ?, 'adopted', 'voice', 2, 0, 'OpenClos' WHERE NOT EXISTS (SELECT 1 FROM plan_entries WHERE trip_id = ? AND title = ?)")
+      .bind(tripId, lodgingTitle, details, tripId, lodgingTitle),
+  ]);
+  await addActivity(tripId, "lodging-confirmed", "宿泊は神津島・新島・新島。式根島は日帰り、神津キャンプは朝確認", "OpenClos", CONFIRMED_LODGING_RECONCILIATION);
 }
 
 async function reconcileCampingDecision(db: D1Database, tripId: number) {

@@ -30,12 +30,12 @@ function ExternalLink({ href, children, className }: { href: string; children: R
 
 const northRoute = ["oshima", "toshima", "niijima", "shikinejima", "kozushima"] as const;
 const southRoute = ["miyakejima", "mikurajima", "hachijojima"] as const;
-const routeCandidate = ["kozushima", "niijima", "oshima"] as const;
+const routeCandidate = ["kozushima", "niijima", "shikinejima"] as const;
 
 export default function DiscoverPage() {
   const kozushima = islandsBySlug.kozushima;
   const niijima = islandsBySlug.niijima;
-  const oshima = islandsBySlug.oshima;
+  const shikinejima = islandsBySlug.shikinejima;
 
   return (
     <main className={styles.magazine}>
@@ -53,9 +53,9 @@ export default function DiscoverPage() {
       <section className={styles.coverStory}>
         <div className={styles.coverIntro}>
           <div className={styles.issueLine}><span>FIELD JOURNAL 003</span><span>ALL 8 TOKAI KISEN ISLANDS</span></div>
-          <p className={styles.coverKicker}>3 NIGHTS / TENT + RENTAL CAR</p>
+          <p className={styles.coverKicker}>3 ISLANDS / KOZUSHIMA CAMP + NIIJIMA 2 NIGHTS</p>
           <h1><span>三晩とも、</span><span>島で眠る。</span></h1>
-          <p className={styles.coverDeck}>宿には泊まらない。三晩とも指定キャンプ場へ行き、島ごとに車を借りる。これは決定事項です。島はまだ決め切らず、2026年の営業と船が本当に噛み合う順に並べ直しました。</p>
+          <p className={styles.coverDeck}>8月29日に神津島へ入り、新島に二晩泊まる。8月31日は連絡船にしきで式根島を日帰り冒険して、新島へ戻ります。神津島のキャンプ場だけ朝のBot確認待ちです。</p>
           <div className={styles.coverActions}>
             <a href="#camp-check">8島の成立条件を見る</a>
             <a href="#island-library">島の記事から選ぶ</a>
@@ -70,10 +70,10 @@ export default function DiscoverPage() {
             </a><Credit photo={kozushima.hero} />
           </div>
           <div className={styles.coverOshima}>
-            <a className={styles.coverLink} href="/discover/oshima">
-              <Image src={oshima.hero.src} alt={oshima.hero.alt} fill sizes="(max-width: 560px) 100vw, 29vw" />
-              <div><small>DAY 3 / TENT</small><strong>大島</strong></div>
-            </a><Credit photo={oshima.hero} />
+            <a className={styles.coverLink} href="/discover/shikinejima">
+              <Image src={shikinejima.hero.src} alt={shikinejima.hero.alt} fill sizes="(max-width: 560px) 100vw, 29vw" />
+              <div><small>DAY 3 / DAY TRIP</small><strong>式根島</strong></div>
+            </a><Credit photo={shikinejima.hero} />
           </div>
           <div className={styles.coverNiijima}>
             <a className={styles.coverLink} href="/discover/niijima">
@@ -85,8 +85,8 @@ export default function DiscoverPage() {
       </section>
 
       <section className={styles.truthStrip} aria-labelledby="truth-title">
-        <div><span className={styles.truthLight} /><p><small>CURRENT TRUTH / SSOT</small><strong id="truth-title">3泊テント＋各島レンタカーは固定</strong></p></div>
-        <p>島の順番は検討中。現時点の最有力は<strong>神津島 → 新島 → 大島</strong>です。3か所のキャンプと3台の車、4区間の船が取れて初めて採用します。</p>
+        <div><span className={styles.truthLight} /><p><small>CURRENT TRUTH / SSOT</small><strong id="truth-title">島順と宿泊地は決定、神津キャンプ確認中</strong></p></div>
+        <p>島順は<strong>神津島 → 新島 → 式根島</strong>。宿泊は<strong>神津島 → 新島 → 新島</strong>です。式根島は日帰りし、野営しません。</p>
         <a href="/">予約前の作業表へ <b aria-hidden="true">→</b></a>
       </section>
 
@@ -113,7 +113,7 @@ export default function DiscoverPage() {
         </div>
         <aside className={styles.campDecisionNote}>
           <strong>今回の足切り</strong>
-          <p>利島はキャンプ禁止・レンタカーなし。式根島は2026年度の野営場が継続閉場。御蔵島はキャンプ禁止で宿予約なしの上陸も不可。三宅島は掲載年度の再確認、八丈島は南航路ゆえ日程接続が課題です。</p>
+          <p>利島はキャンプ禁止・レンタカーなし。式根島の野営場は2026年度も継続閉場しているため、今回は連絡船にしきで日帰りします。御蔵島はキャンプ禁止で宿予約なしの上陸も不可です。</p>
           <ExternalLink href="https://www.tokaikisen.co.jp/cargo/">車は島ごとに借りる理由</ExternalLink>
         </aside>
       </section>
@@ -123,21 +123,21 @@ export default function DiscoverPage() {
         <div className={styles.mapCopy}>
           <p className={styles.eyebrow}>AUG 29 — SEP 1 / 2026</p>
           <h2>南から北へ、一晩ずつ</h2>
-          <p>いま時刻表で成立する三島案です。予約済みではありません。線は8/31の1420便が新島から式根島・神津島を経て大島へ向かう実際の寄港順も含めています。</p>
+          <p>8/31は新島村の連絡船にしきで新島8:20発、式根島16:00発の日帰り。9/1は東海汽船2430便で新島14:10→東京17:00が時刻表上の第一候補です。空席と当日運航は未確認です。</p>
           <ul>
             <li><b>8/29 神津島</b><span>東京7:25 → 10:35。多幸湾で1泊目。</span></li>
             <li><b>8/30 新島</b><span>神津13:25 → 新島14:05。羽伏浦で2泊目。</span></li>
-            <li><b>8/31 大島</b><span>新島9:50 → 大島11:45。トウシキで3泊目。</span></li>
-            <li><b>9/1 東京</b><span>大島発ジェット船4便候補。車返却と合わせる。</span></li>
+            <li><b>8/31 式根島</b><span>新島8:20 → 式根島。16:00発で新島へ戻り、確保済みの宿泊先で3泊目。</span></li>
+            <li><b>9/1 東京</b><span>新島14:10 → 東京17:00。空席と当日運航を確認。</span></li>
           </ul>
         </div>
-        <div className={styles.overviewMap}><IslandMap center={[34.82, 139.36]} zoom={8} points={overviewPoints} routes={overviewRoutes} label="東京・神津島・新島・大島の3泊テント旅" tone="dark" /></div>
+        <div className={styles.overviewMap}><IslandMap center={[34.42, 139.24]} zoom={9} points={overviewPoints} routes={overviewRoutes} label="神津島泊・新島2泊・式根島日帰りの3泊4日旅" tone="dark" /></div>
       </section>
 
       <section className={styles.operationStrip} aria-label="客船運休日と車の扱い">
-        <article><small>8/31</small><strong>島発の大型客船は運休</strong><p>新島9:50発のジェット船1420便で大島11:45着。ここを使う。</p></article>
-        <article><small>9/1</small><strong>東京発客船の運休日</strong><p>大島発の復路とは方向が違う。島発側を一緒に休みと読まない。</p></article>
-        <article><small>CAR</small><strong>一台を島間輸送しない</strong><p>旅客船へ車は載せられない。貨物船は旅行利用に不向きと東海汽船が案内。</p></article>
+        <article><small>8/31 OUT</small><strong>新島8:20 → 式根島</strong><p>連絡船にしき夏期第1便。予約不要、運航情報は当日確認。</p></article>
+        <article><small>8/31 BACK</small><strong>式根島16:00 → 新島</strong><p>連絡船にしき夏期第3便で戻り、新島に宿泊。</p></article>
+        <article><small>9/1</small><strong>新島14:10 → 東京17:00</strong><p>東海汽船2430便が時刻表上の第一候補。</p></article>
         <article><small>GEAR</small><strong>ジェット船は装備に制約</strong><p>受託手荷物なし。ワゴン不可など、テント一式を規定内へ収める。</p></article>
       </section>
 
@@ -198,8 +198,8 @@ export default function DiscoverPage() {
         <div className={styles.bookingIntro}>
           <div className={styles.sectionIndex}><span>04</span><p>BOOKING DESK</p></div>
           <p className={styles.eyebrow}>NEXT ACTIONS</p>
-          <h2>予約は、神津島の車から</h2>
-          <p>いま必要なのは観光案の追加ではありません。最も台数が少ない神津島の車を起点に、キャンプ3件と船4区間を同じ二人分で成立させます。</p>
+          <h2>神津キャンプの朝確認から</h2>
+          <p>新島の宿泊先は確保済みです。残る最重要ゲートは、朝Botが確認する神津島のキャンプ場と、各船の当日運航・空席です。</p>
         </div>
         <div className={styles.bookingList}>
           {bookingLinks.map((item) => <ExternalLink className={styles.bookingRow} href={item.url} key={item.index}><small>{item.index}</small><strong>{item.title}</strong><p>{item.detail}</p><em>{item.status}</em></ExternalLink>)}

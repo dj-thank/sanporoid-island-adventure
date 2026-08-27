@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
+import PwaRegistration from "./PwaRegistration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,18 +21,18 @@ export async function generateMetadata(): Promise<Metadata> {
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const metadataBase = new URL(`${protocol}://${host}`);
   return {
-  title: "一緒に島へ行こう｜3泊4日のテント旅に、あと1〜2人",
-  description: "8月29日から9月1日。三晩すべて指定キャンプ場で眠り、島ごとに車を借りる友達旅行。決まったことも未確定なことも正直に伝える参加案内です。",
+  title: "欠けた潮星｜神津島・新島・式根島の三島冒険",
+  description: "8月29日から9月1日。神津島、新島、式根島を写真ミッションとチェックポイントで巡る友達旅行。宿泊は神津島、新島、新島です。",
     metadataBase,
     openGraph: {
-    title: "一緒に島へ行こう｜3泊4日のテント旅に、あと1〜2人",
-    description: "3泊テント＋島ごとのレンタカー。予約前の今から一緒に旅をつくる友達を迎えるページです。",
+    title: "欠けた潮星｜神津島・新島・式根島の三島冒険",
+    description: "神津島の導き、新島の反響、式根島の約束を、写真と会話で集める旅アプリ。",
       type: "website",
     },
     twitter: {
       card: "summary",
-    title: "一緒に島へ行こう｜3泊4日のテント旅に、あと1〜2人",
-    description: "決まったことも、まだ決まっていないことも正直に。友達との島旅の参加案内です。",
+    title: "欠けた潮星｜神津島・新島・式根島の三島冒険",
+    description: "チェックポイント、島の異変図鑑、島Q&Aを持って旅へ。",
     },
   };
 }
@@ -44,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <PwaRegistration />
         {children}
       </body>
     </html>

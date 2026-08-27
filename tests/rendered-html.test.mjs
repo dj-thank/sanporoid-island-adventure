@@ -81,8 +81,8 @@ test("server-renders the Island Weekend shell and metadata", async () => {
   const html = await response.text();
   assert.match(html, /<html lang="ja">/);
   assert.match(html, /俺たちの予定を読み込んでいます/);
-  assert.match(html, /一緒に島へ行こう｜3泊4日のテント旅に、あと1〜2人/);
-  assert.match(html, /決まったことも未確定なことも正直に伝える参加案内/);
+  assert.match(html, /欠けた潮星｜神津島・新島・式根島の三島冒険/);
+  assert.match(html, /宿泊は神津島、新島、新島/);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
 });
 
@@ -98,24 +98,27 @@ test("server-renders the official-source island magazine", async () => {
   const html = await response.text();
   assert.match(html, /三晩とも、/);
   assert.match(html, /島で眠る。/);
-  assert.match(html, /3泊テント＋各島レンタカーは固定/);
-  assert.match(html, /神津島 → 新島 → 大島/);
+  assert.match(html, /島順と宿泊地は決定、神津キャンプ確認中/);
+  assert.match(html, /神津島 → 新島 → 式根島/);
+  assert.match(html, /式根島の野営場は2026年度も継続閉場/);
   assert.match(html, /魅力の前に、泊まれるかを見る/);
   assert.match(html, /東海汽船の8島を、漏れなく読む/);
   for (const island of ["大島", "利島", "新島", "式根島", "神津島", "三宅島", "御蔵島", "八丈島"]) {
     assert.match(html, new RegExp(island));
   }
   assert.match(html, /利島はキャンプ禁止・レンタカーなし/);
-  assert.match(html, /式根島は2026年度の野営場が継続閉場/);
   assert.match(html, /御蔵島はキャンプ禁止で宿予約なしの上陸も不可/);
-  assert.match(html, /島発の大型客船は運休/);
-  assert.match(html, /一台を島間輸送しない/);
-  assert.match(html, /予約は、神津島の車から/);
+  assert.match(html, /新島8:20 → 式根島/);
+  assert.match(html, /式根島16:00 → 新島/);
+  assert.match(html, /新島14:10 → 東京17:00/);
+  assert.match(html, /空席と当日運航は未確認/);
+  assert.match(html, /神津キャンプの朝確認から/);
   assert.match(html, /\/discover\/kozushima#about/);
   assert.match(html, /\/discover\/niijima#about/);
   assert.match(html, /www\.tokaikisenyoyaku\.com\/app\/login/);
   assert.match(html, /vill\.kouzushima\.tokyo\.jp\/camp/);
   assert.match(html, /まだ予約・購入はしていません/);
+  assert.doesNotMatch(html, /神津島 → 新島 → 大島/);
   assert.doesNotMatch(html, /神津島 → 新島で決定/);
   assert.doesNotMatch(html, /決まった順番で、空席と宿を探す/);
 });
@@ -211,7 +214,7 @@ test("shows a sign-in gate for every site-side write control", async () => {
   assert.match(board, /<fieldset disabled=\{!viewer \|\| busy\}>/);
   assert.match(board, /disabled=\{!viewer \|\| busy\}/);
   assert.match(board, /href="\/discover"/);
-  assert.match(board, /三晩のテント旅に、/);
+  assert.match(board, /三島を渡る旅に、/);
   assert.match(board, /あと1〜2人。/);
   assert.match(board, /良いところも、大変なところも、先に。/);
   assert.match(board, /まだ予約はない。でも、やりたいことは増えてきた。/);
@@ -223,6 +226,68 @@ test("shows a sign-in gate for every site-side write control", async () => {
   assert.match(store, /oai-authenticated-user-id/);
   assert.match(store, /return null;/);
   assert.match(store, /throw new Error\("BOT_UNAUTHORIZED"\)/);
+});
+
+test("server-renders the installable Sanporoid island adventure", async () => {
+  const worker = await loadWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/adventure", { headers: { accept: "text/html" } }),
+    runtime,
+    context,
+  );
+
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /島の異変図鑑/);
+  assert.match(html, /神津島 → 新島 → 式根島/);
+  assert.match(html, /近くのチェックポイント/);
+  assert.match(html, /島のことを聞く/);
+  assert.match(html, /APIキーは保存しません/);
+  assert.match(html, /\/sanporoid\/avatar_treasure_01\.webp/);
+  assert.match(html, /写真は端末内だけで解析/);
+});
+
+test("keeps the PWA shell offline without caching private API data", async () => {
+  const [manifest, serviceWorker, registration, guideRoute] = await Promise.all([
+    readFile(new URL("../app/manifest.ts", import.meta.url), "utf8"),
+    readFile(new URL("../public/sw.js", import.meta.url), "utf8"),
+    readFile(new URL("../app/PwaRegistration.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/api/island-guide/route.ts", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(manifest, /display:\s*"standalone"/);
+  assert.match(manifest, /start_url:\s*"\/adventure"/);
+  assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
+  assert.match(serviceWorker, /return;/);
+  assert.match(registration, /navigator\.serviceWorker\.register\("\/sw\.js"\)/);
+  assert.match(guideRoute, /getChatGPTUser/);
+  assert.match(guideRoute, /store:\s*false/);
+  assert.doesNotMatch(guideRoute, /console\.(?:log|error).*api/i);
+});
+
+test("gives the Bot a scoped read-only trip and island context", async () => {
+  const db = new D1TestDatabase();
+  globalThis.__testCloudflareEnv = { DB: db, OPENCLOS_BOT_TOKEN: "test-openclos-token" };
+  const worker = await loadWorker();
+  const unauthorized = await worker.fetch(
+    new Request("http://localhost/api/bot/context"),
+    { ...runtime, DB: db, OPENCLOS_BOT_TOKEN: "test-openclos-token" },
+    context,
+  );
+  assert.equal(unauthorized.status, 401);
+
+  const response = await worker.fetch(
+    new Request("http://localhost/api/bot/context", { headers: { authorization: "Bearer test-openclos-token" } }),
+    { ...runtime, DB: db, OPENCLOS_BOT_TOKEN: "test-openclos-token" },
+    context,
+  );
+  assert.equal(response.status, 200);
+  const payload = await response.json();
+  assert.equal(payload.trip.routeLabel, "決定｜神津島 → 新島 → 式根島");
+  assert.match(payload.trip.lodging, /神津島 → 新島 → 新島/);
+  assert.match(payload.trip.pending, /神津島キャンプ場は朝確認/);
+  assert.deepEqual(payload.islands.map((island) => island.name), ["神津島", "新島", "式根島"]);
+  assert.equal(payload.writeCapabilities, false);
 });
 
 test("reconciles the fixed camping decision and official schedule into durable state", async () => {
@@ -238,13 +303,15 @@ test("reconciles the fixed camping decision and official schedule into durable s
   assert.match(store, /reconcile:discord-niijima-decision:2026-08-12:v1/);
   assert.match(store, /reconcile:three-tent-nights-and-rental-cars:2026-08-12:v1/);
   assert.match(store, /budget_min_yen = 0, budget_max_yen = 0/);
-  assert.match(store, /検討中｜神津島 → 新島 → 大島/);
-  assert.match(board, /3泊テントは決定、島順・予約・一人あたり費用はまだ未確定/);
+  assert.match(store, /決定｜神津島 → 新島 → 式根島/);
+  assert.match(store, /8\/31式根島は日帰り、8\/31も新島泊/);
+  assert.match(store, /reconcile:confirmed-lodging-kozushima-niijima-niijima:2026-08-28:v1/);
+  assert.match(board, /宿泊は神津島 → 新島 → 新島/);
+  assert.match(board, /神津島キャンプ場は朝Botが確認/);
   assert.match(board, /多幸湾ファミリーキャンプ場/);
   assert.match(board, /都立羽伏浦野営場/);
-  assert.match(board, /トウシキキャンプ場/);
-  assert.match(board, /島発大型客船2000便の運休日/);
-  assert.match(board, /9\/1の運休表記は東京発側/);
+  assert.match(board, /式根島の野営場は2026年度も継続閉場/);
+  assert.match(board, /式根島は連絡船にしきで日帰り/);
   assert.match(board, /人は同乗できず、旅行利用には勧めない/);
 });
 

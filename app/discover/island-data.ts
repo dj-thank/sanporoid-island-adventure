@@ -1415,8 +1415,8 @@ export type CampReadiness = {
 export const campReadiness: CampReadiness[] = [
   {
     slug: "oshima",
-    status: "route-candidate",
-    badge: "今回の3島案",
+    status: "camp-possible",
+    badge: "次回候補",
     verdict: "テント＋車が成立",
     campground: "トウシキキャンプ場",
     campRule: "無料・Web事前予約必須。2026年4月更新の現行案内。港から車で約20〜25分。",
@@ -1452,8 +1452,8 @@ export const campReadiness: CampReadiness[] = [
   {
     slug: "shikinejima",
     status: "closed",
-    badge: "2026年度対象外",
-    verdict: "野営場が継続閉場",
+    badge: "今回の3島・日帰り",
+    verdict: "にしきで往復、新島泊",
     campground: "式根島地区の野営場",
     campRule: "新島村の現行案内で継続閉場中。島内の野宿も禁止。",
     campUrl: "https://www.niijima.com/soshiki/sangyoukankouka/news/2023-1026-1806-101.html",
@@ -1515,8 +1515,8 @@ export const campReadinessBySlug = Object.fromEntries(campReadiness.map((item) =
 
 export const overviewPoints: MapPoint[] = [
   { id: "tokyo", title: "竹芝客船ターミナル", label: "TOKYO", position: [35.6537, 139.7628], summary: "島旅の船の起点。" },
-  { id: "oshima", title: "大島", label: "DAY 3 / CAMP", position: [34.737, 139.387], summary: "トウシキで3泊目。" },
-  { id: "niijima", title: "新島", label: "DAY 2 / CAMP", position: [34.373, 139.259], summary: "羽伏浦で2泊目。" },
+  { id: "shikinejima", title: "式根島", label: "DAY 3 / DAY TRIP", position: [34.326, 139.219], summary: "連絡船にしきで日帰り冒険。" },
+  { id: "niijima", title: "新島", label: "DAY 2+3 / STAY", position: [34.373, 139.259], summary: "確保済みの宿泊先で2泊目と3泊目。" },
   { id: "kozushima", title: "神津島", label: "DAY 1 / CAMP", position: [34.212, 139.139], summary: "多幸湾で1泊目。" },
 ];
 
@@ -1534,17 +1534,23 @@ export const overviewRoutes: MapRoute[] = [
     dash: true,
   },
   {
-    label: "8/31 新島 → 大島（1420便）",
-    positions: [[34.373, 139.259], [34.326, 139.219], [34.212, 139.139], [34.737, 139.387]],
+    label: "8/31 新島8:20 → 式根島 / 式根島16:00 → 新島（連絡船にしき）",
+    positions: [[34.373, 139.259], [34.326, 139.219], [34.373, 139.259]],
     color: "#d6ea4b",
+    dash: true,
+  },
+  {
+    label: "9/1 新島14:10 → 東京17:00（2430便・空席未確認）",
+    positions: [[34.373, 139.259], [35.6537, 139.7628]],
+    color: "#8a4d79",
     dash: true,
   },
 ];
 
 export const bookingLinks = [
   { index: "01", title: "神津島の車を先に確保", detail: "夏の台数が最も厳しい。キャンプ利用でも貸出可能か直接確認。", status: "HARD GATE", url: "https://www.t-treasureislands.metro.tokyo.lg.jp/kouzushima/" },
-  { index: "02", title: "3区画・3台を同じ表で押さえる", detail: "多幸湾、羽伏浦、トウシキと、各島の車を一組ずつ照合。", status: "CAMP + CAR", url: "https://www.vill.kouzushima.tokyo.jp/camp/" },
-  { index: "03", title: "船を4区間で検索", detail: "8/29東京→神津、8/30神津→新島、8/31新島→大島、9/1大島→東京。", status: "LIVE CHECK", url: "https://www.tokaikisenyoyaku.com/app/login" },
+  { index: "02", title: "神津島キャンプを朝確認", detail: "Botが受入状況を確認。新島の2泊分は確保済みとして扱い、詳細な宿名は公開しない。", status: "MORNING CHECK", url: "https://www.vill.kouzushima.tokyo.jp/camp/" },
+  { index: "03", title: "船と連絡船を確認", detail: "8/29東京→神津、8/30神津→新島、8/31にしき往復、9/1新島→東京。", status: "LIVE CHECK", url: "https://www.tokaikisenyoyaku.com/app/login" },
   { index: "04", title: "テント装備を船の荷物規定へ合わせる", detail: "ジェット船は受託手荷物なし。アウトドアワゴン不可など2026年案内を確認。", status: "PACKING", url: "https://www.tokaikisen.co.jp/boarding/baggage/" },
-  { index: "05", title: "最終日の大島発を選ぶ", detail: "9/1はジェット船4便候補。車の返却時刻と合わせる。", status: "RETURN", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
+  { index: "05", title: "最終日の新島発を確認", detail: "9/1は2430便14:10→17:00が第一候補。空席と当日の発着港を再確認。", status: "RETURN", url: "https://www.tokaikisen.co.jp/boarding/timetable/" },
 ];
