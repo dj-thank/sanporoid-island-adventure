@@ -246,7 +246,7 @@ test("server-renders the installable Sanporoid island adventure", async () => {
   assert.match(html, /APIキーは保存しません/);
   assert.match(html, /\/sanporoid\/avatar_treasure_01\.webp/);
   assert.match(html, /写真は端末内だけで解析/);
-  assert.match(html, /真夜中の星空コンパス/);
+  assert.match(html, /潮星スカイ・ファインダー/);
   assert.match(html, /スマートフォンを向ける/);
   assert.match(html, /あれが何座/);
   assert.match(html, /開拓フィールドノート/);
@@ -296,14 +296,32 @@ test("uses Cesium as the adventure map with a token-free mobile fallback", async
 });
 
 test("computes the night sky locally and requests sensor permission explicitly", async () => {
-  const starGuide = await readFile(new URL("../app/adventure/StarGuide.tsx", import.meta.url), "utf8");
+  const [starGuide, starMath] = await Promise.all([
+    readFile(new URL("../app/adventure/StarGuide.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/starMath.ts", import.meta.url), "utf8"),
+  ]);
   assert.match(starGuide, /DeviceOrientationEvent/);
   assert.match(starGuide, /requestPermission/);
   assert.match(starGuide, /deviceorientationabsolute/);
   assert.match(starGuide, /navigator\.geolocation\.getCurrentPosition/);
-  assert.match(starGuide, /2440587\.5/);
+  assert.match(starMath, /2440587\.5/);
   assert.match(starGuide, /北極星/);
+  assert.match(starGuide, /星・星座を探す/);
+  assert.match(starGuide, /時間移動/);
+  assert.match(starGuide, /constellationLines/);
+  assert.match(starGuide, /event\.beta/);
   assert.doesNotMatch(starGuide, /fetch\(/);
+});
+
+test("keeps deterministic astronomy transforms testable outside React", async () => {
+  const { calculateSky, projectStar } = await import(new URL("../app/adventure/starMath.ts", import.meta.url));
+  const polaris = { name: "Polaris", japanese: "北極星", constellation: "こぐま座", constellationCode: "UMi", raHours: 2.5303, decDegrees: 89.2641, magnitude: 1.98 };
+  const [result] = calculateSky([polaris], new Date("2026-08-29T12:00:00.000Z"), 34.21, 139.13, 0);
+  assert.ok(result.altitude > 33 && result.altitude < 36, `Polaris altitude ${result.altitude}`);
+  const projected = projectStar({ ...result, delta: 0, altitude: 35 }, 35);
+  assert.equal(projected.inView, true);
+  assert.equal(projected.x, 50);
+  assert.equal(projected.y, 50);
 });
 
 test("imports every researched trip-island candidate into the map and LLM context", async () => {
