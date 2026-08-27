@@ -2,8 +2,8 @@
 
 /* eslint-disable @next/next/no-img-element, @next/next/no-html-link-for-pages -- copied Sanporoid WebPs and vinext hard navigation are intentional. */
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
-import { islandsBySlug, type Island } from "../discover/island-data";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { islandsBySlug, type Island, type MapPoint } from "../discover/island-data";
 import CesiumIslandMap from "./CesiumIslandMap";
 import { formatDistance, haversineMeters } from "./geoMath";
 import IslandFieldGuide from "./IslandFieldGuide";
@@ -33,10 +33,26 @@ type PhotoEntry = {
   color: string;
 };
 
-const tripIslands: Array<{ slug: TripIslandSlug; day: string; note: string }> = [
-  { slug: "kozushima", day: "8/29 · DAY 1", note: "天上山、水、星の痕跡" },
-  { slug: "niijima", day: "8/30 · DAY 2", note: "白い地質、モヤイ、風" },
-  { slug: "shikinejima", day: "8/31 · DAY TRIP", note: "約束の章 · 16時に新島へ戻る" },
+const appModes = [
+  { id: "explore", label: "探索", eyebrow: "EXPLORE", icon: "⌖" },
+  { id: "missions", label: "任務", eyebrow: "MISSIONS", icon: "◇" },
+  { id: "stars", label: "星空", eyebrow: "STARS", icon: "✦" },
+  { id: "guide", label: "案内", eyebrow: "GUIDE", icon: "◌" },
+] as const;
+
+type AppMode = (typeof appModes)[number]["id"];
+
+const tripIslands: Array<{
+  slug: TripIslandSlug;
+  day: string;
+  note: string;
+  chapter: string;
+  story: string;
+  summary: string;
+}> = [
+  { slug: "kozushima", day: "8/29 · DAY 1", note: "天上山、水、星の痕跡", chapter: "CHAPTER 01", story: "導き", summary: "方角、空白、水の痕跡を読み、旅の星が向く先を決める。" },
+  { slug: "niijima", day: "8/30 · DAY 2", note: "白い地質、モヤイ、風", chapter: "CHAPTER 02", story: "反響", summary: "同じ景色を違う視点で撮り、二枚の差から隠れた物語を開く。" },
+  { slug: "shikinejima", day: "8/31 · DAY TRIP", note: "約束の章 · 16時に新島へ戻る", chapter: "CHAPTER 03", story: "約束", summary: "日帰りの制限時間までに三つの言葉を集め、旅の結末を選ぶ。" },
 ];
 
 const checkpoints: Checkpoint[] = [
@@ -61,15 +77,19 @@ const palette = [
 ];
 
 export default function AdventureApp() {
+  const [activeMode, setActiveMode] = useState<AppMode>("explore");
   const [island, setIsland] = useState<TripIslandSlug>("kozushima");
   const [completed, setCompleted] = useState<string[]>([]);
   const [distances, setDistances] = useState<Record<string, number>>({});
   const [currentPosition, setCurrentPosition] = useState<[number, number] | null>(null);
   const [locationMessage, setLocationMessage] = useState("現在地はまだ端末内で取得していません");
   const [photos, setPhotos] = useState<PhotoEntry[]>([]);
+  const photoUrlsRef = useRef(new Set<string>());
   const [answer, setAnswer] = useState("");
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState("");
+  const [selectedMapPoint, setSelectedMapPoint] = useState<MapPoint | null>(null);
+  const [researchOpen, setResearchOpen] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -83,16 +103,36 @@ export default function AdventureApp() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  useEffect(() => () => photos.forEach((photo) => URL.revokeObjectURL(photo.url)), [photos]);
+  useEffect(() => {
+    const nextUrls = new Set(photos.map((photo) => photo.url));
+    photoUrlsRef.current.forEach((url) => { if (!nextUrls.has(url)) URL.revokeObjectURL(url); });
+    photoUrlsRef.current = nextUrls;
+  }, [photos]);
+
+  useEffect(() => () => {
+    photoUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+  }, []);
 
   const selectedIsland = islandsBySlug[island];
+  const selectedTrip = tripIslands.find((entry) => entry.slug === island) ?? tripIslands[0];
   const selectedCheckpoints = useMemo(
     () => checkpoints.filter((checkpoint) => checkpoint.island === island).sort((a, b) => (distances[a.id] ?? Infinity) - (distances[b.id] ?? Infinity)),
     [distances, island],
   );
   const completedCount = selectedCheckpoints.filter((checkpoint) => completed.includes(checkpoint.id)).length;
+  const nextCheckpoint = selectedCheckpoints.find((checkpoint) => !completed.includes(checkpoint.id)) ?? selectedCheckpoints[0];
   const mapPoints = useMemo(() => [...enrichMapPointsWithResearch(island, selectedIsland.spots), ...officialAnchorMapPoints(island)], [island, selectedIsland.spots]);
   const tideState = photos.length === 0 ? "未観測" : ["静潮", "逆潮", "星隠し"][photos.length % 3];
+  const activeModeLabel = appModes.find((mode) => mode.id === activeMode)?.label ?? "探索";
+
+  function activateMode(nextMode: AppMode) {
+    setActiveMode(nextMode);
+    window.requestAnimationFrame(() => {
+      const target = document.getElementById(`mode-${nextMode}`);
+      target?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "auto" });
+    });
+  }
 
   function locateNearby() {
     if (!navigator.geolocation) {
@@ -181,101 +221,175 @@ export default function AdventureApp() {
   }
 
   return (
-    <main className={styles.appShell}>
-      <header className={styles.hero}>
-        <nav><a href="/">旅の予定</a><a href="/discover">島の大特集</a><span>INSTALLABLE PWA</span></nav>
-        <div className={styles.heroCopy}>
-          <p>三島航路譚 · 8/29 — 9/1</p>
-          <h1>欠けた潮星</h1>
-          <strong>島の異変図鑑 · 神津島 → 新島 → 式根島</strong>
-          <span>海底で三つに割れた「帰り潮の星」。神津島の導き、新島の反響、式根島の約束を、写真と会話で集める。</span>
-        </div>
-        <div className={styles.heroCompanion} aria-label="さんぽろいど">
-          <img src="/sanporoid/avatar_idle_e_01.webp" alt="島を案内するさんぽろいど" />
-          <img className={styles.heroShadow} src="/sanporoid/avatar_shadow_map_mode_tiny.webp" alt="" />
-          <p>「島は、見つけた人ではなく、話した人に開く。」</p>
-        </div>
+    <main className={`${styles.appShell} ${activeMode === "stars" ? styles.starShell : ""}`}>
+      <header className={styles.appHeader}>
+        <button type="button" className={styles.brandButton} onClick={() => activateMode("explore")} aria-label="欠けた潮星の探索モードへ">
+          <small>SANPOROID / ISLAND ADVENTURE</small>
+          <strong>欠けた潮星</strong>
+        </button>
+        <nav className={styles.desktopModeNav} aria-label="アプリのモード">
+          {appModes.map((mode) => <button type="button" key={mode.id} className={activeMode === mode.id ? styles.activeMode : ""} aria-current={activeMode === mode.id ? "page" : undefined} onClick={() => activateMode(mode.id)}><span aria-hidden="true">{mode.icon}</span><small>{mode.eyebrow}</small><strong>{mode.label}</strong></button>)}
+        </nav>
+        <nav className={styles.utilityNav} aria-label="関連ページ">
+          <a href="/">旅の予定</a>
+          <a href="/discover">島の大特集</a>
+          <span>LOCAL-FIRST PWA</span>
+        </nav>
       </header>
 
-      <section className={styles.dayTabs} aria-label="島を選ぶ">
+      <section className={styles.islandRail} aria-label="旅の章を選ぶ">
         {tripIslands.map((entry) => {
           const data = islandsBySlug[entry.slug];
-          return <button className={island === entry.slug ? styles.activeTab : ""} onClick={() => setIsland(entry.slug)} key={entry.slug}><small>{entry.day}</small><strong>{data.name}</strong><span>{entry.note}</span></button>;
+          const isActive = island === entry.slug;
+          return <button type="button" className={isActive ? styles.activeIsland : ""} aria-pressed={isActive} onClick={() => { setIsland(entry.slug); setSelectedMapPoint(null); setResearchOpen(false); }} key={entry.slug}><small>{entry.day}</small><strong>{data.name}</strong><span>{entry.story} · {entry.note}</span></button>;
         })}
       </section>
 
-      <nav className={styles.modeNav} aria-label="冒険モード">
-        <a href="#explore"><small>01</small><strong>地図</strong><span>島を開拓</span></a>
-        <a href="#missions"><small>02</small><strong>指令</strong><span>近くで遊ぶ</span></a>
-        <a href="#stars"><small>03</small><strong>星空</strong><span>夜を読む</span></a>
-        <a href="#guide"><small>04</small><strong>ガイド</strong><span>島に聞く</span></a>
+      <p className={styles.modeAnnouncer} aria-live="polite">{activeModeLabel}モードを表示中</p>
+
+      <section id="mode-explore" className={styles.modePage} hidden={activeMode !== "explore"} tabIndex={-1} aria-labelledby="explore-title">
+        <header className={styles.hero}>
+          <div className={styles.heroCopy}>
+            <p>三島航路譚 · 8/29 — 9/1</p>
+            <h1 id="explore-title">欠けた潮星</h1>
+            <strong>島の異変図鑑 · 神津島 → 新島 → 式根島</strong>
+            <span>海底で三つに割れた「帰り潮の星」。神津島の導き、新島の反響、式根島の約束を、写真と会話で集める。</span>
+            <div className={styles.heroActions}>
+              <button type="button" onClick={locateNearby}>現在地から探索</button>
+              <button type="button" onClick={() => activateMode("missions")}>写真任務を見る</button>
+            </div>
+          </div>
+          <div className={styles.heroChapter}><small>{selectedTrip.chapter}</small><strong>{selectedIsland.name}｜{selectedTrip.story}</strong><span>{selectedTrip.summary}</span></div>
+          <div className={styles.heroCompanion} aria-label="さんぽろいど">
+            <img src="/sanporoid/avatar_idle_e_01.webp" alt="島を案内するさんぽろいど" />
+            <img className={styles.heroShadow} src="/sanporoid/avatar_shadow_map_mode_tiny.webp" alt="" />
+            <p>「島は、見つけた人ではなく、話した人に開く。」</p>
+          </div>
+        </header>
+
+        <section className={styles.worldBrief} aria-label="欠けた潮星の世界観とゲームループ">
+          <div className={styles.worldLead}>
+            <small>GAME MANAGER / WORLD STATE</small>
+            <h2>三つの欠片を、会話で星に戻す。</h2>
+            <p>近くの安全な候補へ行く。役割で見る。写真を一枚撮る。仲間の言葉で島を変える。宝を持って次章へ進む。</p>
+            <dl><div><dt>現在の章</dt><dd>{selectedIsland.name}｜{selectedTrip.story}</dd></div><div><dt>潮相</dt><dd>{tideState}</dd></div><div><dt>星の欠片</dt><dd>{completed.length} / {checkpoints.length}</dd></div></dl>
+          </div>
+          <details className={styles.worldDetails}>
+            <summary><span><small>STORY & ROLE ARCHIVE</small><strong>三章の物語と役割カード</strong></span><b>開く</b></summary>
+            <div className={styles.chapterGrid}>
+              {tripIslands.map((entry) => <article key={entry.slug}><span>{entry.chapter}</span><h3>{islandsBySlug[entry.slug].name}｜{entry.story}</h3><p>{entry.summary}</p></article>)}
+            </div>
+            <div className={styles.roleRail}><span>ROLE CARDS</span>{["目印係", "観察係", "物語係", "記録係"].map((role, index) => <div key={role}><b>0{index + 1}</b><strong>{role}</strong><small>一人だけが持つ手掛かりを、会話で共有する</small></div>)}</div>
+          </details>
+        </section>
+
+        <section className={styles.exploreWorkspace} aria-label={`${selectedIsland.name}を探索する`}>
+          <div className={styles.mapPanel}>
+            <div className={styles.mapHeading}>
+              <div><small>SANPOROID MAP</small><h2>{selectedIsland.name}の冒険地図</h2><p>地図の地点、現在地、任務、公式情報を一つの探索面に重ねます。</p></div>
+              <div><button type="button" onClick={locateNearby}>近くを探す</button><button type="button" className={styles.secondaryButton} aria-expanded={researchOpen} onClick={() => setResearchOpen((value) => !value)}>{researchOpen ? "調査ノートを閉じる" : "調査ノートを開く"}</button></div>
+            </div>
+            <div className={styles.mapWrapCesium}>
+              <CesiumIslandMap
+                key={selectedIsland.slug}
+                center={selectedIsland.mapCenter}
+                islandName={selectedIsland.name}
+                points={mapPoints}
+                currentPosition={currentPosition}
+                onRequestLocation={locateNearby}
+                onSelectionChange={setSelectedMapPoint}
+              />
+              <img className={styles.mapCompanion} src="/sanporoid/avatar_idle_e_01.webp" alt="地図のさんぽろいど" />
+              <img className={styles.arrivalRing} src="/sanporoid/arrival_ring.webp" alt="" />
+            </div>
+            <div className={styles.locationStrip} role="status"><strong>端末内の現在地</strong><span>{locationMessage}</span></div>
+            <p className={styles.privacyNote}>正確な現在地は端末内の距離計算だけに使い、サイト・Bot・OpenAIへ送りません。</p>
+          </div>
+
+          <aside className={styles.nowPanel} aria-labelledby="explore-now-title">
+            <small>EXPLORE THIS ISLAND NOW</small>
+            <h2 id="explore-now-title">いま、何を見る？</h2>
+            {selectedMapPoint ? <article className={styles.mapSelectionSummary}><span>MAP SELECTION</span><h3>{selectedMapPoint.title}</h3><p>{selectedMapPoint.summary}</p><button type="button" onClick={() => setResearchOpen(true)}>根拠と注意を読む</button></article> : <p className={styles.selectionPrompt}>地図上の地点か、地図下の地点レールを選ぶと、現行注意と調査根拠が開きます。</p>}
+            {nextCheckpoint && <article className={styles.nextMission}>
+              <div><small>NEXT PHOTO MISSION</small><b>{distances[nextCheckpoint.id] === undefined ? "距離未確認" : formatDistance(distances[nextCheckpoint.id])}</b></div>
+              <h3>{nextCheckpoint.title}</h3>
+              <strong>{nextCheckpoint.mission}</strong>
+              <p>{nextCheckpoint.photoPrompt}</p>
+              <button type="button" onClick={() => activateMode("missions")}>任務の操作を開く</button>
+            </article>}
+            <dl className={styles.nowStats}><div><dt>この島の任務</dt><dd>{completedCount} / {selectedCheckpoints.length}</dd></div><div><dt>図鑑標本</dt><dd>{photos.filter((photo) => photo.islandName === selectedIsland.name).length}</dd></div><div><dt>事実と物語</dt><dd>分離表示</dd></div></dl>
+          </aside>
+
+          <div className={styles.fieldGuideSlot}>
+            <IslandFieldGuide key={island} island={island} islandName={selectedIsland.name} currentPosition={currentPosition} selectedPoint={selectedMapPoint} open={researchOpen} onOpenChange={setResearchOpen} />
+          </div>
+        </section>
+
+        <footer className={styles.footer}><img src="/sanporoid/avatar_treasure_01.webp" alt="宝箱を見つけたさんぽろいど" /><div><strong>旅は、行った場所の数ではなく、見つけた証拠で残る。</strong><p>運航、海況、立入、温泉、宿泊は現地掲示と公式案内を優先してください。</p></div></footer>
+      </section>
+
+      <section id="mode-missions" className={`${styles.modePage} ${styles.missionMode}`} hidden={activeMode !== "missions"} tabIndex={-1} aria-labelledby="missions-title">
+        <div className={styles.modeFrame}>
+          <header className={styles.modeIntro}>
+            <div><small>PHOTO ODDITY MISSIONS</small><h2 id="missions-title">{selectedIsland.name}の観測任務</h2><p>到着は端末内の距離だけで確認。解放後の写真も端末内で平均色を解析し、外部へ送信しません。</p></div>
+            <div className={styles.modeStats}><strong>{completedCount} / {selectedCheckpoints.length}</strong><span>この島の到着確認</span><button type="button" onClick={locateNearby}>近い順に更新</button></div>
+          </header>
+          <div className={styles.missionStatus} role="status"><strong>現在地ステータス</strong><span>{locationMessage}</span></div>
+
+          <section className={styles.missionPanel} aria-labelledby="checkpoint-title">
+            <header><div><small>NEARBY CHECKPOINTS</small><h2 id="checkpoint-title">近くのチェックポイント</h2></div><span>{completedCount} / {selectedCheckpoints.length}</span></header>
+            <div className={styles.checkpointList}>
+              {selectedCheckpoints.map((checkpoint, index) => {
+                const isComplete = completed.includes(checkpoint.id);
+                const distance = distances[checkpoint.id];
+                return <article className={isComplete ? styles.completed : ""} key={checkpoint.id}>
+                  <div className={styles.checkpointTop}><span>0{index + 1} · {checkpoint.category}</span><b>{distance === undefined ? "距離未確認" : formatDistance(distance)}</b></div>
+                  <h3>{checkpoint.title}</h3><strong>{checkpoint.mission}</strong><p>{checkpoint.photoPrompt}</p>
+                  <div className={styles.checkpointActions}>
+                    <button type="button" onClick={() => confirmCheckpoint(checkpoint)}>{isComplete ? "到着済み" : "到着を確認"}</button>
+                    <label className={isComplete ? "" : styles.locked}>写真を撮る<input type="file" accept="image/*" capture="environment" disabled={!isComplete} onChange={(event) => void addPhoto(checkpoint, event)} /></label>
+                  </div>
+                  <small className={styles.reward}>REWARD · {checkpoint.reward}</small>
+                </article>;
+              })}
+            </div>
+          </section>
+
+          <section className={styles.photoLab} aria-labelledby="photo-lab-title">
+            <header><div><small>PHOTO ODDITY LAB</small><h2 id="photo-lab-title">島の異変図鑑</h2></div><p>写真は端末内だけで解析。平均色から、旅にしか存在しない“異変名”をつけます。画像はアップロードしません。</p></header>
+            {photos.length === 0 ? <div className={styles.photoEmpty}><img src="/sanporoid/avatar_treasure_01.webp" alt="宝箱を見つけたさんぽろいど" /><p>チェックポイントへ到着すると写真ミッションが解放されます。<br />海、岩、湯気、道の曲がり方が図鑑の標本になります。</p></div> : <div className={styles.photoGrid}>{photos.map((photo) => <figure key={photo.id} style={{ "--oddity-color": photo.color } as React.CSSProperties}><img src={photo.url} alt={`${photo.checkpointTitle}で撮った標本`} /><figcaption><small>{photo.islandName} · {photo.checkpointTitle}</small><strong>{photo.tag}</strong><span>ISLAND EVIDENCE / LOCAL ONLY</span></figcaption></figure>)}</div>}
+          </section>
+        </div>
+      </section>
+
+      <section id="mode-stars" className={`${styles.modePage} ${styles.starMode}`} hidden={activeMode !== "stars"} tabIndex={-1} aria-label={`${selectedIsland.name}の星空モード`}>
+        <StarGuide key={selectedIsland.slug} fallbackPosition={selectedIsland.mapCenter} islandName={selectedIsland.name} />
+      </section>
+
+      <section id="mode-guide" className={`${styles.modePage} ${styles.guideMode}`} hidden={activeMode !== "guide"} tabIndex={-1} aria-labelledby="guide-title">
+        <div className={styles.modeFrame}>
+          <header className={styles.modeIntro}>
+            <div><small>LOCAL-FIRST ISLAND GUIDE</small><h2 id="guide-title">{selectedIsland.name}のことを聞く</h2><p>まず19件の調査候補と12件の現行公式情報を含む端末内データから回答し、必要な一回だけ任意でOpenAIへ接続します。</p></div>
+            <div className={styles.guideBoundary}><strong>事実と物語は分離</strong><span>運航・営業・安全は回答だけで確定せず、公式案内と現地掲示を優先。</span></div>
+          </header>
+
+          <section className={styles.guideSection}>
+            <div className={styles.guideIntro}><small>ISLAND GUIDE LLM</small><h2>島のことを聞く</h2><p>アプリ内の島情報を先に使い、APIキーが入力された一回だけOpenAIへ問い合わせます。APIキーは保存しません。</p><dl><div><dt>位置情報</dt><dd>送信しない</dd></div><div><dt>写真</dt><dd>送信しない</dd></div><div><dt>APIキー</dt><dd>保存しない</dd></div></dl></div>
+            <form onSubmit={askIsland} className={styles.guideForm}>
+              <label>質問<textarea name="question" required rows={4} placeholder={`${selectedIsland.name}で雨の日にできることは？`} /></label>
+              <div><label>OpenAI APIキー（任意）<input name="apiKey" type="password" autoComplete="off" placeholder="入力しなければローカル回答" /></label><label>モデル<select name="model" defaultValue="gpt-5.6-luna"><option>gpt-5.6-luna</option><option>gpt-5.6-terra</option><option>gpt-5.4-mini</option></select></label></div>
+              <p>キーはこの入力欄と一回の通信だけで使い、ブラウザ保存・D1・R2・ログへ残しません。公開アクセスでは利用せず、ChatGPTサインイン済みの所有者だけが接続できます。</p>
+              <button disabled={asking}>{asking ? "島へ聞いています…" : "島ガイドに聞く"}</button>
+              {askError && <p className={styles.error} role="alert">{askError}</p>}
+            </form>
+            <div className={styles.answer} aria-live="polite">{answer || `例：${selectedIsland.name}の成り立ち、写真ミッション、安全な回り方を聞けます。`}</div>
+          </section>
+        </div>
+      </section>
+
+      <nav className={styles.mobileBottomNav} aria-label="モバイルのモード切替">
+        {appModes.map((mode) => <button type="button" key={mode.id} className={activeMode === mode.id ? styles.activeMode : ""} aria-current={activeMode === mode.id ? "page" : undefined} aria-label={`${mode.label}モードを開く`} onClick={() => activateMode(mode.id)}><span aria-hidden="true">{mode.icon}</span><small>{mode.eyebrow}</small><strong>{mode.label}</strong></button>)}
       </nav>
-
-      <section id="world" className={styles.worldBrief} aria-label="欠けた潮星の世界観とゲームループ">
-        <div className={styles.worldLead}><small>GAME MANAGER / WORLD STATE</small><h2>三つの欠片を、会話で星に戻す。</h2><p>近くの安全な候補へ行く。役割で見る。写真を一枚撮る。仲間の言葉で島を変える。宝を持って次章へ進む。</p><dl><div><dt>現在の章</dt><dd>{selectedIsland.name}</dd></div><div><dt>潮相</dt><dd>{tideState}</dd></div><div><dt>星の欠片</dt><dd>{completed.length} / {checkpoints.length}</dd></div></dl></div>
-        <div className={styles.chapterGrid}>
-          <article><span>CHAPTER 01</span><h3>神津島｜導き</h3><p>方角、空白、水の痕跡を読み、旅の星が向く先を決める。</p></article>
-          <article><span>CHAPTER 02</span><h3>新島｜反響</h3><p>同じ景色を違う視点で撮り、二枚の差から隠れた物語を開く。</p></article>
-          <article><span>CHAPTER 03</span><h3>式根島｜約束</h3><p>日帰りの制限時間までに三つの言葉を集め、旅の結末を選ぶ。</p></article>
-        </div>
-        <div className={styles.roleRail}><span>ROLE CARDS</span>{["目印係", "観察係", "物語係", "記録係"].map((role, index) => <div key={role}><b>0{index + 1}</b><strong>{role}</strong><small>一人だけが持つ手掛かりを、会話で共有する</small></div>)}</div>
-      </section>
-
-      <section id="explore" className={styles.mapMissionSection}>
-        <div className={styles.mapPanel}>
-          <div className={styles.mapHeading}><div><small>SANPOROID MAP</small><h2>{selectedIsland.name}の冒険地図</h2></div><button onClick={locateNearby}>近くを探す</button></div>
-          <div className={styles.mapWrapCesium}>
-            <CesiumIslandMap center={selectedIsland.mapCenter} islandName={selectedIsland.name} points={mapPoints} currentPosition={currentPosition} onRequestLocation={locateNearby} />
-            <img className={styles.mapCompanion} src="/sanporoid/avatar_idle_e_01.webp" alt="地図のさんぽろいど" />
-            <img className={styles.arrivalRing} src="/sanporoid/arrival_ring.webp" alt="" />
-          </div>
-          <p className={styles.locationMessage}>{locationMessage}</p>
-          <p className={styles.privacyNote}>正確な現在地は端末内の距離計算だけに使い、サイト・Bot・OpenAIへ送りません。</p>
-        </div>
-
-        <div id="missions" className={styles.missionPanel}>
-          <header><div><small>NEARBY CHECKPOINTS</small><h2>近くのチェックポイント</h2></div><span>{completedCount} / {selectedCheckpoints.length}</span></header>
-          <div className={styles.checkpointList}>
-            {selectedCheckpoints.map((checkpoint) => {
-              const isComplete = completed.includes(checkpoint.id);
-              const distance = distances[checkpoint.id];
-              return <article className={isComplete ? styles.completed : ""} key={checkpoint.id}>
-                <div className={styles.checkpointTop}><span>{checkpoint.category}</span><b>{distance === undefined ? "距離未確認" : formatDistance(distance)}</b></div>
-                <h3>{checkpoint.title}</h3><strong>{checkpoint.mission}</strong><p>{checkpoint.photoPrompt}</p>
-                <div className={styles.checkpointActions}>
-                  <button onClick={() => confirmCheckpoint(checkpoint)}>{isComplete ? "到着済み" : "到着を確認"}</button>
-                  <label className={isComplete ? "" : styles.locked}>写真を撮る<input type="file" accept="image/*" capture="environment" disabled={!isComplete} onChange={(event) => void addPhoto(checkpoint, event)} /></label>
-                </div>
-                <small className={styles.reward}>REWARD · {checkpoint.reward}</small>
-              </article>;
-            })}
-          </div>
-        </div>
-        <div className={styles.fieldGuideWrap}>
-          <IslandFieldGuide island={island} islandName={selectedIsland.name} currentPosition={currentPosition} />
-        </div>
-      </section>
-
-      <section id="photos" className={styles.photoLab}>
-        <header><div><small>PHOTO ODDITY LAB</small><h2>島の異変図鑑</h2></div><p>写真は端末内だけで解析。平均色から、旅にしか存在しない“異変名”をつけます。画像はアップロードしません。</p></header>
-        {photos.length === 0 ? <div className={styles.photoEmpty}><img src="/sanporoid/avatar_treasure_01.webp" alt="宝箱を見つけたさんぽろいど" /><p>チェックポイントへ到着すると写真ミッションが解放されます。<br />海、岩、湯気、道の曲がり方が図鑑の標本になります。</p></div> : <div className={styles.photoGrid}>{photos.map((photo) => <figure key={photo.id} style={{ "--oddity-color": photo.color } as React.CSSProperties}><img src={photo.url} alt={`${photo.checkpointTitle}で撮った標本`} /><figcaption><small>{photo.islandName} · {photo.checkpointTitle}</small><strong>{photo.tag}</strong><span>ISLAND EVIDENCE / LOCAL ONLY</span></figcaption></figure>)}</div>}
-      </section>
-
-      <div id="stars" className={styles.starMode}><StarGuide key={selectedIsland.slug} fallbackPosition={selectedIsland.mapCenter} islandName={selectedIsland.name} /></div>
-
-      <section id="guide" className={styles.guideSection}>
-        <div className={styles.guideIntro}><small>ISLAND GUIDE LLM</small><h2>島のことを聞く</h2><p>アプリ内の島情報を先に使い、APIキーが入力された一回だけOpenAIへ問い合わせます。APIキーは保存しません。</p></div>
-        <form onSubmit={askIsland} className={styles.guideForm}>
-          <label>質問<textarea name="question" required rows={3} placeholder={`${selectedIsland.name}で雨の日にできることは？`} /></label>
-          <div><label>OpenAI APIキー（任意）<input name="apiKey" type="password" autoComplete="off" placeholder="入力しなければローカル回答" /></label><label>モデル<select name="model" defaultValue="gpt-5.6-luna"><option>gpt-5.6-luna</option><option>gpt-5.6-terra</option><option>gpt-5.4-mini</option></select></label></div>
-          <p>キーはこの入力欄と一回の通信だけで使い、ブラウザ保存・D1・R2・ログへ残しません。公開アクセスでは利用せず、ChatGPTサインイン済みの所有者だけが接続できます。</p>
-          <button disabled={asking}>{asking ? "島へ聞いています…" : "島ガイドに聞く"}</button>
-          {askError && <p className={styles.error} role="alert">{askError}</p>}
-        </form>
-        <div className={styles.answer} aria-live="polite">{answer || `例：${selectedIsland.name}の成り立ち、写真ミッション、安全な回り方を聞けます。`}</div>
-      </section>
-
-      <footer className={styles.footer}><img src="/sanporoid/avatar_treasure_01.webp" alt="宝箱を見つけたさんぽろいど" /><div><strong>旅は、行った場所の数ではなく、見つけた証拠で残る。</strong><p>運航、海況、立入、温泉、宿泊は現地掲示と公式案内を優先してください。</p></div></footer>
     </main>
   );
 }

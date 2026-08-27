@@ -108,19 +108,58 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
 
   return (
     <section className={`${styles.starGuide} ${nightRed ? styles.nightRed : ""}`} style={{ "--night-dim": String(nightBrightness / 100) } as React.CSSProperties} aria-labelledby="star-guide-title">
-      <header><div><small>HYG 4.1 · {hygCatalog.starCount.toLocaleString("ja-JP")} REAL STARS</small><h2 id="star-guide-title">潮星スカイ・ファインダー</h2><p>スマートフォンを向けると、実星データ、現在地、時刻、方位、端末の上下角から空を再構成。検索した星へ左右・上下の誘導を表示します。</p></div><div className={styles.starActions}><button onClick={() => void startSensors()}>センサー開始</button><button onClick={() => setShowLines((value) => !value)}>{showLines ? "星座線を隠す" : "星座線を表示"}</button><button onClick={() => setNightRed((value) => !value)}>{nightRed ? "通常色へ" : "暗所用の赤へ"}</button></div></header>
+      <header className={styles.starHeader}>
+        <div><small>HYG 4.1 · {hygCatalog.starCount.toLocaleString("ja-JP")} REAL STARS</small><h2 id="star-guide-title">潮星スカイ・ファインダー</h2><p>{islandName}の空へスマートフォンを向けると、実星データ・時刻・方位・端末の上下角から端末内で再構成します。検索した星へ左右・上下の誘導を表示します。</p></div>
+        <div className={styles.starActions}>
+          <button type="button" aria-pressed={sensorEnabled} onClick={() => void startSensors()}>{sensorEnabled ? "センサー使用中" : "センサー開始"}</button>
+          <button type="button" aria-pressed={showLines} onClick={() => setShowLines((value) => !value)}>{showLines ? "星座線を隠す" : "星座線を表示"}</button>
+          <button type="button" aria-pressed={nightRed} onClick={() => setNightRed((value) => !value)}>{nightRed ? "通常色へ" : "暗所用の赤へ"}</button>
+        </div>
+      </header>
 
-      <div className={styles.searchRail}><label>星・星座を探す<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} list="star-search-list" placeholder="例：北極星、オリオン座、Vega" /></label><datalist id="star-search-list">{stars.filter((star) => star.magnitude <= 2.5).slice(0, 180).map((star) => <option key={star.name} value={star.japanese}>{star.constellation}</option>)}</datalist><div className={styles.timeMachine}><button onClick={() => setOffsetHours((value) => clamp(value - 1, -12, 24))}>−1h</button><input aria-label={`時間移動 ${offsetHours}時間`} type="range" min="-12" max="24" value={offsetHours} onChange={(event) => setOffsetHours(Number(event.target.value))} /><button onClick={() => setOffsetHours((value) => clamp(value + 1, -12, 24))}>＋1h</button><button onClick={() => setOffsetHours(0)}>現在</button><strong>{displayedTime ? displayedTime.toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "時刻同期中"}</strong></div></div>
+      <div className={styles.starWorkspace}>
+        <div className={styles.skyColumn}>
+          <div className={styles.searchRail}>
+            <label>星・星座を探す<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} list="star-search-list" placeholder="例：北極星、オリオン座、Vega" /></label>
+            <datalist id="star-search-list">{stars.filter((star) => star.magnitude <= 2.5).slice(0, 180).map((star) => <option key={star.name} value={star.japanese}>{star.constellation}</option>)}</datalist>
+            <div className={styles.timeMachine} aria-label="星空の時間移動">
+              <button type="button" aria-label="1時間戻す" onClick={() => setOffsetHours((value) => clamp(value - 1, -12, 24))}>−1h</button>
+              <input aria-label={`時間移動 ${offsetHours}時間`} type="range" min="-12" max="24" value={offsetHours} onChange={(event) => setOffsetHours(Number(event.target.value))} />
+              <button type="button" aria-label="1時間進める" onClick={() => setOffsetHours((value) => clamp(value + 1, -12, 24))}>＋1h</button>
+              <button type="button" onClick={() => setOffsetHours(0)}>現在</button>
+              <strong>{displayedTime ? displayedTime.toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "時刻同期中"}</strong>
+            </div>
+          </div>
 
-      <div className={styles.skyViewport} aria-label={`方位${Math.round(heading)}度・高度${Math.round(viewAltitude)}度の星空`}>
-        <div className={styles.compassLine}><span>左</span><strong>{Math.round(heading)}° · {cardinal(heading)} / 高度 {Math.round(viewAltitude)}°</strong><span>右</span></div>
-        {showLines && <svg className={styles.constellationLayer} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">{constellationLines.flatMap((line, lineIndex) => line.slice(1).map((name, index) => { const from = projectedByName.get(line[index]); const to = projectedByName.get(name); return from?.inView && to?.inView ? <line key={`${lineIndex}-${name}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y} /> : null; }))}</svg>}
-        {visibleStars.slice(0, 260).map((star) => <button className={styles.star} aria-label={`${star.japanese}、${star.constellation}、高度${Math.round(star.altitude)}度`} onClick={() => setSelectedName(star.name)} key={`${star.name}-${star.raHours}`} style={{ left: `${star.x}%`, top: `${star.y}%`, "--star-size": `${Math.max(3, 11 - star.magnitude * 1.55)}px` } as React.CSSProperties}><b /><span>{star.magnitude <= 2.2 ? star.japanese : ""}<small>{star.magnitude <= 1.7 ? star.constellation : ""}</small></span></button>)}
-        <div className={styles.reticle}><span /><span /></div>
-        {target && (!projectStar(target, viewAltitude).inView || searchedTarget) && <div className={styles.locateArrow} style={{ "--arrow-angle": `${Math.atan2(target.delta, target.altitude - viewAltitude) * 180 / Math.PI}deg` } as React.CSSProperties}><b>↑</b><span>{target.japanese}<small>{directionText(target.delta, target.altitude - viewAltitude)}</small></span></div>}
+          <div className={styles.skyViewport} aria-label={`方位${Math.round(heading)}度・高度${Math.round(viewAltitude)}度の星空`}>
+            <div className={styles.compassLine}><span>左</span><strong>{Math.round(heading)}° · {cardinal(heading)} / 高度 {Math.round(viewAltitude)}°</strong><span>右</span></div>
+            {showLines && <svg className={styles.constellationLayer} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">{constellationLines.flatMap((line, lineIndex) => line.slice(1).map((name, index) => { const from = projectedByName.get(line[index]); const to = projectedByName.get(name); return from?.inView && to?.inView ? <line key={`${lineIndex}-${name}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y} /> : null; }))}</svg>}
+            {visibleStars.slice(0, 260).map((star) => <button type="button" className={styles.star} aria-label={`${star.japanese}、${star.constellation}、高度${Math.round(star.altitude)}度`} aria-pressed={selectedName === star.name} onClick={() => setSelectedName(star.name)} key={`${star.name}-${star.raHours}`} style={{ left: `${star.x}%`, top: `${star.y}%`, "--star-size": `${Math.max(3, 11 - star.magnitude * 1.55)}px` } as React.CSSProperties}><b /><span>{star.magnitude <= 2.2 ? star.japanese : ""}<small>{star.magnitude <= 1.7 ? star.constellation : ""}</small></span></button>)}
+            <div className={styles.reticle}><span /><span /></div>
+            {target && (!projectStar(target, viewAltitude).inView || searchedTarget) && <div className={styles.locateArrow} style={{ "--arrow-angle": `${Math.atan2(target.delta, target.altitude - viewAltitude) * 180 / Math.PI}deg` } as React.CSSProperties}><b>↑</b><span>{target.japanese}<small>{directionText(target.delta, target.altitude - viewAltitude)}</small></span></div>}
+          </div>
+        </div>
+
+        <aside className={styles.controlDock}>
+          <article className={styles.targetCard} aria-live="polite">
+            <small>あれが何座？</small>
+            {target ? <><h3>{sideLabel(target.delta)}に {target.japanese}</h3><strong>{target.constellation}</strong><p>高度 約{Math.round(target.altitude)}°・方位 {Math.round(target.azimuth)}°。{directionText(target.delta, target.altitude - viewAltitude)}。雲・障害物・磁気ずれは含みません。</p></> : <><h3>星空を同期しています</h3><p>現在時刻の端末計算を準備中です。</p></>}
+          </article>
+
+          <div className={styles.sensorReadout} role="status"><p><strong>方位</strong>{sensorStatus}</p><p><strong>位置</strong>{locationStatus}。緯度・経度の数値は保存・送信しません。</p></div>
+
+          <details className={styles.manualPanel}>
+            <summary><span><small>MANUAL CONTROLS</small><strong>手動調整と暗所輝度</strong></span><b>開く</b></summary>
+            <div>
+              <label>手動方位<input type="range" min="0" max="359" value={Math.round(heading)} onChange={(event) => setHeading(Number(event.target.value))} /><span>{Math.round(heading)}°</span></label>
+              <label>見る高さ<input type="range" min="-10" max="90" value={Math.round(viewAltitude)} onChange={(event) => setViewAltitude(Number(event.target.value))} /><span>{Math.round(viewAltitude)}°</span></label>
+              <label>肉眼等級<input type="range" min="1" max="5" step="0.5" value={magnitudeLimit} onChange={(event) => setMagnitudeLimit(Number(event.target.value))} /><span>≤ {magnitudeLimit.toFixed(1)}</span></label>
+              <label>暗所輝度<input type="range" min="18" max="70" value={nightBrightness} onChange={(event) => setNightBrightness(Number(event.target.value))} /><span>{nightBrightness}%</span></label>
+            </div>
+          </details>
+        </aside>
       </div>
 
-      <div className={styles.starReadout}><article><small>あれが何座？</small>{target ? <><h3>{sideLabel(target.delta)}に {target.japanese}</h3><strong>{target.constellation}</strong><p>高度 約{Math.round(target.altitude)}°・方位 {Math.round(target.azimuth)}°。{directionText(target.delta, target.altitude - viewAltitude)}。雲・障害物・磁気ずれは含みません。</p></> : <><h3>星空を同期しています</h3><p>現在時刻の端末計算を準備中です。</p></>}</article><aside><p>{sensorStatus}</p><p>{locationStatus}。緯度・経度の数値は保存・送信しません。</p><label>手動方位<input type="range" min="0" max="359" value={Math.round(heading)} onChange={(event) => setHeading(Number(event.target.value))} /><span>{Math.round(heading)}°</span></label><label>見る高さ<input type="range" min="-10" max="90" value={Math.round(viewAltitude)} onChange={(event) => setViewAltitude(Number(event.target.value))} /><span>{Math.round(viewAltitude)}°</span></label><label>肉眼等級<input type="range" min="1" max="5" step="0.5" value={magnitudeLimit} onChange={(event) => setMagnitudeLimit(Number(event.target.value))} /><span>≤ {magnitudeLimit.toFixed(1)}</span></label><label>暗所輝度<input type="range" min="18" max="70" value={nightBrightness} onChange={(event) => setNightBrightness(Number(event.target.value))} /><span>{nightBrightness}%</span></label></aside></div>
       <footer>安全な場所で立ち止まって使用してください。歩行中、運転中、崖・海岸・車道では画面を見続けないでください。星座線は主要星を結ぶ簡易表示で、IAU星座境界ではありません。HYG Database v4.1 / astronexus, CC BY-SA 4.0。</footer>
     </section>
   );

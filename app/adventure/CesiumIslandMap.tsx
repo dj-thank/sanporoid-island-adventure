@@ -12,6 +12,7 @@ type Props = {
   points: MapPoint[];
   currentPosition: [number, number] | null;
   onRequestLocation: () => void;
+  onSelectionChange?: (point: MapPoint | null) => void;
 };
 
 const pointColors: Record<string, string> = {
@@ -20,15 +21,25 @@ const pointColors: Record<string, string> = {
   ART: "#768b35", TOWN: "#5a655e", FOREST: "#426443", GATE: "#151b1c", "OFFICIAL DATA": "#0c6573",
 };
 
-export default function CesiumIslandMap({ center, islandName, points, currentPosition, onRequestLocation }: Props) {
+export default function CesiumIslandMap({ center, islandName, points, currentPosition, onRequestLocation, onSelectionChange }: Props) {
   const shellRef = useRef<HTMLElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewerRef = useRef<CesiumViewer | null>(null);
   const cesiumRef = useRef<typeof import("cesium") | null>(null);
+  const onSelectionChangeRef = useRef(onSelectionChange);
+  const currentPositionRef = useRef(currentPosition);
   const [selected, setSelected] = useState<MapPoint | null>(null);
   const [status, setStatus] = useState("地図までスクロールするか「3D起動」を押すと読み込みます。");
   const [mode, setMode] = useState<"3D" | "2D">("3D");
   const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    onSelectionChangeRef.current = onSelectionChange;
+  }, [onSelectionChange]);
+
+  useEffect(() => {
+    currentPositionRef.current = currentPosition;
+  }, [currentPosition]);
 
   useEffect(() => {
     const shell = shellRef.current;
@@ -92,10 +103,12 @@ export default function CesiumIslandMap({ center, islandName, points, currentPos
         viewer.scene.screenSpaceCameraController.enableCollisionDetection = true;
 
         addPointEntities(Cesium, viewer, points);
+        syncCurrentLocation(Cesium, viewer, currentPositionRef.current);
         flyHome(Cesium, viewer, center);
         selectedListener = viewer.selectedEntityChanged.addEventListener((entity?: Entity) => {
           const point = entity ? points.find((candidate) => candidate.id === entity.id) ?? null : null;
           setSelected(point);
+          onSelectionChangeRef.current?.(point);
         });
         setStatus("地点を押すと、島情報・現行注意・公式出典を表示します。");
       } catch (error) {
@@ -117,18 +130,7 @@ export default function CesiumIslandMap({ center, islandName, points, currentPos
   useEffect(() => {
     const Cesium = cesiumRef.current;
     const viewer = viewerRef.current;
-    if (!Cesium || !viewer || viewer.isDestroyed()) return;
-    viewer.entities.removeById("sanporoid-current-location");
-    if (currentPosition) {
-      viewer.entities.add({
-        id: "sanporoid-current-location",
-        name: "現在地",
-        position: Cesium.Cartesian3.fromDegrees(currentPosition[1], currentPosition[0], 18),
-        point: { pixelSize: 15, color: Cesium.Color.fromCssColorString("#d6ea4b"), outlineColor: Cesium.Color.fromCssColorString("#17323a"), outlineWidth: 4, disableDepthTestDistance: Number.POSITIVE_INFINITY },
-        label: { text: "現在地", font: "700 14px sans-serif", fillColor: Cesium.Color.WHITE, showBackground: true, backgroundColor: Cesium.Color.fromCssColorString("#17323a").withAlpha(0.86), pixelOffset: new Cesium.Cartesian2(0, -26), disableDepthTestDistance: Number.POSITIVE_INFINITY },
-      });
-      viewer.scene.requestRender();
-    }
+    if (Cesium && viewer && !viewer.isDestroyed()) syncCurrentLocation(Cesium, viewer, currentPosition);
   }, [currentPosition]);
 
   function resetView() {
@@ -149,23 +151,76 @@ export default function CesiumIslandMap({ center, islandName, points, currentPos
     }
   }
 
+  function focusPoint(point: MapPoint) {
+    setSelected(point);
+    onSelectionChangeRef.current?.(point);
+    const Cesium = cesiumRef.current;
+    const viewer = viewerRef.current;
+    if (!Cesium || !viewer || viewer.isDestroyed()) return;
+    const entity = viewer.entities.getById(point.id);
+    if (entity) viewer.selectedEntity = entity;
+    viewer.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(point.position[1], point.position[0], 3_800),
+      orientation: { heading: 0, pitch: Cesium.Math.toRadians(-52), roll: 0 },
+      duration: 0.8,
+    });
+  }
+
+  function clearSelection() {
+    setSelected(null);
+    onSelectionChangeRef.current?.(null);
+    const viewer = viewerRef.current;
+    if (viewer && !viewer.isDestroyed()) viewer.selectedEntity = undefined;
+  }
+
   return (
     <section ref={shellRef} className={styles.cesiumShell} aria-label={`${islandName}のCesium開拓地図`}>
       <div className={styles.toolbar}>
         <div><small>CESIUM 3D ISLAND EXPLORER</small><strong>{islandName} · {points.length}地点レイヤー</strong></div>
-        <div><button onClick={() => setShouldLoad(true)} disabled={shouldLoad}>{shouldLoad ? "3D読込済み" : "3D起動"}</button><button onClick={onRequestLocation}>現在地</button><button onClick={resetView}>島全体</button><button onClick={toggleMode}>{mode === "3D" ? "2Dへ" : "3Dへ"}</button></div>
+        <div>
+          <button type="button" onClick={() => setShouldLoad(true)} disabled={shouldLoad}>{shouldLoad ? "3D読込済み" : "3D起動"}</button>
+          <button type="button" onClick={onRequestLocation}>現在地</button>
+          <button type="button" onClick={resetView}>島全体</button>
+          <button type="button" aria-pressed={mode === "2D"} onClick={toggleMode}>{mode === "3D" ? "2Dへ" : "3Dへ"}</button>
+        </div>
       </div>
-      <div className={styles.viewport} ref={containerRef} />
-      <p className={styles.status} aria-live="polite">{status}</p>
-      {selected ? <article className={styles.selectedCard}>
-        <div><small>{selected.label}</small><h3>{selected.title}</h3><p>{selected.summary}</p></div>
-        <div>{selected.researchedFacts?.length ? <><strong>調査で確認できたこと</strong><ul>{selected.researchedFacts.map((fact) => <li key={fact}>{fact}</li>)}</ul></> : <p>地点の基本情報を表示しています。</p>}</div>
-        <div className={styles.caution}><strong>当日確認</strong><ul>{(selected.cautions ?? ["運航・通行・天候・営業を公式案内で確認"]).map((item) => <li key={item}>{item}</li>)}</ul></div>
-        <div className={styles.sourceLinks}>{selected.sources?.map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.url}>{source.label} ↗</a>)}</div>
-      </article> : <div className={styles.emptyCard}>地図上の丸い地点を押すと、Sanporoidの島情報がここに開きます。</div>}
+
+      <div className={styles.mapStage}>
+        <div className={styles.viewport} ref={containerRef} />
+        <p className={styles.status} aria-live="polite">{status}</p>
+        {selected ? <aside className={styles.selectedCard} aria-live="polite" aria-label={`${selected.title}の地点情報`}>
+          <header><div><small>{selected.label}</small><h3>{selected.title}</h3></div><button type="button" onClick={clearSelection} aria-label="地点情報を閉じる">閉じる</button></header>
+          <p>{selected.summary}</p>
+          <details>
+            <summary>根拠と当日確認を開く</summary>
+            <div className={styles.selectedDetails}>
+              <div><strong>調査で確認できたこと</strong>{selected.researchedFacts?.length ? <ul>{selected.researchedFacts.map((fact) => <li key={fact}>{fact}</li>)}</ul> : <p>地点の基本情報を表示しています。</p>}</div>
+              <div className={styles.caution}><strong>当日確認</strong><ul>{(selected.cautions ?? ["運航・通行・天候・営業を公式案内で確認"]).map((item) => <li key={item}>{item}</li>)}</ul></div>
+              {selected.sources?.length ? <div className={styles.sourceLinks}>{selected.sources.map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.url}>{source.label} ↗</a>)}</div> : null}
+            </div>
+          </details>
+        </aside> : <div className={styles.emptyCard}>丸い地点か、下の地点レールを選ぶと、事実・注意・出典が地図上に開きます。</div>}
+      </div>
+
+      <nav className={styles.pointRail} aria-label={`${islandName}の地図地点`}>
+        {points.map((point) => <button type="button" key={point.id} className={selected?.id === point.id ? styles.activePoint : ""} aria-pressed={selected?.id === point.id} onClick={() => focusPoint(point)}><small>{point.label}</small><strong>{point.title}</strong></button>)}
+      </nav>
       <p className={styles.boundary}>CesiumJS / OpenStreetMap。3D表示は観光・探索用であり、海上航法・避難経路・登山路の安全証明には使用しません。地形・画像タイルは通信時に取得します。</p>
     </section>
   );
+}
+
+function syncCurrentLocation(Cesium: typeof import("cesium"), viewer: CesiumViewer, currentPosition: [number, number] | null) {
+  viewer.entities.removeById("sanporoid-current-location");
+  if (!currentPosition) { viewer.scene.requestRender(); return; }
+  viewer.entities.add({
+    id: "sanporoid-current-location",
+    name: "現在地",
+    position: Cesium.Cartesian3.fromDegrees(currentPosition[1], currentPosition[0], 18),
+    point: { pixelSize: 15, color: Cesium.Color.fromCssColorString("#d6ea4b"), outlineColor: Cesium.Color.fromCssColorString("#17323a"), outlineWidth: 4, disableDepthTestDistance: Number.POSITIVE_INFINITY },
+    label: { text: "現在地", font: "700 14px sans-serif", fillColor: Cesium.Color.WHITE, showBackground: true, backgroundColor: Cesium.Color.fromCssColorString("#17323a").withAlpha(0.86), pixelOffset: new Cesium.Cartesian2(0, -26), disableDepthTestDistance: Number.POSITIVE_INFINITY },
+  });
+  viewer.scene.requestRender();
 }
 
 function addPointEntities(Cesium: typeof import("cesium"), viewer: CesiumViewer, points: MapPoint[]) {

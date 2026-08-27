@@ -242,8 +242,8 @@ test("server-renders the installable Sanporoid island adventure", async () => {
   assert.match(html, /神津島 → 新島 → 式根島/);
   assert.match(html, /近くのチェックポイント/);
   assert.match(html, /CESIUM 3D ISLAND EXPLORER/);
-  assert.match(html, /aria-label="冒険モード"/);
-  assert.match(html, /href="#stars"/);
+  assert.match(html, /aria-label="アプリのモード"/);
+  assert.match(html, /STARS/);
   assert.match(html, /島のことを聞く/);
   assert.match(html, /APIキーは保存しません/);
   assert.match(html, /\/sanporoid\/avatar_treasure_01\.webp/);
@@ -307,6 +307,38 @@ test("uses Cesium as the adventure map with a token-free mobile fallback", async
   assert.equal(JSON.parse(packageJson).dependencies.cesium, "^1.144.0");
 });
 
+test("organizes the island adventure into accessible responsive app modes", async () => {
+  const [app, map, fieldGuide, starGuide, shellCss, mapCss, fieldCss, starCss] = await Promise.all([
+    readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/CesiumIslandMap.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/IslandFieldGuide.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/StarGuide.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/adventure.module.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/cesium-island-map.module.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/island-field-guide.module.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/star-guide.module.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(app, /const appModes/);
+  assert.match(app, /id: "explore"/);
+  assert.match(app, /id: "missions"/);
+  assert.match(app, /id: "stars"/);
+  assert.match(app, /id: "guide"/);
+  assert.match(app, /mobileBottomNav/);
+  assert.match(app, /hidden=\{activeMode !==/);
+  assert.match(app, /19件の調査候補と12件の現行公式情報/);
+  assert.match(map, /onSelectionChange/);
+  assert.match(map, /pointRail/);
+  assert.match(fieldGuide, /role="tablist"/);
+  assert.match(fieldGuide, /selectedPoint/);
+  assert.match(starGuide, /starWorkspace/);
+  assert.match(starGuide, /nightRed/);
+  assert.match(shellCss, /safe-area-inset-bottom/);
+  assert.match(shellCss, /prefers-reduced-motion/);
+  for (const css of [shellCss, mapCss, fieldCss, starCss]) assert.match(css, /min-height:\s*44px/);
+  assert.match(starCss, /background:\s*#050000/);
+});
+
 test("computes the night sky locally and requests sensor permission explicitly", async () => {
   const [starGuide, starMath] = await Promise.all([
     readFile(new URL("../app/adventure/StarGuide.tsx", import.meta.url), "utf8"),
@@ -355,8 +387,8 @@ test("imports every researched trip-island candidate into the map and LLM contex
   assert.match(mapKnowledge, /enrichMapPointsWithResearch/);
   assert.match(mapKnowledge, /cautions/);
   const fieldGuide = await readFile(new URL("../app/adventure/IslandFieldGuide.tsx", import.meta.url), "utf8");
-  assert.match(fieldGuide, /slice\(0, 3\)/);
-  assert.match(fieldGuide, /残り.*件も表示/);
+  assert.match(fieldGuide, /role="tablist"/);
+  assert.match(fieldGuide, /GuideView/);
   assert.match(guideRoute, /researchedExperiences/);
   assert.match(guideRoute, /安全確認済み連続ルートではない/);
 });

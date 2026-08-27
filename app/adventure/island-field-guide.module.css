@@ -1,44 +1,92 @@
-.fieldGuide { margin: 18px; color: #17323a; background: #f7f2e9; border: 1px solid rgba(23,50,58,.16); border-radius: 16px; overflow: clip; }
-.fieldGuide > header { display: grid; grid-template-columns: 1.25fr .75fr; gap: 30px; align-items: end; padding: 32px; }
-.fieldGuide header small { color: #e76f51; font-weight: 900; letter-spacing: .14em; }
-.fieldGuide h2 { margin: 7px 0; font-size: clamp(28px, 4vw, 48px); }
-.fieldGuide header p { max-width: 720px; margin: 0; color: #52696f; line-height: 1.75; }
-.fieldGuide header label { display: grid; gap: 8px; font-size: 12px; font-weight: 900; }
-.fieldGuide input { width: 100%; padding: 13px; border: 1px solid rgba(23,50,58,.3); border-radius: 10px; background: #fff; font: inherit; }
-.safetyBand { display: flex; gap: 18px; align-items: baseline; padding: 17px 28px; color: #fff9e9; background: #743221; }
+.fieldGuide { color: #17323a; background: #fffdf4; border: 1px solid rgba(23,50,58,.15); border-radius: 18px; box-shadow: 0 18px 44px rgba(23,50,58,.08); overflow: clip; }
+.fieldGuide :where(button, a, input, summary):focus-visible { outline: 3px solid #d6ea4b; outline-offset: 3px; }
+.fieldGuide > header { display: grid; grid-template-columns: minmax(0,1fr) minmax(310px,.58fr); gap: 30px; align-items: end; padding: 26px; }
+.fieldGuide header small, .panelIntro small, .contextCard header small { color: #e76f51; font-size: 9px; font-weight: 900; letter-spacing: .14em; }
+.fieldGuide h2 { margin: 7px 0; font-size: clamp(27px,3.5vw,44px); line-height: 1.08; }
+.fieldGuide > header p { max-width: 760px; margin: 0; color: #52696f; line-height: 1.75; }
+.guideHeaderActions { display: grid; gap: 12px; }
+.guideHeaderActions dl { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin: 0; }
+.guideHeaderActions dl div { display: grid; gap: 2px; padding: 9px; background: #f1eadf; border-radius: 10px; }
+.guideHeaderActions dt { color: #667a7f; font-size: 9px; font-weight: 800; }
+.guideHeaderActions dd { margin: 0; font-size: 16px; font-weight: 900; }
+.guideHeaderActions button { min-height: 46px; padding: 11px 15px; color: #fffdf4; background: #17323a; border: 0; border-radius: 11px; font-weight: 900; cursor: pointer; }
+.safetyBand { display: flex; gap: 18px; align-items: baseline; padding: 14px 22px; color: #fff9e9; background: #743221; }
 .safetyBand strong { flex: 0 0 auto; }
-.safetyBand span { font-size: 12px; line-height: 1.65; }
-.currentGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 18px 18px 0; }
-.currentGrid article { display: grid; gap: 7px; padding: 16px; color: #17323a; background: #fffdf4; border-left: 5px solid #e76f51; border-radius: 10px; }
-.currentGrid small { color: #b34b34; font-size: 9px; font-weight: 900; letter-spacing: .08em; }
-.currentGrid ul { margin: 0; padding-left: 18px; }
-.currentGrid li, .currentGrid p { margin: 0; color: #52696f; font-size: 11px; line-height: 1.6; }
-.currentGrid p { padding: 8px; background: #fff0e7; border-radius: 7px; }
-.currentGrid article > div { display: flex; flex-wrap: wrap; gap: 9px; }
-.currentGrid a { color: #0c6573; font-size: 10px; font-weight: 900; }
-.anchorRail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 18px 18px 0; }
-.anchorRail article { display: grid; gap: 5px; padding: 15px; background: #e8f1ed; border: 1px solid #b7ccc3; border-radius: 12px; }
-.anchorRail small { color: #33705d; font-weight: 900; letter-spacing: .1em; }
-.anchorRail span { color: #52696f; font-size: 11px; line-height: 1.5; }
-.anchorRail a, .sources a { color: #0c6573; font-size: 12px; font-weight: 900; }
-.experienceGrid { display: grid; gap: 10px; padding: 18px; }
-.experienceCard { border: 1px solid rgba(23,50,58,.16); border-radius: 14px; background: #f7f2e9; overflow: clip; }
-.experienceCard summary { display: flex; justify-content: space-between; gap: 20px; align-items: center; padding: 18px 20px; cursor: pointer; list-style-position: outside; }
-.experienceCard summary > span { display: grid; gap: 5px; }
-.experienceCard summary small { color: #0c6573; font-size: 10px; font-weight: 900; letter-spacing: .1em; }
-.experienceCard summary strong { font-size: 19px; }
-.experienceCard summary b { flex: 0 0 auto; padding: 7px 10px; color: #743221; background: #f5d7c8; border-radius: 999px; font-size: 11px; }
-.cardBody { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 20px 20px; border-top: 1px solid rgba(23,50,58,.12); }
-.cardBody > div { padding-top: 14px; }
-.cardBody h3 { margin: 0 0 8px; font-size: 13px; }
-.cardBody p, .cardBody li { color: #52696f; font-size: 12px; line-height: 1.7; }
-.cardBody ol, .cardBody ul { margin: 0; padding-left: 20px; }
-.warning { padding: 14px !important; background: #fff0e7; border-radius: 10px; }
-.tags { display: flex; flex-wrap: wrap; gap: 6px; align-content: start; }
+.safetyBand span { font-size: 11px; line-height: 1.65; }
+.guideBody[hidden], .tabPanel[hidden] { display: none !important; }
+.guideBody { padding: 16px; background: #f6f1eb; border-top: 1px solid rgba(23,50,58,.12); }
+.contextCard, .contextEmpty { margin-bottom: 12px; padding: 18px; background: #17323a; border-radius: 14px; color: #fffdf4; }
+.contextCard > header { display: flex; justify-content: space-between; gap: 15px; align-items: start; }
+.contextCard header h3 { margin: 5px 0 0; font-size: 26px; }
+.contextCard header > span { flex: 0 0 auto; padding: 7px 10px; color: #17323a; background: #d6ea4b; border-radius: 999px; font-size: 10px; font-weight: 900; }
+.contextCard > p { margin: 12px 0; color: #d8e4e2; line-height: 1.7; }
+.contextColumns { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.contextColumns > div { padding: 12px; color: #17323a; background: #edf4f1; border-radius: 10px; }
+.contextColumns strong { font-size: 11px; }
+.contextColumns ul { margin: 7px 0 0; padding-left: 18px; }
+.contextColumns li, .contextColumns p { color: #52696f; font-size: 11px; line-height: 1.65; }
+.contextWarning { background: #fff0e7 !important; }
+.contextSources { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.contextSources a { min-height: 44px; display: inline-flex; align-items: center; color: #d6ea4b; font-size: 11px; font-weight: 900; }
+.contextEmpty { display: flex; justify-content: space-between; gap: 18px; align-items: center; }
+.contextEmpty span { color: #c7d7d4; font-size: 11px; line-height: 1.55; }
+.guideTabs { position: sticky; z-index: 5; top: calc(var(--header-height, 72px) + var(--island-rail-height, 78px) + 6px); display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; padding: 6px; background: rgba(246,241,235,.96); border: 1px solid rgba(23,50,58,.12); border-radius: 14px; backdrop-filter: blur(12px); }
+.guideTabs button { display: grid; grid-template-columns: 1fr auto; gap: 1px 9px; min-height: 58px; padding: 9px 12px; color: #53686e; text-align: left; background: transparent; border: 1px solid transparent; border-radius: 10px; cursor: pointer; }
+.guideTabs small { grid-column: 1; color: #0c6573; font-size: 8px; font-weight: 900; letter-spacing: .1em; }
+.guideTabs strong { grid-column: 1; font-size: 12px; }
+.guideTabs span { grid-column: 2; grid-row: 1 / -1; align-self: center; font-size: 11px; font-weight: 900; }
+.guideTabs .activeTab { color: #fffdf4; background: #0c6573; border-color: #0c6573; }
+.guideTabs .activeTab small { color: #d6ea4b; }
+.tabPanel { padding-top: 12px; }
+.panelIntro { display: flex; justify-content: space-between; gap: 18px; align-items: end; padding: 14px 6px; }
+.panelIntro h3 { margin: 4px 0 0; font-size: 24px; }
+.panelIntro > span { color: #743221; font-size: 10px; font-weight: 900; }
+.panelIntro label { display: grid; gap: 6px; min-width: min(330px,45%); font-size: 10px; font-weight: 900; }
+.panelIntro input { width: 100%; min-height: 44px; padding: 10px 12px; color: #17323a; background: #fff; border: 1px solid rgba(23,50,58,.26); border-radius: 9px; font: inherit; }
+.currentGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+.currentCard, .experienceCard { color: #17323a; background: #fffdf4; border: 1px solid rgba(23,50,58,.14); border-radius: 12px; overflow: clip; }
+.currentCard summary, .experienceCard summary { display: flex; justify-content: space-between; gap: 14px; align-items: center; min-height: 66px; padding: 14px 16px; cursor: pointer; list-style: none; }
+.currentCard summary::-webkit-details-marker, .experienceCard summary::-webkit-details-marker { display: none; }
+.currentCard summary > span, .experienceCard summary > span { display: grid; gap: 4px; }
+.currentCard summary small, .experienceCard summary small { color: #0c6573; font-size: 8px; font-weight: 900; letter-spacing: .09em; }
+.currentCard summary strong { font-size: 15px; }
+.currentCard summary b, .experienceCard summary b { flex: 0 0 auto; padding: 7px 9px; color: #743221; background: #f5d7c8; border-radius: 999px; font-size: 10px; }
+.currentBody { padding: 0 16px 15px; border-top: 1px solid rgba(23,50,58,.1); }
+.currentBody ul { margin: 12px 0; padding-left: 18px; }
+.currentBody li, .currentBody p { color: #52696f; font-size: 11px; line-height: 1.65; }
+.currentBody p { padding: 10px; background: #fff0e7; border-radius: 8px; }
+.currentBody > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.currentBody a, .sources a, .anchorRail a { min-height: 44px; display: inline-flex; align-items: center; color: #0c6573; font-size: 11px; font-weight: 900; }
+.experienceGrid { display: grid; gap: 8px; }
+.experienceCard summary { min-height: 72px; }
+.experienceCard summary strong { font-size: 17px; }
+.cardBody { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; padding: 14px; border-top: 1px solid rgba(23,50,58,.1); }
+.cardBody > div { padding: 12px; background: #edf4f1; border-radius: 9px; }
+.cardBody h3 { margin: 0 0 7px; font-size: 12px; }
+.cardBody p, .cardBody li { color: #52696f; font-size: 11px; line-height: 1.65; }
+.cardBody ol, .cardBody ul { margin: 0; padding-left: 18px; }
+.warning { background: #fff0e7 !important; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; align-content: start; background: transparent !important; padding-inline: 0 !important; }
 .tags span { padding: 6px 8px; color: #743221; background: #f2d8cb; border-radius: 999px; font-size: 10px; font-weight: 900; }
-.sources { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.sources { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; background: transparent !important; padding: 0 !important; }
 .sources small { margin-left: auto; color: #708186; }
+.anchorRail { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; }
+.anchorRail article { display: grid; gap: 5px; padding: 15px; background: #e8f1ed; border: 1px solid #b7ccc3; border-radius: 12px; }
+.anchorRail small { color: #33705d; font-size: 8px; font-weight: 900; letter-spacing: .1em; }
+.anchorRail span { color: #52696f; font-size: 11px; line-height: 1.55; }
 .empty { margin: 0; padding: 24px; text-align: center; }
-.showAllButton { display: block; min-width: 220px; min-height: 46px; margin: 0 auto 20px; padding: 11px 18px; color: #fffdf4; background: #0c6573; border: 0; border-radius: 999px; font-weight: 900; cursor: pointer; }
-.showAllButton:hover, .showAllButton:focus-visible { background: #17323a; outline: 3px solid rgba(214,234,75,.7); outline-offset: 2px; }
-@media (max-width: 760px) { .fieldGuide { margin: 12px; } .fieldGuide > header, .cardBody { grid-template-columns: 1fr; } .currentGrid { display: flex; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; scrollbar-width: thin; } .currentGrid article { flex: 0 0 84%; scroll-snap-align: start; } .anchorRail { grid-template-columns: 1fr; } .safetyBand { display: grid; gap: 5px; } .experienceCard summary { align-items: flex-start; } .sources small { width: 100%; margin-left: 0; } }
+@media (max-width: 760px) {
+  .fieldGuide > header { grid-template-columns: 1fr; gap: 17px; padding: 20px 17px; }
+  .guideHeaderActions dl { overflow-x: auto; }
+  .safetyBand { display: grid; gap: 5px; padding: 14px 17px; }
+  .guideBody { padding: 10px; }
+  .contextColumns, .currentGrid, .cardBody, .anchorRail { grid-template-columns: 1fr; }
+  .contextEmpty { display: grid; }
+  .guideTabs { display: flex; overflow-x: auto; scroll-snap-type: x proximity; }
+  .guideTabs button { flex: 0 0 160px; scroll-snap-align: start; }
+  .panelIntro { display: grid; align-items: start; }
+  .panelIntro label { min-width: 0; width: 100%; }
+  .experienceCard summary { align-items: flex-start; }
+  .sources small { width: 100%; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .fieldGuide * { scroll-behavior: auto !important; transition: none !important; } }
