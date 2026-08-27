@@ -1,4 +1,4 @@
-const CACHE_NAME = "island-adventure-v1";
+const CACHE_NAME = "island-adventure-v2";
 const APP_SHELL = [
   "/adventure",
   "/discover",
@@ -44,7 +44,16 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => cached ?? fetch(event.request)),
-  );
+  const isRuntimeAsset = url.pathname.startsWith("/cesiumStatic/")
+    || url.pathname.startsWith("/_next/static/")
+    || url.pathname.startsWith("/sanporoid/");
+  event.respondWith(caches.match(event.request).then(async (cached) => {
+    if (cached) return cached;
+    const response = await fetch(event.request);
+    if (isRuntimeAsset && response.ok) {
+      const copy = response.clone();
+      void caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+    }
+    return response;
+  }));
 });

@@ -241,6 +241,7 @@ test("server-renders the installable Sanporoid island adventure", async () => {
   assert.match(html, /島の異変図鑑/);
   assert.match(html, /神津島 → 新島 → 式根島/);
   assert.match(html, /近くのチェックポイント/);
+  assert.match(html, /CESIUM 3D ISLAND EXPLORER/);
   assert.match(html, /島のことを聞く/);
   assert.match(html, /APIキーは保存しません/);
   assert.match(html, /\/sanporoid\/avatar_treasure_01\.webp/);
@@ -268,10 +269,30 @@ test("keeps the PWA shell offline without caching private API data", async () =>
   assert.match(manifest, /start_url:\s*"\/adventure"/);
   assert.match(serviceWorker, /url\.pathname\.startsWith\("\/api\/"\)/);
   assert.match(serviceWorker, /return;/);
+  assert.match(serviceWorker, /\/cesiumStatic\//);
+  assert.match(serviceWorker, /cache\.put\(event\.request/);
   assert.match(registration, /navigator\.serviceWorker\.register\("\/sw\.js"\)/);
   assert.match(guideRoute, /getChatGPTUser/);
   assert.match(guideRoute, /store:\s*false/);
   assert.doesNotMatch(guideRoute, /console\.(?:log|error).*api/i);
+});
+
+test("uses Cesium as the adventure map with a token-free mobile fallback", async () => {
+  const [component, viteConfig, packageJson] = await Promise.all([
+    readFile(new URL("../app/adventure/CesiumIslandMap.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../vite.config.ts", import.meta.url), "utf8"),
+    readFile(new URL("../package.json", import.meta.url), "utf8"),
+  ]);
+  assert.match(component, /OpenStreetMapImageryProvider/);
+  assert.match(component, /EllipsoidTerrainProvider/);
+  assert.match(component, /GridImageryProvider/);
+  assert.match(component, /requestRenderMode:\s*true/);
+  assert.match(component, /resolutionScale/);
+  assert.match(component, /currentPosition/);
+  assert.doesNotMatch(component, /Ion\.defaultAccessToken\s*=/);
+  assert.match(viteConfig, /cesiumStatic/);
+  assert.match(viteConfig, /viteStaticCopy/);
+  assert.equal(JSON.parse(packageJson).dependencies.cesium, "^1.144.0");
 });
 
 test("computes the night sky locally and requests sensor permission explicitly", async () => {

@@ -3,8 +3,8 @@
 /* eslint-disable @next/next/no-img-element, @next/next/no-html-link-for-pages -- copied Sanporoid WebPs and vinext hard navigation are intentional. */
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
-import IslandMap from "../discover/IslandMap";
 import { islandsBySlug, type Island } from "../discover/island-data";
+import CesiumIslandMap from "./CesiumIslandMap";
 import IslandFieldGuide from "./IslandFieldGuide";
 import { answerFromExperiencePack, enrichMapPointsWithResearch, officialAnchorMapPoints, type TripIslandSlug } from "./islandKnowledge";
 import StarGuide from "./StarGuide";
@@ -216,8 +216,8 @@ export default function AdventureApp() {
       <section className={styles.mapMissionSection}>
         <div className={styles.mapPanel}>
           <div className={styles.mapHeading}><div><small>SANPOROID MAP</small><h2>{selectedIsland.name}の冒険地図</h2></div><button onClick={locateNearby}>近くを探す</button></div>
-          <div className={styles.mapWrap}>
-            <IslandMap center={selectedIsland.mapCenter} zoom={selectedIsland.mapZoom} points={mapPoints} label={`${selectedIsland.name}のさんぽろいど地図`} />
+          <div className={styles.mapWrapCesium}>
+            <CesiumIslandMap center={selectedIsland.mapCenter} islandName={selectedIsland.name} points={mapPoints} currentPosition={currentPosition} onRequestLocation={locateNearby} />
             <img className={styles.mapCompanion} src="/sanporoid/avatar_idle_e_01.webp" alt="地図のさんぽろいど" />
             <img className={styles.arrivalRing} src="/sanporoid/arrival_ring.webp" alt="" />
           </div>

@@ -36,14 +36,18 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
   const [sensorStatus, setSensorStatus] = useState("センサーは未開始。手動方位でも使えます。");
   const [position, setPosition] = useState<[number, number]>(fallbackPosition);
   const [locationStatus, setLocationStatus] = useState(`${islandName}の中心を仮位置にしています`);
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState<Date | null>(null);
   const [nightRed, setNightRed] = useState(true);
   const [magnitudeLimit, setMagnitudeLimit] = useState(3.5);
   const [nightBrightness, setNightBrightness] = useState(38);
 
   useEffect(() => {
+    const initialSync = window.setTimeout(() => setNow(new Date()), 0);
     const timer = window.setInterval(() => setNow(new Date()), 60_000);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearTimeout(initialSync);
+      window.clearInterval(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -66,7 +70,7 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
     };
   }, [sensorEnabled]);
 
-  const sky = useMemo(() => calculateSky(stars, now, position[0], position[1], heading), [heading, now, position]);
+  const sky = useMemo(() => now ? calculateSky(stars, now, position[0], position[1], heading) : [], [heading, now, position]);
   const visibleStars = sky.filter((star) => star.altitude > 0 && star.magnitude <= magnitudeLimit).sort((a, b) => a.delta - b.delta);
   const target = visibleStars[0];
 

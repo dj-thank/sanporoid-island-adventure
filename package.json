@@ -14,6 +14,7 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "cesium": "^1.144.0",
     "drizzle-orm": "0.45.2",
     "leaflet": "^1.9.4",
     "react": "19.2.6",
@@ -37,11 +38,13 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "16.4.0",
     "react-server-dom-webpack": "19.2.6",
+    "sirv": "^3.0.2",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.3",
     "vinext": "1.0.0-beta.2",
     "vite": "8.0.13",
+    "vite-plugin-static-copy": "^4.1.1",
     "wrangler": "4.92.0"
   },
   "type": "module"

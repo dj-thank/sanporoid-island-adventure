@@ -38,7 +38,7 @@ export default function IslandFieldGuide({ island, islandName, currentPosition }
         {visibleEntries.map((entry) => <details key={entry.id} className={styles.experienceCard}>
           <summary><span><small>{entry.officialRouteClaim ? "OFFICIAL MODEL ROUTE" : "EVIDENCE-BACKED CANDIDATE"}</small><strong>{entry.title}</strong></span><b>当日確認</b></summary>
           <div className={styles.cardBody}>
-            <div><h3>順番の候補</h3><ol>{entry.orderedStops.map((stop) => <li key={stop}>{stop}</li>)}</ol></div>
+            <div><h3>順番の候補</h3><ol>{entry.orderedStops.map((stop, index) => <li key={`${stop}-${index}`}>{stop}</li>)}</ol></div>
             <div><h3>一次情報で確認できたこと</h3>{entry.supportedFacts.length ? <ul>{entry.supportedFacts.map((fact) => <li key={fact}>{fact}</li>)}</ul> : <p>候補地点の公式情報のみ。連続ルートは未確認です。</p>}</div>
             <div className={styles.warning}><h3>まだ確認が必要</h3><ul>{entry.constraints.map((constraint) => <li key={constraint}>{constraint}</li>)}</ul><p>{entry.sharedTransportGate}</p></div>
             {entry.hazards.length > 0 && <div className={styles.tags}>{entry.hazards.map((hazard) => <span key={hazard}>{hazardNames[hazard] ?? hazard}</span>)}</div>}

@@ -153,6 +153,9 @@
 .mapHeading h2, .missionPanel h2, .photoLab h2, .guideIntro h2 { margin: 4px 0 0; font-size: clamp(25px, 3vw, 42px); }
 .mapHeading button { padding: 12px 18px; color: #fff; background: #0c6573; border: 0; border-radius: 999px; font-weight: 800; cursor: pointer; }
 .mapWrap { position: relative; margin: 18px; border: 4px solid #17323a; border-radius: 18px; overflow: hidden; }
+.mapWrapCesium { position: relative; }
+.mapWrapCesium .mapCompanion { top: 78px; bottom: auto; }
+.mapWrapCesium .arrivalRing { top: 152px; bottom: auto; }
 .mapWrap :global(.leaflet-tile-pane) { filter: saturate(.78) sepia(.13) brightness(1.04); }
 .mapWrap :global(.leaflet-container) { min-height: 520px; background: #aecfe2; }
 .mapCompanion { position: absolute; z-index: 550; right: 22px; bottom: 20px; width: 104px; pointer-events: none; filter: drop-shadow(0 10px 12px rgba(0,0,0,.2)); }
