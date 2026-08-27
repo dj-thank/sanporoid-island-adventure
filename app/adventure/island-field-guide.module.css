@@ -39,4 +39,6 @@
 .sources { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 .sources small { margin-left: auto; color: #708186; }
 .empty { margin: 0; padding: 24px; text-align: center; }
-@media (max-width: 760px) { .fieldGuide { margin: 12px; } .fieldGuide > header, .currentGrid, .cardBody { grid-template-columns: 1fr; } .anchorRail { grid-template-columns: 1fr; } .safetyBand { display: grid; gap: 5px; } .experienceCard summary { align-items: flex-start; } .sources small { width: 100%; margin-left: 0; } }
+.showAllButton { display: block; min-width: 220px; min-height: 46px; margin: 0 auto 20px; padding: 11px 18px; color: #fffdf4; background: #0c6573; border: 0; border-radius: 999px; font-weight: 900; cursor: pointer; }
+.showAllButton:hover, .showAllButton:focus-visible { background: #17323a; outline: 3px solid rgba(214,234,75,.7); outline-offset: 2px; }
+@media (max-width: 760px) { .fieldGuide { margin: 12px; } .fieldGuide > header, .cardBody { grid-template-columns: 1fr; } .currentGrid { display: flex; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; scrollbar-width: thin; } .currentGrid article { flex: 0 0 84%; scroll-snap-align: start; } .anchorRail { grid-template-columns: 1fr; } .safetyBand { display: grid; gap: 5px; } .experienceCard summary { align-items: flex-start; } .sources small { width: 100%; margin-left: 0; } }

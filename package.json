@@ -10,7 +10,7 @@
     "build": "vinext build",
     "start": "vinext start",
     "test": "pnpm run build && node --experimental-loader ./tests/cloudflare-loader.mjs --test tests/rendered-html.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern public/cesiumStatic",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
@@ -38,13 +38,11 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "16.4.0",
     "react-server-dom-webpack": "19.2.6",
-    "sirv": "^3.0.2",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.3",
     "vinext": "1.0.0-beta.2",
     "vite": "8.0.13",
-    "vite-plugin-static-copy": "^4.1.1",
     "wrangler": "4.92.0"
   },
   "type": "module"

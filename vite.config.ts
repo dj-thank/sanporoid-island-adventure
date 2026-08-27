@@ -1,8 +1,5 @@
 import vinext from "vinext";
-import { resolve } from "node:path";
-import sirv from "sirv";
 import { defineConfig } from "vite";
-import { viteStaticCopy } from "vite-plugin-static-copy";
 import hostingConfig from "./.openai/hosting.json";
 import { sites } from "./build/sites-vite-plugin";
 
@@ -54,23 +51,7 @@ export default defineConfig(async () => {
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
     plugins: [
-      {
-        name: "cesium-dev-assets",
-        apply: "serve",
-        configureServer(server) {
-          server.middlewares.use(
-            "/cesiumStatic",
-            sirv(resolve("node_modules/cesium/Build/Cesium"), { dev: true, etag: true }),
-          );
-        },
-      },
       vinext(),
-      viteStaticCopy({
-        targets: ["ThirdParty", "Workers", "Assets", "Widgets"].map((directory) => ({
-          src: `node_modules/cesium/Build/Cesium/${directory}`,
-          dest: "cesiumStatic",
-        })),
-      }),
       sites(),
       cloudflare({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },

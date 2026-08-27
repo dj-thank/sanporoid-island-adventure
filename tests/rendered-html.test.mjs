@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 
@@ -242,6 +242,8 @@ test("server-renders the installable Sanporoid island adventure", async () => {
   assert.match(html, /神津島 → 新島 → 式根島/);
   assert.match(html, /近くのチェックポイント/);
   assert.match(html, /CESIUM 3D ISLAND EXPLORER/);
+  assert.match(html, /aria-label="冒険モード"/);
+  assert.match(html, /href="#stars"/);
   assert.match(html, /島のことを聞く/);
   assert.match(html, /APIキーは保存しません/);
   assert.match(html, /\/sanporoid\/avatar_treasure_01\.webp/);
@@ -272,6 +274,8 @@ test("keeps the PWA shell offline without caching private API data", async () =>
   assert.match(serviceWorker, /\/cesiumStatic\//);
   assert.match(serviceWorker, /cache\.put\(event\.request/);
   assert.match(registration, /navigator\.serviceWorker\.register\("\/sw\.js"\)/);
+  assert.match(registration, /location\.hostname === "localhost"/);
+  assert.match(registration, /registration\.unregister\(\)/);
   assert.match(guideRoute, /getChatGPTUser/);
   assert.match(guideRoute, /store:\s*false/);
   assert.doesNotMatch(guideRoute, /console\.(?:log|error).*api/i);
@@ -293,7 +297,13 @@ test("uses Cesium as the adventure map with a token-free mobile fallback", async
   assert.match(component, /currentPosition/);
   assert.doesNotMatch(component, /Ion\.defaultAccessToken\s*=/);
   assert.match(viteConfig, /cesiumStatic/);
-  assert.match(viteConfig, /viteStaticCopy/);
+  await Promise.all([
+    access(new URL("../public/cesiumStatic/Assets/approximateTerrainHeights.json", import.meta.url)),
+    access(new URL("../public/cesiumStatic/Assets/IAU2006_XYS/IAU2006_XYS_18.json", import.meta.url)),
+    access(new URL("../public/cesiumStatic/Widgets/widgets.css", import.meta.url)),
+    access(new URL("../public/cesiumStatic/Workers/createGeometry.js", import.meta.url)),
+    access(new URL("../public/cesiumStatic/LICENSE.md", import.meta.url)),
+  ]);
   assert.equal(JSON.parse(packageJson).dependencies.cesium, "^1.144.0");
 });
 
@@ -344,6 +354,9 @@ test("imports every researched trip-island candidate into the map and LLM contex
   assert.equal(currentFacts.facts.every((entry) => entry.sources.length > 0 && entry.cautions.length > 0), true);
   assert.match(mapKnowledge, /enrichMapPointsWithResearch/);
   assert.match(mapKnowledge, /cautions/);
+  const fieldGuide = await readFile(new URL("../app/adventure/IslandFieldGuide.tsx", import.meta.url), "utf8");
+  assert.match(fieldGuide, /slice\(0, 3\)/);
+  assert.match(fieldGuide, /残り.*件も表示/);
   assert.match(guideRoute, /researchedExperiences/);
   assert.match(guideRoute, /安全確認済み連続ルートではない/);
 });

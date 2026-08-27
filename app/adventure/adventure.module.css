@@ -2,7 +2,8 @@
   min-height: 100vh;
   color: #17323a;
   background: #f8f4f0;
-  overflow: hidden;
+  overflow: visible;
+  scroll-behavior: smooth;
 }
 
 .hero {
@@ -96,6 +97,28 @@
 .dayTabs strong { font-size: 26px; }
 .dayTabs span { font-size: 12px; opacity: .78; }
 
+.modeNav {
+  position: sticky;
+  z-index: 800;
+  top: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  max-width: 760px;
+  margin: 22px auto 0;
+  padding: 4px;
+  background: rgba(23,50,58,.94);
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(23,50,58,.2);
+  backdrop-filter: blur(18px);
+}
+.modeNav a { display: grid; grid-template-columns: auto 1fr; gap: 0 9px; align-items: center; min-height: 54px; padding: 8px 13px; color: #fffdf4; border-radius: 13px; text-decoration: none; }
+.modeNav a:hover, .modeNav a:focus-visible { background: #0c6573; outline: none; }
+.modeNav small { grid-row: span 2; color: #d6ea4b; font-size: 10px; font-weight: 900; }
+.modeNav strong { font-size: 13px; }
+.modeNav span { color: #b8c9c7; font-size: 9px; }
+
 .worldBrief {
   display: grid;
   grid-template-columns: 1fr 1.6fr;
@@ -133,6 +156,8 @@
   margin: 42px auto 0;
   padding: 0 22px 80px;
 }
+.mapMissionSection, .photoLab, .starMode, .guideSection { scroll-margin-top: 96px; }
+.fieldGuideWrap { grid-column: 1 / -1; min-width: 0; }
 
 .mapPanel, .missionPanel, .photoLab, .guideSection {
   border: 1px solid rgba(23,50,58,.16);
@@ -223,6 +248,7 @@
 }
 
 @media (max-width: 620px) {
+  .appShell { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
   .hero { min-height: 740px; }
   .hero nav { gap: 12px; font-size: 10px; }
   .hero nav span { display: none; }
@@ -231,6 +257,11 @@
   .dayTabs { grid-template-columns: 1fr; margin-top: -18px; }
   .dayTabs button, .dayTabs button:first-child, .dayTabs button:last-child { border-radius: 13px; }
   .dayTabs .activeTab { transform: translateX(8px); }
+  .modeNav { position: fixed; top: auto; right: 10px; bottom: calc(8px + env(safe-area-inset-bottom)); left: 10px; width: auto; margin: 0; border-radius: 20px; }
+  .modeNav a { display: grid; grid-template-columns: 1fr; place-items: center; gap: 1px; min-width: 0; min-height: 55px; padding: 6px 3px; text-align: center; }
+  .modeNav small { display: none; }
+  .modeNav strong { font-size: 12px; }
+  .modeNav span { max-width: 74px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 8px; }
   .worldBrief { padding-inline: 12px; }
   .chapterGrid { grid-template-columns: 1fr; }
   .mapMissionSection { padding-inline: 12px; }
@@ -242,3 +273,5 @@
   .footer { align-items: flex-start; }
   .footer img { width: 90px; }
 }
+
+@media (prefers-reduced-motion: reduce) { .appShell { scroll-behavior: auto; } }

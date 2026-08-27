@@ -204,7 +204,14 @@ export default function AdventureApp() {
         })}
       </section>
 
-      <section className={styles.worldBrief} aria-label="欠けた潮星の世界観とゲームループ">
+      <nav className={styles.modeNav} aria-label="冒険モード">
+        <a href="#explore"><small>01</small><strong>地図</strong><span>島を開拓</span></a>
+        <a href="#missions"><small>02</small><strong>指令</strong><span>近くで遊ぶ</span></a>
+        <a href="#stars"><small>03</small><strong>星空</strong><span>夜を読む</span></a>
+        <a href="#guide"><small>04</small><strong>ガイド</strong><span>島に聞く</span></a>
+      </nav>
+
+      <section id="world" className={styles.worldBrief} aria-label="欠けた潮星の世界観とゲームループ">
         <div className={styles.worldLead}><small>GAME MANAGER / WORLD STATE</small><h2>三つの欠片を、会話で星に戻す。</h2><p>近くの安全な候補へ行く。役割で見る。写真を一枚撮る。仲間の言葉で島を変える。宝を持って次章へ進む。</p><dl><div><dt>現在の章</dt><dd>{selectedIsland.name}</dd></div><div><dt>潮相</dt><dd>{tideState}</dd></div><div><dt>星の欠片</dt><dd>{completed.length} / {checkpoints.length}</dd></div></dl></div>
         <div className={styles.chapterGrid}>
           <article><span>CHAPTER 01</span><h3>神津島｜導き</h3><p>方角、空白、水の痕跡を読み、旅の星が向く先を決める。</p></article>
@@ -214,7 +221,7 @@ export default function AdventureApp() {
         <div className={styles.roleRail}><span>ROLE CARDS</span>{["目印係", "観察係", "物語係", "記録係"].map((role, index) => <div key={role}><b>0{index + 1}</b><strong>{role}</strong><small>一人だけが持つ手掛かりを、会話で共有する</small></div>)}</div>
       </section>
 
-      <section className={styles.mapMissionSection}>
+      <section id="explore" className={styles.mapMissionSection}>
         <div className={styles.mapPanel}>
           <div className={styles.mapHeading}><div><small>SANPOROID MAP</small><h2>{selectedIsland.name}の冒険地図</h2></div><button onClick={locateNearby}>近くを探す</button></div>
           <div className={styles.mapWrapCesium}>
@@ -224,10 +231,9 @@ export default function AdventureApp() {
           </div>
           <p className={styles.locationMessage}>{locationMessage}</p>
           <p className={styles.privacyNote}>正確な現在地は端末内の距離計算だけに使い、サイト・Bot・OpenAIへ送りません。</p>
-          <IslandFieldGuide island={island} islandName={selectedIsland.name} currentPosition={currentPosition} />
         </div>
 
-        <div className={styles.missionPanel}>
+        <div id="missions" className={styles.missionPanel}>
           <header><div><small>NEARBY CHECKPOINTS</small><h2>近くのチェックポイント</h2></div><span>{completedCount} / {selectedCheckpoints.length}</span></header>
           <div className={styles.checkpointList}>
             {selectedCheckpoints.map((checkpoint) => {
@@ -245,16 +251,19 @@ export default function AdventureApp() {
             })}
           </div>
         </div>
+        <div className={styles.fieldGuideWrap}>
+          <IslandFieldGuide island={island} islandName={selectedIsland.name} currentPosition={currentPosition} />
+        </div>
       </section>
 
-      <section className={styles.photoLab}>
+      <section id="photos" className={styles.photoLab}>
         <header><div><small>PHOTO ODDITY LAB</small><h2>島の異変図鑑</h2></div><p>写真は端末内だけで解析。平均色から、旅にしか存在しない“異変名”をつけます。画像はアップロードしません。</p></header>
         {photos.length === 0 ? <div className={styles.photoEmpty}><img src="/sanporoid/avatar_treasure_01.webp" alt="宝箱を見つけたさんぽろいど" /><p>チェックポイントへ到着すると写真ミッションが解放されます。<br />海、岩、湯気、道の曲がり方が図鑑の標本になります。</p></div> : <div className={styles.photoGrid}>{photos.map((photo) => <figure key={photo.id} style={{ "--oddity-color": photo.color } as React.CSSProperties}><img src={photo.url} alt={`${photo.checkpointTitle}で撮った標本`} /><figcaption><small>{photo.islandName} · {photo.checkpointTitle}</small><strong>{photo.tag}</strong><span>ISLAND EVIDENCE / LOCAL ONLY</span></figcaption></figure>)}</div>}
       </section>
 
-      <StarGuide key={selectedIsland.slug} fallbackPosition={selectedIsland.mapCenter} islandName={selectedIsland.name} />
+      <div id="stars" className={styles.starMode}><StarGuide key={selectedIsland.slug} fallbackPosition={selectedIsland.mapCenter} islandName={selectedIsland.name} /></div>
 
-      <section className={styles.guideSection}>
+      <section id="guide" className={styles.guideSection}>
         <div className={styles.guideIntro}><small>ISLAND GUIDE LLM</small><h2>島のことを聞く</h2><p>アプリ内の島情報を先に使い、APIキーが入力された一回だけOpenAIへ問い合わせます。APIキーは保存しません。</p></div>
         <form onSubmit={askIsland} className={styles.guideForm}>
           <label>質問<textarea name="question" required rows={3} placeholder={`${selectedIsland.name}で雨の日にできることは？`} /></label>

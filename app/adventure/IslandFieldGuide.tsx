@@ -13,6 +13,7 @@ const hazardNames: Record<string, string> = {
 
 export default function IslandFieldGuide({ island, islandName, currentPosition }: { island: TripIslandSlug; islandName: string; currentPosition: [number, number] | null }) {
   const [query, setQuery] = useState("");
+  const [showAll, setShowAll] = useState(false);
   const entries = experiencesFor(island);
   const currentFacts = currentFactsFor(island);
   const anchors = anchorsFor(island);
@@ -21,6 +22,7 @@ export default function IslandFieldGuide({ island, islandName, currentPosition }
     if (!needle) return entries;
     return entries.filter((entry) => [entry.title, ...entry.orderedStops, ...entry.supportedFacts, ...entry.bestFit].join(" ").toLowerCase().includes(needle));
   }, [entries, query]);
+  const displayedEntries = query.trim() || showAll ? visibleEntries : visibleEntries.slice(0, 3);
 
   return (
     <section className={styles.fieldGuide} aria-labelledby="field-guide-title">
@@ -36,7 +38,7 @@ export default function IslandFieldGuide({ island, islandName, currentPosition }
         {anchors.map((anchor) => <article key={anchor.id}><small>OFFICIAL OPEN DATA</small><strong>{anchor.name}</strong><span>{currentPosition ? `現在地から約${formatDistance(haversineMeters(...currentPosition, ...(anchor.position as [number, number])))} · ` : ""}目的地点座標（入口ではありません）</span><a href={anchor.source.url} target="_blank" rel="noreferrer">出典を見る</a></article>)}
       </div>}
       <div className={styles.experienceGrid}>
-        {visibleEntries.map((entry) => <details key={entry.id} className={styles.experienceCard}>
+        {displayedEntries.map((entry) => <details key={entry.id} className={styles.experienceCard}>
           <summary><span><small>{entry.officialRouteClaim ? "OFFICIAL MODEL ROUTE" : "EVIDENCE-BACKED CANDIDATE"}</small><strong>{entry.title}</strong></span><b>当日確認</b></summary>
           <div className={styles.cardBody}>
             <div><h3>順番の候補</h3><ol>{entry.orderedStops.map((stop, index) => <li key={`${stop}-${index}`}>{stop}</li>)}</ol></div>
@@ -47,6 +49,7 @@ export default function IslandFieldGuide({ island, islandName, currentPosition }
           </div>
         </details>)}
       </div>
+      {!query.trim() && visibleEntries.length > 3 && <button className={styles.showAllButton} type="button" aria-expanded={showAll} onClick={() => setShowAll((value) => !value)}>{showAll ? "候補を3件に戻す" : `残り${visibleEntries.length - 3}件も表示`}</button>}
       {visibleEntries.length === 0 && <p className={styles.empty}>一致する候補はありません。検索語を短くしてください。</p>}
     </section>
   );
