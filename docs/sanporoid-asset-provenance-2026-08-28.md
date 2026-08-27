@@ -1,7 +1,9 @@
 # Sanporoid asset reuse receipt
 
-Observed at: 2026-08-28 JST  
-Source checkout: `C:\Users\rambo\Documents\ChatGPT\sanpo\work\sanporoid`  
+Observed at: 2026-08-28 JST
+
+Source checkout: `C:\Users\rambo\Documents\ChatGPT\sanpo\work\sanporoid`
+
 Source revision: `ad07e6d10cf78e1721c0daba72f89700d17932e4`
 
 The island PWA reuses four canonical, tracked Sanporoid production assets from

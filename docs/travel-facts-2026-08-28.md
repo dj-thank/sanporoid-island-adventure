@@ -1,6 +1,7 @@
 # 2026-08-29開始 3島ルートの公式確認
 
-Observed at: 2026-08-28 JST  
+Observed at: 2026-08-28 JST
+
 Gate ceiling: `LOCAL_PASS` の根拠資料。空席、予約、当日運航、発着港、宿泊成立は未確認。
 
 ## 現行ルート
