@@ -310,6 +310,36 @@ test("uses the canonical Sanporoid MapLibre UI and local map assets", async () =
   assert.match(provenance, /68295c62912f37b87d6e735d3ec9b183a047f5cd/);
 });
 
+test("gives all three islands bounded map profiles without fake walk routes", async () => {
+  const [profilesSource, component] = await Promise.all([
+    readFile(new URL("../app/adventure/islandMapProfiles.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/SanporoidIslandMap.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const slug of ["kozushima", "niijima", "shikinejima"]) assert.match(profilesSource, new RegExp(`${slug}:\\s*\\{`));
+  assert.match(profilesSource, /bounds:/);
+  assert.match(profilesSource, /camera:/);
+  assert.match(profilesSource, /biome:/);
+  assert.match(profilesSource, /categories:/);
+  assert.match(component, /fitBounds/);
+  assert.match(component, /mission-radius-fill/);
+  assert.match(component, /categoryFilters/);
+  assert.match(component, /順番線は徒歩経路ではありません/);
+  assert.doesNotMatch(component, /const route = points\.map/);
+  assert.doesNotMatch(component, /id: "island-exploration-route"/);
+  const { circlePolygon, islandForPosition, islandMapProfiles } = await import(new URL("../app/adventure/islandMapProfiles.ts", import.meta.url));
+  assert.equal(islandForPosition([34.212, 139.139]), "kozushima");
+  assert.equal(islandForPosition([34.373, 139.259]), "niijima");
+  assert.equal(islandForPosition([34.324, 139.216]), "shikinejima");
+  for (const profile of Object.values(islandMapProfiles)) {
+    assert.equal(profile.categories.length, 6);
+    assert.ok(profile.bounds[0][0] < profile.bounds[1][0]);
+    assert.ok(profile.bounds[0][1] < profile.bounds[1][1]);
+  }
+  const ring = circlePolygon([34.22, 139.14], 500);
+  assert.equal(ring.coordinates[0].length, 49);
+  assert.deepEqual(ring.coordinates[0][0], ring.coordinates[0].at(-1));
+});
+
 test("organizes the island adventure into accessible responsive app modes", async () => {
   const [app, map, fieldGuide, starGuide, shellCss, mapCss, fieldCss, starCss] = await Promise.all([
     readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),
@@ -420,6 +450,8 @@ test("imports every researched trip-island candidate into the map and LLM contex
   assert.match(fieldGuide, /GuideView/);
   assert.match(guideRoute, /researchedExperiences/);
   assert.match(guideRoute, /安全確認済み連続ルートではない/);
+  assert.match(guideRoute, /mapProfile/);
+  assert.match(mapKnowledge, /順番線は徒歩経路ではない/);
 });
 
 test("gives the Bot a scoped read-only trip and island context", async () => {
@@ -445,6 +477,9 @@ test("gives the Bot a scoped read-only trip and island context", async () => {
   assert.match(payload.trip.pending, /神津島キャンプ場は朝確認/);
   assert.deepEqual(payload.islands.map((island) => island.name), ["神津島", "新島", "式根島"]);
   assert.deepEqual(payload.islands.map((island) => island.researchedExperienceCount), [7, 5, 7]);
+  assert.deepEqual(payload.islands.map((island) => island.mapProfile.categories.length), [6, 6, 6]);
+  assert.equal(payload.islands.every((island) => island.mapProfile.officialMapUrl && island.mapProfile.hazardUrl), true);
+  assert.match(payload.islands[0].mapProfile.routeBoundary, /徒歩経路/);
   assert.equal(payload.researchPack.experienceCount, 19);
   assert.equal(payload.researchPack.currentFactCount, 12);
   assert.match(payload.researchPack.safetyBoundary, /not verified continuous walking routes/);

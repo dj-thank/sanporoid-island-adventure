@@ -1,6 +1,7 @@
 import { getChatGPTUser } from "../../chatgpt-auth";
 import { currentFactsFor, experiencesFor, islandCurrentFacts, type TripIslandSlug } from "../../adventure/islandKnowledge";
 import { islandsBySlug, type Island } from "../../discover/island-data";
+import { islandMapProfiles } from "../../adventure/islandMapProfiles";
 
 const allowedIslands = new Set<Island["slug"]>(["kozushima", "niijima", "shikinejima"]);
 const allowedModels = new Set(["gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.4-mini"]);
@@ -31,6 +32,7 @@ export async function POST(request: Request) {
   const island = islandsBySlug[slug];
   const researchedExperiences = experiencesFor(slug as TripIslandSlug);
   const currentFacts = currentFactsFor(slug as TripIslandSlug);
+  const mapProfile = islandMapProfiles[slug as TripIslandSlug];
   const context = [
     `島: ${island.name} (${island.english})`,
     `概要: ${island.shortIntro}`,
@@ -38,6 +40,7 @@ export async function POST(request: Request) {
     `基本情報: ${island.facts.map((fact) => `${fact.label}=${fact.value}`).join(" / ")}`,
     `候補スポット: ${island.spots.map((spot) => `${spot.title}: ${spot.summary}`).join(" / ")}`,
     `写真ミッション: ${island.friendMissions.map((mission) => `${mission.title}: ${mission.copy}`).join(" / ")}`,
+    `地図: カテゴリ=${mapProfile.categories.map((category) => category.label).join("、")} / 安全注意=${mapProfile.safetyNote} / 公式MAP=${mapProfile.officialMapUrl} / 防災データ=${mapProfile.hazardUrl} / 点線は徒歩経路ではない`,
     `現行公式情報（${islandCurrentFacts.checkedAt}確認）:\n${currentFacts.map((entry) => `- ${entry.category}｜${entry.title}｜事実=${entry.facts.join("、")}｜注意=${entry.cautions.join("、")}｜出典=${entry.sources.map((source) => source.url).join(" ")}`).join("\n")}`,
     `Sanporoid全国・関東調査からの島別候補（${researchedExperiences.length}件、候補であり安全確認済み連続ルートではない）:\n${researchedExperiences.map((entry) => [
       `- ${entry.title}`,

@@ -1,6 +1,7 @@
 import { getTripBoard, requireBot } from "../../../../db/store";
 import { currentFactsFor, experiencesFor, islandCurrentFacts, islandExperiencePack } from "../../../adventure/islandKnowledge";
 import { islandsBySlug } from "../../../discover/island-data";
+import { islandMapProfiles } from "../../../adventure/islandMapProfiles";
 
 const tripIslandSlugs = ["kozushima", "niijima", "shikinejima"] as const;
 
@@ -26,6 +27,7 @@ export async function GET(request: Request) {
       },
       islands: tripIslandSlugs.map((slug) => {
         const island = islandsBySlug[slug];
+        const mapProfile = islandMapProfiles[slug];
         const researchedExperiences = experiencesFor(slug);
         return {
           slug,
@@ -37,6 +39,15 @@ export async function GET(request: Request) {
           rules: island.rules,
           official: island.official,
           currentOfficialFacts: currentFactsFor(slug),
+          mapProfile: {
+            bounds: mapProfile.bounds,
+            camera: mapProfile.camera,
+            categories: mapProfile.categories.map((category) => ({ id: category.id, label: category.label })),
+            safetyNote: mapProfile.safetyNote,
+            officialMapUrl: mapProfile.officialMapUrl,
+            hazardUrl: mapProfile.hazardUrl,
+            routeBoundary: "地図の点線は章の順番ヒントであり、徒歩経路・通行可能性を示さない。",
+          },
           researchedExperienceCount: researchedExperiences.length,
           researchedExperiences: researchedExperiences.map((entry) => ({
             id: entry.id,

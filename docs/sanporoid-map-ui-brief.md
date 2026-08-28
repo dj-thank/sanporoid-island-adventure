@@ -6,4 +6,6 @@
 
 星座画面の実装証拠は `docs/ui-reference/kaketa-constellation-implementation.png`。天頂・天底付近では方位を保持し、適応平滑化・大気差・最良位置精度を使う。
 
+3島別の表示範囲・カテゴリ・任務半径・安全境界は `app/adventure/islandMapProfiles.ts` と `docs/three-island-map-research-2026-08-29.md` を正本とする。実装画像は `map-kozushima-v2.png`、`map-niijima-v2.png`、`map-shikinejima-v2.png`。全POIを結ぶ旧直線は徒歩経路に見えるため撤去した。
+
 東京の履歴、Health Connect値、GPS受信状態を島アプリへコピーしてはならない。現在地が未許可なら島中心を「仮位置」と明示し、実位置として表示しない。

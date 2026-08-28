@@ -112,6 +112,45 @@
       "implementation": {"fidelity": "semantic", "target": "SanporoidIslandMap companion sheet", "evidence": ["app/adventure/SanporoidIslandMap.tsx"], "deviation": "Health metrics are replaced by island checkpoint progress; no fake HC state."}
     },
     {
+      "id": "three_island_switcher",
+      "title": "Three-island direct switcher",
+      "bounds": [0.02, 0.04, 0.24, 0.07],
+      "observed_copy": [{"text": "神津島 / 新島 / 式根島", "confidence": "exact", "role": "tabs"}],
+      "authoritative_copy": ["神津島", "新島", "式根島"],
+      "purpose": "循環操作ではなく一操作で対象島へ移る",
+      "states": ["one_selected"],
+      "interactions": ["tap"],
+      "visual_contract": ["Three compact washi buttons", "Selected island uses Sanporoid aqua", "No horizontal scrolling"],
+      "source_assets": [],
+      "implementation": {"fidelity": "adapted", "target": "SanporoidIslandMap islandSwitcher", "evidence": ["app/adventure/SanporoidIslandMap.tsx", "docs/ui-reference/map-kozushima-v2.png"], "deviation": "3島旅行では直接切替が必要なため追加。"}
+    },
+    {
+      "id": "island_category_filters",
+      "title": "Island-specific category filters",
+      "bounds": [0.02, 0.09, 0.58, 0.1],
+      "observed_copy": [{"text": "任務 / 山・地質 / 海・星 / 文化 / 港・空港", "confidence": "exact", "role": "filters"}],
+      "authoritative_copy": ["島ごとに6分類"],
+      "purpose": "密集した地点から目的に合う種類だけを残す",
+      "states": ["all", "one_filter_selected"],
+      "interactions": ["tap"],
+      "visual_contract": ["Two-row compact filter grid", "Island-specific labels", "Hidden markers remain in data"],
+      "source_assets": [],
+      "implementation": {"fidelity": "adapted", "target": "SanporoidIslandMap categoryFilters", "evidence": ["app/adventure/islandMapProfiles.ts", "docs/ui-reference/map-shikinejima-v2.png"], "deviation": "地点密度と3島差を扱うため追加。"}
+    },
+    {
+      "id": "mission_radius_zones",
+      "title": "Checkpoint order and arrival zones",
+      "bounds": [0.12, 0.2, 0.68, 0.45],
+      "observed_copy": [{"text": "1 / 2 / 3", "confidence": "exact", "role": "mission markers"}],
+      "authoritative_copy": ["番号付き任務", "到着判定半径", "順番線は徒歩経路ではありません"],
+      "purpose": "チェックポイントの順番と到着判定範囲を、徒歩経路と混同せず表示する",
+      "states": ["unreached", "completed"],
+      "interactions": ["tap_marker"],
+      "visual_contract": ["Numbered yellow markers", "Dashed translucent radius polygons", "Green completed state", "No all-POI route line"],
+      "source_assets": [],
+      "implementation": {"fidelity": "adapted", "target": "SanporoidIslandMap mission layers", "evidence": ["app/adventure/SanporoidIslandMap.tsx", "tests/rendered-html.test.mjs"], "deviation": "安全未確認の直線ルートを撤去し、非経路の順番ヒントへ変更。"}
+    },
+    {
       "id": "bottom_navigation",
       "title": "Primary app navigation",
       "bounds": [0.03, 0.88, 0.94, 0.09],
@@ -126,7 +165,7 @@
     }
   ],
   "screen_state_acceptance": [
-    {"state": "map_ready_fallback", "required_regions": ["vector_map_world", "top_location_status", "route_progress_card", "floating_map_controls", "player_hud", "companion_sheet", "bottom_navigation"], "evidence": "docs/ui-reference/kaketa-sanporoid-map-implementation.png"},
+    {"state": "map_ready_fallback", "required_regions": ["vector_map_world", "top_location_status", "route_progress_card", "floating_map_controls", "player_hud", "companion_sheet", "three_island_switcher", "island_category_filters", "mission_radius_zones", "bottom_navigation"], "evidence": "docs/ui-reference/kaketa-sanporoid-map-implementation.png"},
     {"state": "location_unavailable", "required_regions": ["vector_map_world", "top_location_status", "floating_map_controls"], "evidence": "tests/rendered-html.test.mjs"}
   ],
   "completion_criteria": ["No horizontal page scrolling at 320px", "Exact Sanporoid style JSON loads", "Every island checkpoint is selectable on-map", "Mission and guide open inside the map", "Location permission remains user initiated", "Only map and constellation are primary modes", "Map and constellation tests pass"]

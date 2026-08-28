@@ -1,6 +1,7 @@
 import type { MapPoint } from "../discover/island-data";
 import currentFacts from "./island-current-facts.json";
 import pack from "./island-experience-pack.json";
+import { islandMapProfiles } from "./islandMapProfiles";
 
 export type TripIslandSlug = "kozushima" | "niijima" | "shikinejima";
 
@@ -31,8 +32,10 @@ export function currentFactsFor(slug: TripIslandSlug) {
 export function buildIslandLlmContext(slug: TripIslandSlug) {
   const operations = currentFactsFor(slug);
   const experiences = experiencesFor(slug);
+  const mapProfile = islandMapProfiles[slug];
   return [
     `島: ${islandNames[slug]}`,
+    `地図プロファイル: カテゴリ=${mapProfile.categories.map((category) => category.label).join("、")}｜安全注意=${mapProfile.safetyNote}｜公式MAP=${mapProfile.officialMapUrl}｜防災データ=${mapProfile.hazardUrl}｜順番線は徒歩経路ではない`,
     `現行公式情報（${islandCurrentFacts.checkedAt}確認）:`,
     ...operations.map((entry) => `- ${entry.category}｜${entry.title}｜事実=${entry.facts.join("、")}｜注意=${entry.cautions.join("、")}｜出典=${entry.sources.map((source) => source.url).join(" ")}`),
     `Sanporoid調査候補（${experiences.length}件、安全確認済み連続ルートではない）:`,

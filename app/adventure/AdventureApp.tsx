@@ -8,6 +8,7 @@ import SanporoidIslandMap from "./SanporoidIslandMap";
 import { formatDistance, haversineMeters } from "./geoMath";
 import IslandFieldGuide from "./IslandFieldGuide";
 import { answerFromExperiencePack, buildIslandLlmContext, enrichMapPointsWithResearch, officialAnchorMapPoints, type TripIslandSlug } from "./islandKnowledge";
+import { islandForPosition, islandMapProfiles } from "./islandMapProfiles";
 import StarGuide from "./StarGuide";
 import styles from "./adventure.module.css";
 
@@ -119,17 +120,15 @@ export default function AdventureApp() {
 
   const selectedIsland = islandsBySlug[island];
   const selectedTrip = tripIslands.find((entry) => entry.slug === island) ?? tripIslands[0];
-  const selectedCheckpoints = useMemo(
-    () => checkpoints.filter((checkpoint) => checkpoint.island === island).sort((a, b) => (distances[a.id] ?? Infinity) - (distances[b.id] ?? Infinity)),
-    [distances, island],
-  );
+  const islandCheckpoints = useMemo(() => checkpoints.filter((checkpoint) => checkpoint.island === island), [island]);
+  const selectedCheckpoints = useMemo(() => [...islandCheckpoints].sort((a, b) => (distances[a.id] ?? Infinity) - (distances[b.id] ?? Infinity)), [distances, islandCheckpoints]);
   const completedCount = selectedCheckpoints.filter((checkpoint) => completed.includes(checkpoint.id)).length;
   const nextCheckpoint = selectedCheckpoints.find((checkpoint) => !completed.includes(checkpoint.id)) ?? selectedCheckpoints[0];
   const mapPoints = useMemo(() => [
-    ...selectedCheckpoints.map((checkpoint) => ({
-      id: checkpoint.id,
+    ...islandCheckpoints.map((checkpoint) => ({
+      id: `mission:${checkpoint.id}`,
       title: checkpoint.title,
-      label: checkpoint.category,
+      label: "MISSION",
       position: checkpoint.position,
       summary: checkpoint.mission,
       researchedFacts: [checkpoint.photoPrompt, `報酬: ${checkpoint.reward}`],
@@ -138,7 +137,8 @@ export default function AdventureApp() {
     } satisfies MapPoint)),
     ...enrichMapPointsWithResearch(island, selectedIsland.spots),
     ...officialAnchorMapPoints(island),
-  ], [island, selectedCheckpoints, selectedIsland.spots]);
+  ], [island, islandCheckpoints, selectedIsland.spots]);
+  const missionAreas = useMemo(() => islandCheckpoints.map((checkpoint, index) => ({ id: checkpoint.id, position: checkpoint.position, radiusMeters: checkpoint.radiusMeters, index: index + 1, completed: completed.includes(checkpoint.id) })), [completed, islandCheckpoints]);
   const tideState = photos.length === 0 ? "未観測" : ["静潮", "逆潮", "星隠し"][photos.length % 3];
   const activeModeLabel = appModes.find((mode) => mode.id === activeMode)?.label ?? "地図";
 
@@ -171,6 +171,8 @@ export default function AdventureApp() {
         if (!Number.isFinite(coords.accuracy) || coords.accuracy >= bestLocationAccuracyRef.current) return;
         bestLocationAccuracyRef.current = coords.accuracy;
         setCurrentPosition([coords.latitude, coords.longitude]);
+        const detectedIsland = islandForPosition([coords.latitude, coords.longitude]);
+        if (detectedIsland) setIsland(detectedIsland);
         const next = Object.fromEntries(checkpoints.map((checkpoint) => [checkpoint.id, haversineMeters(coords.latitude, coords.longitude, ...checkpoint.position)]));
         setDistances(next);
         setLocationMessage(`現在地を精度約${Math.round(coords.accuracy)}mで更新しました。数値は保存・送信していません。`);
@@ -356,6 +358,8 @@ export default function AdventureApp() {
             <div className={styles.mapWrapCesium}>
               <SanporoidIslandMap
                 key={selectedIsland.slug}
+                island={island}
+                profile={islandMapProfiles[island]}
                 center={selectedIsland.mapCenter}
                 islandName={selectedIsland.name}
                 points={mapPoints}
@@ -368,10 +372,9 @@ export default function AdventureApp() {
                 onSelectionChange={setSelectedMapPoint}
                 missionPanel={mapMissionPanel}
                 guidePanel={mapGuidePanel}
-                onNextIsland={() => {
-                  const index = tripIslands.findIndex((entry) => entry.slug === island);
-                  const next = tripIslands[(index + 1) % tripIslands.length];
-                  setIsland(next.slug);
+                missionAreas={missionAreas}
+                onIslandChange={(nextIsland) => {
+                  setIsland(nextIsland);
                   setSelectedMapPoint(null);
                   setResearchOpen(false);
                 }}
