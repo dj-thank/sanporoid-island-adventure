@@ -77,13 +77,13 @@
 .empty { margin: 0; padding: 24px; text-align: center; }
 @media (max-width: 760px) {
   .fieldGuide > header { grid-template-columns: 1fr; gap: 17px; padding: 20px 17px; }
-  .guideHeaderActions dl { overflow-x: auto; }
+  .guideHeaderActions dl { display: grid; grid-template-columns:repeat(2,minmax(0,1fr)); overflow:visible; }
   .safetyBand { display: grid; gap: 5px; padding: 14px 17px; }
   .guideBody { padding: 10px; }
   .contextColumns, .currentGrid, .cardBody, .anchorRail { grid-template-columns: 1fr; }
   .contextEmpty { display: grid; }
-  .guideTabs { display: flex; overflow-x: auto; scroll-snap-type: x proximity; }
-  .guideTabs button { flex: 0 0 160px; scroll-snap-align: start; }
+  .guideTabs { display: grid; grid-template-columns:repeat(2,minmax(0,1fr)); overflow:visible; }
+  .guideTabs button { min-width:0; }
   .panelIntro { display: grid; align-items: start; }
   .panelIntro label { min-width: 0; width: 100%; }
   .experienceCard summary { align-items: flex-start; }
