@@ -4,8 +4,8 @@
 .starHeader { display: flex; justify-content: space-between; gap: 28px; align-items: end; padding: 24px clamp(18px,3vw,42px); border-bottom: 1px solid rgba(255,255,255,.13); background: #050a12; }
 .nightRed .starHeader { background: #090000; border-color: rgba(255,99,80,.22); }
 .starHeader > div:first-child { max-width: 760px; }
-.starHeader small, .targetCard small, .manualPanel small { color: #87bfff; font-size: 9px; font-weight: 900; letter-spacing: .15em; }
-.nightRed :is(.starHeader,.targetCard,.manualPanel) small { color: #ff6350; }
+.starHeader small, .tripSkyCard small, .targetCard small, .manualPanel small { color: #87bfff; font-size: 9px; font-weight: 900; letter-spacing: .15em; }
+.nightRed :is(.starHeader,.tripSkyCard,.targetCard,.manualPanel) small { color: #ff6350; }
 .starHeader h2 { margin: 6px 0; font-size: clamp(30px,4vw,54px); line-height: 1; letter-spacing: -.04em; }
 .starHeader p { margin: 0; color: #9fb2c7; font-size: 12px; line-height: 1.7; }
 .nightRed .starHeader p { color: #c9796d; }
@@ -57,8 +57,13 @@
 .locateArrow > span { display: grid; gap: 3px; padding: 6px 9px; background: rgba(0,0,0,.7); border-radius: 8px; font-size: 12px; font-weight: 900; }
 .locateArrow small { font-size: 9px; }
 .controlDock { display: grid; gap: 10px; align-content: start; padding-top: 10px; }
-.targetCard, .sensorReadout, .manualPanel { padding: 18px; background: #09111d; border: 1px solid rgba(255,255,255,.14); border-radius: 15px; }
-.nightRed :is(.targetCard,.sensorReadout,.manualPanel) { background: #100100; border-color: rgba(255,99,80,.24); }
+.tripSkyCard, .targetCard, .sensorReadout, .manualPanel { padding: 18px; background: #09111d; border: 1px solid rgba(255,255,255,.14); border-radius: 15px; }
+.nightRed :is(.tripSkyCard,.targetCard,.sensorReadout,.manualPanel) { background: #100100; border-color: rgba(255,99,80,.24); }
+.tripSkyCard { display: grid; gap: 5px; border-left: 4px solid #87bfff; }
+.nightRed .tripSkyCard { border-left-color: #ff6350; }
+.tripSkyCard > strong { color: #f4f1e8; font-size: 17px; }
+.tripSkyCard p { margin: 0; color: #9fb2c7; font-size: 11px; line-height: 1.65; }
+.nightRed .tripSkyCard p { color: #c9796d; }
 .targetCard h3 { margin: 7px 0 3px; font-size: 26px; line-height: 1.08; }
 .targetCard > strong { color: #87bfff; }
 .nightRed .targetCard > strong { color: #ff6350; }
@@ -109,7 +114,7 @@
   .compassLine { inset-inline: 11px; }
   .controlDock { grid-template-columns: 1fr; padding-top: 0; }
   .manualPanel { grid-column: auto; }
-  .targetCard, .sensorReadout { padding: 15px; }
+  .tripSkyCard, .targetCard, .sensorReadout { padding: 15px; }
   .targetCard h3 { font-size: 23px; }
 }
 @media (max-width: 340px) {

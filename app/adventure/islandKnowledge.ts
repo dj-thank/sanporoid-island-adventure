@@ -1,5 +1,6 @@
 import type { MapPoint } from "../discover/island-data";
 import currentFacts from "./island-current-facts.json";
+import deepKnowledge from "./island-deep-knowledge.json";
 import pack from "./island-experience-pack.json";
 import { islandMapProfiles } from "./islandMapProfiles";
 
@@ -7,6 +8,7 @@ export type TripIslandSlug = "kozushima" | "niijima" | "shikinejima";
 
 export type IslandExperience = (typeof pack.experiences)[number];
 export type IslandAnchor = (typeof pack.anchors)[number];
+export type IslandDeepTheme = (typeof deepKnowledge.islands)[number]["themes"][number];
 
 const islandNames: Record<TripIslandSlug, string> = {
   kozushima: "神津島",
@@ -16,6 +18,8 @@ const islandNames: Record<TripIslandSlug, string> = {
 
 export const islandExperiencePack = pack;
 export const islandCurrentFacts = currentFacts;
+export const islandDeepKnowledge = deepKnowledge;
+export const deepThemeCount = deepKnowledge.islands.reduce((total, entry) => total + entry.themes.length, 0);
 
 export function experiencesFor(slug: TripIslandSlug) {
   return pack.experiences.filter((entry) => entry.island === islandNames[slug]);
@@ -29,15 +33,22 @@ export function currentFactsFor(slug: TripIslandSlug) {
   return currentFacts.facts.filter((entry) => entry.island === islandNames[slug]);
 }
 
+export function deepKnowledgeFor(slug: TripIslandSlug) {
+  return deepKnowledge.islands.find((entry) => entry.island === islandNames[slug])?.themes ?? [];
+}
+
 export function buildIslandLlmContext(slug: TripIslandSlug) {
   const operations = currentFactsFor(slug);
   const experiences = experiencesFor(slug);
+  const themes = deepKnowledgeFor(slug);
   const mapProfile = islandMapProfiles[slug];
   return [
     `島: ${islandNames[slug]}`,
     `地図プロファイル: カテゴリ=${mapProfile.categories.map((category) => category.label).join("、")}｜安全注意=${mapProfile.safetyNote}｜公式MAP=${mapProfile.officialMapUrl}｜防災データ=${mapProfile.hazardUrl}｜順番線は徒歩経路ではない`,
     `現行公式情報（${islandCurrentFacts.checkedAt}確認）:`,
     ...operations.map((entry) => `- ${entry.category}｜${entry.title}｜事実=${entry.facts.join("、")}｜注意=${entry.cautions.join("、")}｜出典=${entry.sources.map((source) => source.url).join(" ")}`),
+    `島の深層知識（${themes.length}テーマ、${islandDeepKnowledge.checkedAt}確認）:`,
+    ...themes.map((theme) => `- ${theme.category}｜${theme.title}｜要約=${theme.summary}｜事実=${theme.facts.join("、")}｜地図接続=${theme.mapLinks.join("、")}｜注意=${theme.cautions.join("、")}｜出典=${theme.sources.map((source) => source.url).join(" ")}`),
     `Sanporoid調査候補（${experiences.length}件、安全確認済み連続ルートではない）:`,
     ...experiences.map((entry) => `- ${entry.title}｜順番候補=${entry.orderedStops.join(" → ")}｜根拠=${entry.supportedFacts.join("、") || "地点情報のみ"}｜制約=${entry.constraints.join("、") || "当日確認"}｜運用ゲート=${entry.sharedTransportGate}`),
   ].join("\n");
@@ -59,19 +70,22 @@ export function officialAnchorMapPoints(slug: TripIslandSlug): MapPoint[] {
 export function enrichMapPointsWithResearch(slug: TripIslandSlug, points: MapPoint[]): MapPoint[] {
   const experiences = experiencesFor(slug);
   const operations = currentFactsFor(slug);
+  const themes = deepKnowledgeFor(slug);
   return points.map((point) => {
     const matches = experiences.filter((entry) => entry.orderedStops.some((stop) => namesOverlap(stop, point.title)));
     const operationMatches = operations.filter((entry) => entry.relatedNames.some((name) => namesOverlap(name, point.title)));
-    if (!matches.length && !operationMatches.length) return point;
-    const researchedFacts = unique([...operationMatches.flatMap((entry) => entry.facts), ...matches.flatMap((entry) => entry.supportedFacts)]).slice(0, 8);
-    const cautions = unique([...operationMatches.flatMap((entry) => entry.cautions), ...matches.flatMap((entry) => entry.constraints)]).slice(0, 8);
+    const deepMatches = themes.filter((theme) => theme.mapLinks.some((name) => namesOverlap(name, point.title)));
+    if (!matches.length && !operationMatches.length && !deepMatches.length) return point;
+    const researchedFacts = unique([...operationMatches.flatMap((entry) => entry.facts), ...deepMatches.flatMap((entry) => entry.facts), ...matches.flatMap((entry) => entry.supportedFacts)]).slice(0, 12);
+    const cautions = unique([...operationMatches.flatMap((entry) => entry.cautions), ...deepMatches.flatMap((entry) => entry.cautions), ...matches.flatMap((entry) => entry.constraints)]).slice(0, 10);
     const sources = uniqueByUrl([
       ...operationMatches.flatMap((entry) => entry.sources),
+      ...deepMatches.flatMap((entry) => entry.sources),
       ...matches.flatMap((entry) => entry.officialSources.map((source) => ({ label: source.authority, url: source.url }))),
     ]);
     return {
       ...point,
-      summary: `${point.summary} ${operationMatches.length ? `現行公式情報${operationMatches.length}件` : ""}${matches.length ? `・Sanporoid調査候補${matches.length}件` : ""}を接続しています。`,
+      summary: `${point.summary} ${operationMatches.length ? `現行公式情報${operationMatches.length}件` : ""}${deepMatches.length ? `・深層知識${deepMatches.length}テーマ` : ""}${matches.length ? `・Sanporoid調査候補${matches.length}件` : ""}を接続しています。`,
       researchedFacts,
       cautions: cautions.length ? cautions : ["運航・通行・天候・営業を当日に確認"],
       sources,
@@ -92,6 +106,7 @@ function uniqueByUrl(values: Array<{ label: string; url: string }>) { return [..
 export function answerFromExperiencePack(question: string, slug: TripIslandSlug) {
   const entries = experiencesFor(slug);
   const operations = currentFactsFor(slug);
+  const themes = deepKnowledgeFor(slug);
   const normalized = question.toLowerCase();
   const tokens = question.split(/[\s、。・についてをでのはが]+/).filter((token) => token.length >= 2);
   const currentMatches = operations.map((entry) => {
@@ -113,11 +128,20 @@ export function answerFromExperiencePack(question: string, slug: TripIslandSlug)
 
   const selected = scored.filter(({ score }) => score > 0).slice(0, 3);
   const candidates = selected.length ? selected : scored.slice(0, 3);
+  const deepScored = themes.map((theme) => {
+    const searchable = [theme.category, theme.title, theme.summary, ...theme.facts, ...theme.questionAliases, ...theme.mapLinks].join(" ").toLowerCase();
+    const score = tokens.reduce((total, token) => total + (searchable.includes(token.toLowerCase()) ? 5 : 0), 0)
+      + theme.questionAliases.reduce((total, alias) => total + (normalized.includes(alias.toLowerCase()) ? 8 : 0), 0);
+    return { theme, score };
+  }).sort((left, right) => right.score - left.score);
+  const deepSelected = deepScored.filter(({ score }) => score > 0).slice(0, 2);
+  const deepCandidates = deepSelected.length ? deepSelected : deepScored.slice(0, 2);
   const body = candidates.map(({ entry }) => {
     const facts = entry.supportedFacts.length ? `確認済みの根拠: ${entry.supportedFacts.join("、")}。` : "公式情報は候補地点単位です。";
     const constraints = entry.constraints.length ? `注意: ${entry.constraints.join("、")}。` : "当日の状況確認が必要です。";
     return `・${entry.title}\n  ${facts}${constraints}`;
   }).join("\n");
   const currentSection = currentMatches.length ? `【${islandCurrentFacts.checkedAt}確認の現行公式情報】\n${currentMatches.map(({ entry }) => `・${entry.title}\n  ${entry.facts.join("、")}。注意: ${entry.cautions.join("、")}。`).join("\n")}\n\n` : "";
-  return `${currentSection}${islandNames[slug]}のSanporoid調査パック（${entries.length}件）から近い候補です。\n${body}\n\n連続した安全な徒歩ルートを保証する情報ではありません。運航、着岸港、通行止め、天候・海況、営業、入口を当日に公式案内と現地掲示で確認してください。`;
+  const deepSection = `【島を理解する】\n${deepCandidates.map(({ theme }) => `・${theme.title}\n  ${theme.summary}\n  ${theme.facts.slice(0, 2).join("、")}。出典: ${theme.sources.map((source) => source.label).join(" / ")}。`).join("\n")}\n\n`;
+  return `${currentSection}${deepSection}${islandNames[slug]}のSanporoid調査パック（${entries.length}件）から近い候補です。\n${body}\n\n連続した安全な徒歩ルートを保証する情報ではありません。運航、着岸港、通行止め、天候・海況、営業、入口を当日に公式案内と現地掲示で確認してください。`;
 }

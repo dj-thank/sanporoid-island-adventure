@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-08-28",
+  "checkedAt": "2026-08-29",
   "facts": [
     {
       "id": "kozu-camp-current",
@@ -47,6 +47,28 @@
       "sources": [{"label": "神津島村 病気になったときには", "url": "https://www.vill.kouzushima.tokyo.jp/images/2025/06/20250618-byouki.pdf"}, {"label": "神津島村 防災", "url": "https://www.vill.kouzushima.tokyo.jp/bousai/"}]
     },
     {
+      "id": "kozu-transport-refresh",
+      "island": "神津島",
+      "category": "当日運航",
+      "title": "高速船は6時頃、港は当日朝の更新を読み直す",
+      "status": "time_bound_refresh_required",
+      "relatedNames": ["神津島港", "多幸湾", "前浜海岸"],
+      "facts": ["東海汽船は高速ジェット船を当日6時頃、大型客船を9時以降に更新すると案内", "神津島は前浜港と多幸湾の2港があり、往復で港が変わる場合がある", "時刻表は運航・接岸・残席の確定ではない"],
+      "cautions": ["表示時刻と更新時刻を確認", "地図LLMの便名・港名を当日確定値として使わない", "乗船前に公式運航ページと現地放送を優先"],
+      "sources": [{"label": "東海汽船 本日の運航状況", "url": "https://www.tokaikisen.co.jp/schedule/"}, {"label": "神津島観光協会 FAQ", "url": "https://kozushima.com/info/faq/"}]
+    },
+    {
+      "id": "kozu-moon-current",
+      "island": "神津島",
+      "category": "星空・月齢",
+      "title": "8月29日は満月翌日、暗い天の川より月と明るい星",
+      "status": "trip_window_astronomy",
+      "relatedNames": ["よたね広場", "前浜海岸", "多幸湾"],
+      "facts": ["国立天文台は2026年8月28日を満月と案内", "土星は真夜中の東から南東の空", "神津島の暗い夜を守る照明環境と、当夜の月明かりは別条件"],
+      "cautions": ["星空保護区を晴天・天の川の保証と説明しない", "強い月明かりに合わせて月・明るい星座・土星へ観察目標を変える", "夜間天上山へ入らない"],
+      "sources": [{"label": "国立天文台 2026年8月の星空", "url": "https://www.nao.ac.jp/astro/sky/2026/08.html"}, {"label": "DarkSky International 神津島", "url": "https://darksky.org/places/kozushima-island-dark-sky-park/"}]
+    },
+    {
       "id": "niijima-camp-current",
       "island": "新島",
       "category": "宿泊・キャンプ",
@@ -91,6 +113,28 @@
       "sources": [{"label": "新島村 令和8年夏期申し合わせ", "url": "https://niijima.com/soshiki/sangyoukankouka/news/2026-0809-1517-27.html"}]
     },
     {
+      "id": "niijima-transport-refresh",
+      "island": "新島",
+      "category": "当日運航",
+      "title": "新島到着港と神津島発便を当日に確定する",
+      "status": "time_bound_refresh_required",
+      "relatedNames": ["新島港", "前浜海岸", "羽伏浦海岸"],
+      "facts": ["新島は前浜（黒根）港と渡浮根港があり、往復で港が変わる場合がある", "高速ジェット船の運航決定は当日6時頃", "神津島から新島への便は式根島経由を含み、島順と一便の寄港順を混同しない"],
+      "cautions": ["時刻表だけで就航・接岸・残席を確定しない", "到着港からキャンプ受付までの所要時間を港確定後に再計算", "大荷物を村営バスへ載せられない条件を確認"],
+      "sources": [{"label": "東海汽船 本日の運航状況", "url": "https://www.tokaikisen.co.jp/schedule/"}, {"label": "東海汽船 時刻表", "url": "https://www.tokaikisen.co.jp/boarding/timetable/"}]
+    },
+    {
+      "id": "niijima-moon-current",
+      "island": "新島",
+      "category": "星空・月齢",
+      "title": "新島の夜も満月直後、海岸撮影は月光を利用する",
+      "status": "trip_window_astronomy",
+      "relatedNames": ["前浜海岸", "羽伏浦海岸", "湯の浜露天温泉"],
+      "facts": ["2026年8月28日が満月", "旅行中は月明かりが強く、暗い天の川の条件ではない", "真夜中は土星が東から南東の空"],
+      "cautions": ["暗い海岸へ単独で行かない", "遊泳・崖端・車道を星空撮影のために無視しない", "住民・入浴者・車へライトやカメラを向けない"],
+      "sources": [{"label": "国立天文台 2026年8月の星空", "url": "https://www.nao.ac.jp/astro/sky/2026/08.html"}]
+    },
+    {
       "id": "shikine-camp-current",
       "island": "式根島",
       "category": "宿泊・キャンプ",
@@ -133,6 +177,28 @@
       "facts": ["令和8年式根島地区夏期申し合わせ期間は7月〜9月", "公式海水浴案内は採取禁止・火気禁止・危険生物に触れない・ライフガード指示を案内"],
       "cautions": ["ライフガードや売店は夏期のみでも毎日の配置を保証しない", "海況と現地掲示を優先"],
       "sources": [{"label": "新島村 令和8年夏期申し合わせ", "url": "https://niijima.com/soshiki/sangyoukankouka/news/2026-0809-1517-27.html"}, {"label": "式根島 海水浴", "url": "https://shikinejima.tokyo/play/beach/"}]
+    },
+    {
+      "id": "shikine-transport-refresh",
+      "island": "式根島",
+      "category": "当日運航",
+      "title": "連絡船にしきは時刻表と当日運航を分けて確認",
+      "status": "time_bound_refresh_required",
+      "relatedNames": ["野伏港", "神引展望台", "泊海水浴場"],
+      "facts": ["令和8年夏期ダイヤは新島8:20発・式根島8:00着方向と、式根島16:00発・新島16:20着方向を掲載", "予約不要でも当日運航を保証しない", "今回の式根島は日帰りで新島へ戻る章"],
+      "cautions": ["16時便を最優先の帰路制約として扱う", "現地で運休・時刻・乗場を再確認", "夜の式根島探索や野営を提案しない"],
+      "sources": [{"label": "新島村 連絡船にしき運航ダイヤ", "url": "https://niijima.com/shoukai/access/nishiki/unkou.html"}, {"label": "新島村 連絡船にしき", "url": "https://www.niijima.com/shoukai/access/nishiki/"}]
+    },
+    {
+      "id": "shikine-moon-current",
+      "island": "式根島",
+      "category": "星空・月齢",
+      "title": "式根島の星空地点は次回宿泊用、今回は日中の方角理解へ",
+      "status": "trip_window_astronomy",
+      "relatedNames": ["神引展望台", "泊海水浴場", "野伏港"],
+      "facts": ["観光協会は神引展望台・出会い橋・大浦・泊・野伏港・小の口公園を星空地点として紹介", "2026年8月28日が満月", "今回は16時に新島へ戻るため、星空地点は日中に方角と安全を把握する情報として使う"],
+      "cautions": ["今回の日程で式根島の夜間行動を勧めない", "次回夜間は懐中電灯・二人以上・騒音配慮・宿への声掛けを守る", "海岸と港の立入・波・足元を優先"],
+      "sources": [{"label": "式根島観光協会 星空", "url": "https://shikinejima.tokyo/play/star/"}, {"label": "国立天文台 2026年8月の星空", "url": "https://www.nao.ac.jp/astro/sky/2026/08.html"}]
     }
   ]
 }

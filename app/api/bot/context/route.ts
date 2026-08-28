@@ -1,5 +1,5 @@
 import { getTripBoard, requireBot } from "../../../../db/store";
-import { currentFactsFor, experiencesFor, islandCurrentFacts, islandExperiencePack } from "../../../adventure/islandKnowledge";
+import { currentFactsFor, deepKnowledgeFor, deepThemeCount, experiencesFor, islandCurrentFacts, islandDeepKnowledge, islandExperiencePack } from "../../../adventure/islandKnowledge";
 import { islandsBySlug } from "../../../discover/island-data";
 import { islandMapProfiles } from "../../../adventure/islandMapProfiles";
 
@@ -39,6 +39,7 @@ export async function GET(request: Request) {
           rules: island.rules,
           official: island.official,
           currentOfficialFacts: currentFactsFor(slug),
+          deepKnowledge: deepKnowledgeFor(slug),
           mapProfile: {
             bounds: mapProfile.bounds,
             camera: mapProfile.camera,
@@ -70,6 +71,8 @@ export async function GET(request: Request) {
         safetyBoundary: islandExperiencePack.safetyBoundary,
         currentFactsCheckedAt: islandCurrentFacts.checkedAt,
         currentFactCount: islandCurrentFacts.facts.length,
+        deepKnowledgeCheckedAt: islandDeepKnowledge.checkedAt,
+        deepThemeCount,
       },
       world: {
         title: "欠けた潮星",

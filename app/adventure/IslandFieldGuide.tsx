@@ -3,7 +3,7 @@
 import { type KeyboardEvent, useMemo, useState } from "react";
 import type { MapPoint } from "../discover/island-data";
 import { formatDistance, haversineMeters } from "./geoMath";
-import { anchorsFor, currentFactsFor, experiencesFor, islandCurrentFacts, islandExperiencePack, type TripIslandSlug } from "./islandKnowledge";
+import { anchorsFor, currentFactsFor, deepKnowledgeFor, experiencesFor, islandCurrentFacts, islandDeepKnowledge, islandExperiencePack, type TripIslandSlug } from "./islandKnowledge";
 import styles from "./island-field-guide.module.css";
 
 const hazardNames: Record<string, string> = {
@@ -12,8 +12,8 @@ const hazardNames: Record<string, string> = {
   bus_gap: "バス接続", facility_closure: "休館", port_switch: "着岸港変更", luggage: "荷物", departure_cutoff: "帰路時刻",
 };
 
-type GuideView = "current" | "research" | "anchors";
-const guideViews: GuideView[] = ["current", "research", "anchors"];
+type GuideView = "current" | "deep" | "research" | "anchors";
+const guideViews: GuideView[] = ["current", "deep", "research", "anchors"];
 
 type Props = {
   island: TripIslandSlug;
@@ -29,6 +29,7 @@ export default function IslandFieldGuide({ island, islandName, currentPosition, 
   const [activeView, setActiveView] = useState<GuideView>("current");
   const entries = experiencesFor(island);
   const currentFacts = currentFactsFor(island);
+  const themes = deepKnowledgeFor(island);
   const anchors = anchorsFor(island);
   const visibleEntries = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -51,12 +52,12 @@ export default function IslandFieldGuide({ island, islandName, currentPosition, 
     <section className={styles.fieldGuide} aria-labelledby="field-guide-title">
       <header>
         <div>
-          <small>SANPOROID ISLAND INTELLIGENCE</small>
+          <small>SHIOBOSHI ISLAND INTELLIGENCE</small>
           <h2 id="field-guide-title">{islandName} 開拓フィールドノート</h2>
-          <p>地図で選んだ地点を入口に、現行公式情報・公式座標・3島計{islandExperiencePack.experienceCount}件の調査候補を分けて確認します。</p>
+          <p>地図で選んだ地点を入口に、現行公式情報・地質から暮らしまでの深層知識・公式座標・3島計{islandExperiencePack.experienceCount}件の調査候補を分けて確認します。</p>
         </div>
         <div className={styles.guideHeaderActions}>
-          <dl><div><dt>公式情報</dt><dd>{currentFacts.length}</dd></div><div><dt>調査候補</dt><dd>{entries.length}</dd></div><div><dt>確認日</dt><dd>{islandCurrentFacts.checkedAt}</dd></div></dl>
+          <dl><div><dt>公式情報</dt><dd>{currentFacts.length}</dd></div><div><dt>深層テーマ</dt><dd>{themes.length}</dd></div><div><dt>調査候補</dt><dd>{entries.length}</dd></div><div><dt>確認日</dt><dd>{islandCurrentFacts.checkedAt}</dd></div></dl>
           <button type="button" aria-expanded={open} aria-controls={panelId} onClick={() => onOpenChange(!open)}>{open ? "調査レイヤーを閉じる" : "島の調査レイヤーを開く"}</button>
         </div>
       </header>
@@ -76,6 +77,7 @@ export default function IslandFieldGuide({ island, islandName, currentPosition, 
 
         <div className={styles.guideTabs} role="tablist" aria-label="調査ノートの種類">
           <button id={`field-guide-current-tab-${island}`} type="button" role="tab" aria-selected={activeView === "current"} aria-controls={`field-guide-current-${island}`} tabIndex={activeView === "current" ? 0 : -1} className={activeView === "current" ? styles.activeTab : ""} onKeyDown={(event) => moveTab(event, "current")} onClick={() => setActiveView("current")}><small>CURRENT</small><strong>今日の公式情報</strong><span>{currentFacts.length}件</span></button>
+          <button id={`field-guide-deep-tab-${island}`} type="button" role="tab" aria-selected={activeView === "deep"} aria-controls={`field-guide-deep-${island}`} tabIndex={activeView === "deep" ? 0 : -1} className={activeView === "deep" ? styles.activeTab : ""} onKeyDown={(event) => moveTab(event, "deep")} onClick={() => setActiveView("deep")}><small>UNDERSTAND</small><strong>島を理解する</strong><span>{themes.length}件</span></button>
           <button id={`field-guide-research-tab-${island}`} type="button" role="tab" aria-selected={activeView === "research"} aria-controls={`field-guide-research-${island}`} tabIndex={activeView === "research" ? 0 : -1} className={activeView === "research" ? styles.activeTab : ""} onKeyDown={(event) => moveTab(event, "research")} onClick={() => setActiveView("research")}><small>RESEARCH</small><strong>調査候補</strong><span>{entries.length}件</span></button>
           <button id={`field-guide-anchors-tab-${island}`} type="button" role="tab" aria-selected={activeView === "anchors"} aria-controls={`field-guide-anchors-${island}`} tabIndex={activeView === "anchors" ? 0 : -1} className={activeView === "anchors" ? styles.activeTab : ""} onKeyDown={(event) => moveTab(event, "anchors")} onClick={() => setActiveView("anchors")}><small>COORDINATES</small><strong>公式座標</strong><span>{anchors.length}件</span></button>
         </div>
@@ -86,6 +88,21 @@ export default function IslandFieldGuide({ island, islandName, currentPosition, 
             {currentFacts.map((entry) => <details className={styles.currentCard} key={entry.id}>
               <summary><span><small>{entry.category} · CHECKED {islandCurrentFacts.checkedAt}</small><strong>{entry.title}</strong></span><b>公式</b></summary>
               <div className={styles.currentBody}><ul>{entry.facts.map((fact) => <li key={fact}>{fact}</li>)}</ul><p>{entry.cautions.join(" / ")}</p><div>{entry.sources.map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.url}>{source.label} ↗</a>)}</div></div>
+            </details>)}
+          </div>
+        </section>
+
+        <section id={`field-guide-deep-${island}`} className={styles.tabPanel} role="tabpanel" aria-labelledby={`field-guide-deep-tab-${island}`} hidden={activeView !== "deep"}>
+          <div className={styles.panelIntro}><div><small>DEEP ISLAND KNOWLEDGE</small><h3>地質から暮らしまで、島をつなげて読む</h3></div><span>CHECKED {islandDeepKnowledge.checkedAt}</span></div>
+          <div className={styles.deepGrid} aria-label={`${islandName}の深層知識`}>
+            {themes.map((theme) => <details className={styles.deepCard} key={theme.id}>
+              <summary><span><small>{theme.category}</small><strong>{theme.title}</strong></span><b>理解</b></summary>
+              <div className={styles.deepBody}>
+                <p>{theme.summary}</p>
+                <div><strong>確認できたこと</strong><ul>{theme.facts.map((fact) => <li key={fact}>{fact}</li>)}</ul></div>
+                <div className={styles.deepWarning}><strong>現地で守ること</strong><ul>{theme.cautions.map((caution) => <li key={caution}>{caution}</li>)}</ul></div>
+                <nav>{theme.sources.map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.url}>{source.label} ↗</a>)}</nav>
+              </div>
             </details>)}
           </div>
         </section>

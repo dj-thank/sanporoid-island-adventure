@@ -7,7 +7,7 @@ import { islandsBySlug, type Island, type MapPoint } from "../discover/island-da
 import SanporoidIslandMap from "./SanporoidIslandMap";
 import { formatDistance, haversineMeters } from "./geoMath";
 import IslandFieldGuide from "./IslandFieldGuide";
-import { answerFromExperiencePack, buildIslandLlmContext, enrichMapPointsWithResearch, officialAnchorMapPoints, type TripIslandSlug } from "./islandKnowledge";
+import { answerFromExperiencePack, buildIslandLlmContext, deepThemeCount, enrichMapPointsWithResearch, islandCurrentFacts, islandExperiencePack, officialAnchorMapPoints, type TripIslandSlug } from "./islandKnowledge";
 import { islandForPosition, islandMapProfiles } from "./islandMapProfiles";
 import StarGuide from "./StarGuide";
 import styles from "./adventure.module.css";
@@ -448,7 +448,7 @@ export default function AdventureApp() {
       <section id="mode-guide" className={`${styles.modePage} ${styles.guideMode}`} hidden tabIndex={-1} aria-labelledby="guide-title">
         <div className={styles.modeFrame}>
           <header className={styles.modeIntro}>
-            <div><small>LOCAL-FIRST ISLAND GUIDE</small><h2 id="guide-title">{selectedIsland.name}のことを聞く</h2><p>まず19件の調査候補と12件の現行公式情報を含む端末内データから回答し、必要な一回だけ任意でOpenAIへ接続します。</p></div>
+            <div><small>LOCAL-FIRST ISLAND GUIDE</small><h2 id="guide-title">{selectedIsland.name}のことを聞く</h2><p>まず{islandExperiencePack.experienceCount}件の調査候補、{islandCurrentFacts.facts.length}件の現行公式情報、{deepThemeCount}件の深層テーマを含む端末内データから回答し、必要な一回だけ任意でOpenAIへ接続します。</p></div>
             <div className={styles.guideBoundary}><strong>事実と物語は分離</strong><span>運航・営業・安全は回答だけで確定せず、公式案内と現地掲示を優先。</span></div>
           </header>
 

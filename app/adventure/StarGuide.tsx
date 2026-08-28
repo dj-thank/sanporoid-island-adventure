@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import hygCatalog from "./hyg-bright-stars-v41.json";
+import { islandDeepKnowledge } from "./islandKnowledge";
 import { calculateSky, cardinal, deviceViewFromOrientation, isHeadingReliable, normalizeDegrees, normalizeSigned, projectStar, sensorSmoothingAmount, sideLabel, smoothHeading, type CatalogStar } from "./starMath";
 import styles from "./star-guide.module.css";
 
@@ -268,6 +269,11 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
         </div>
 
         <aside className={styles.controlDock}>
+          <article className={styles.tripSkyCard}>
+            <small>TRIP SKY · 8/29—9/1</small>
+            <strong>満月直後の空</strong>
+            <p>{islandDeepKnowledge.tripContext.nightSky}</p>
+          </article>
           <article className={styles.targetCard} aria-live="polite">
             <small>あれが何座？</small>
             {target ? <><h3>{sideLabel(target.delta)}に {target.japanese}</h3><strong>{target.constellation}</strong><p>見かけ高度 約{Math.round(target.altitude)}°・方位 {Math.round(target.azimuth)}°。{directionText(target.delta, target.altitude - viewAltitude)}。標準大気差を補正し、雲・障害物・局地的な磁気ずれは含みません。</p></> : <><h3>星空を同期しています</h3><p>現在時刻の端末計算を準備中です。</p></>}

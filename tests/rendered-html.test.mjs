@@ -252,11 +252,12 @@ test("server-renders the installable Shioboshi island adventure", async () => {
   assert.match(html, /スマートフォンを向ける/);
   assert.match(html, /あれが何座/);
   assert.match(html, /開拓フィールドノート/);
-  assert.match(html, /SANPOROID ISLAND INTELLIGENCE/);
+  assert.match(html, /SHIOBOSHI ISLAND INTELLIGENCE/);
+  assert.match(html, /島を理解する/);
   assert.match(html, /候補 ≠ 安全確認済みルート/);
   assert.match(html, /指定キャンプ場以外の野営は禁止/);
   assert.match(html, /CHECKED/);
-  assert.match(html, /2026-08-28/);
+  assert.match(html, /2026-08-29/);
 });
 
 test("keeps the PWA shell offline without caching private API data", async () => {
@@ -312,10 +313,10 @@ test("prepares PC-free Android and iPhone installation surfaces for GitHub", asy
   assert.match(pagesBuilder, /root-absolute public asset paths/);
   assert.match(nativeConfig, /VITE_HOSTED_PWA/);
   assert.match(adventure, /GitHub Pages版はAPIキーを受け取らず/);
-  assert.match(androidGradle, /versionCode 2/);
-  assert.match(androidGradle, /versionName "0\.2\.0"/);
-  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.0/);
-  assert.equal(JSON.parse(packageText).version, "0.2.0");
+  assert.match(androidGradle, /versionCode 3/);
+  assert.match(androidGradle, /versionName "0\.2\.1"/);
+  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.1/);
+  assert.equal(JSON.parse(packageText).version, "0.2.1");
 });
 
 test("keeps the canonical Sanporoid map core under a distinct Shioboshi UI", async () => {
@@ -401,7 +402,8 @@ test("organizes the island adventure into accessible responsive app modes", asyn
   assert.match(app, /label: "星座"/);
   assert.match(app, /mobileBottomNav/);
   assert.match(app, /hidden=\{activeMode !==/);
-  assert.match(app, /19件の調査候補と12件の現行公式情報/);
+  assert.match(app, /islandExperiencePack\.experienceCount/);
+  assert.match(app, /deepThemeCount/);
   assert.match(map, /onSelectionChange/);
   assert.match(map, /floatingControls/);
   assert.match(map, /companionSheet/);
@@ -467,31 +469,51 @@ test("keeps deterministic astronomy transforms testable outside React", async ()
   assert.equal(projected.y, 50);
 });
 
-test("imports every researched trip-island candidate into the map and LLM context", async () => {
-  const [rawPack, rawCurrentFacts, mapKnowledge, guideRoute] = await Promise.all([
+test("imports current, deep, and candidate island knowledge into the map and LLM context", async () => {
+  const [rawPack, rawCurrentFacts, rawDeepKnowledge, mapKnowledge, guideRoute] = await Promise.all([
     readFile(new URL("../app/adventure/island-experience-pack.json", import.meta.url), "utf8"),
     readFile(new URL("../app/adventure/island-current-facts.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/island-deep-knowledge.json", import.meta.url), "utf8"),
     readFile(new URL("../app/adventure/islandKnowledge.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/api/island-guide/route.ts", import.meta.url), "utf8"),
   ]);
   const pack = JSON.parse(rawPack);
   const currentFacts = JSON.parse(rawCurrentFacts);
+  const deepKnowledge = JSON.parse(rawDeepKnowledge);
   assert.equal(pack.experienceCount, 19);
   assert.equal(pack.anchorCount, 3);
   assert.deepEqual(Object.fromEntries(["神津島", "新島", "式根島"].map((name) => [name, pack.experiences.filter((entry) => entry.island === name).length])), { 神津島: 7, 新島: 5, 式根島: 7 });
   assert.equal(pack.experiences.every((entry) => entry.officialSources.length > 0 && entry.sharedTransportGate), true);
-  assert.equal(currentFacts.checkedAt, "2026-08-28");
-  assert.equal(currentFacts.facts.length, 12);
+  assert.equal(currentFacts.checkedAt, "2026-08-29");
+  assert.equal(currentFacts.facts.length, 18);
   assert.equal(currentFacts.facts.every((entry) => entry.sources.length > 0 && entry.cautions.length > 0), true);
+  assert.equal(deepKnowledge.checkedAt, "2026-08-29");
+  assert.deepEqual(Object.fromEntries(deepKnowledge.islands.map((entry) => [entry.island, entry.themes.length])), { 神津島: 5, 新島: 5, 式根島: 5 });
+  assert.equal(deepKnowledge.islands.flatMap((entry) => entry.themes).every((theme) => theme.sources.length > 0 && theme.mapLinks.length > 0 && theme.questionAliases.length > 0), true);
   assert.match(mapKnowledge, /enrichMapPointsWithResearch/);
+  assert.match(mapKnowledge, /deepKnowledgeFor/);
   assert.match(mapKnowledge, /cautions/);
   const fieldGuide = await readFile(new URL("../app/adventure/IslandFieldGuide.tsx", import.meta.url), "utf8");
   assert.match(fieldGuide, /role="tablist"/);
   assert.match(fieldGuide, /GuideView/);
+  assert.match(fieldGuide, /UNDERSTAND/);
   assert.match(guideRoute, /researchedExperiences/);
+  assert.match(guideRoute, /deepThemes/);
   assert.match(guideRoute, /安全確認済み連続ルートではない/);
   assert.match(guideRoute, /mapProfile/);
   assert.match(mapKnowledge, /順番線は徒歩経路ではない/);
+});
+
+test("answers island questions from deep knowledge without flattening uncertainty", async () => {
+  const { answerFromExperiencePack } = await import(new URL("../app/adventure/islandKnowledge.ts", import.meta.url));
+  const kozushima = answerFromExperiencePack("神津島は838年にできたの？", "kozushima");
+  const niijima = answerFromExperiencePack("コーガ石はどんな石？", "niijima");
+  const shikineHistory = answerFromExperiencePack("1703年の津波で新島と分かれたの？", "shikinejima");
+  const shikineNight = answerFromExperiencePack("式根島で夜に星を見たい", "shikinejima");
+  assert.match(kozushima, /18以上の火山|天上山だけではない/);
+  assert.match(niijima, /切る・積む・彫る・溶かす|黒雲母流紋岩/);
+  assert.match(shikineHistory, /分離したという説明は.*説|1703年分離説/);
+  assert.match(shikineNight, /今回は16時に新島へ戻る|日帰り章/);
 });
 
 test("gives the Bot a scoped read-only trip and island context", async () => {
@@ -521,7 +543,9 @@ test("gives the Bot a scoped read-only trip and island context", async () => {
   assert.equal(payload.islands.every((island) => island.mapProfile.officialMapUrl && island.mapProfile.hazardUrl), true);
   assert.match(payload.islands[0].mapProfile.routeBoundary, /徒歩経路/);
   assert.equal(payload.researchPack.experienceCount, 19);
-  assert.equal(payload.researchPack.currentFactCount, 12);
+  assert.equal(payload.researchPack.currentFactCount, 18);
+  assert.equal(payload.researchPack.deepThemeCount, 15);
+  assert.deepEqual(payload.islands.map((island) => island.deepKnowledge.length), [5, 5, 5]);
   assert.match(payload.researchPack.safetyBoundary, /not verified continuous walking routes/);
   assert.equal(payload.writeCapabilities, false);
 });

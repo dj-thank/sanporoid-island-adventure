@@ -5,7 +5,7 @@
 .fieldGuide h2 { margin: 7px 0; font-size: clamp(27px,3.5vw,44px); line-height: 1.08; }
 .fieldGuide > header p { max-width: 760px; margin: 0; color: #52696f; line-height: 1.75; }
 .guideHeaderActions { display: grid; gap: 12px; }
-.guideHeaderActions dl { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin: 0; }
+.guideHeaderActions dl { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin: 0; }
 .guideHeaderActions dl div { display: grid; gap: 2px; padding: 9px; background: #f1eadf; border-radius: 10px; }
 .guideHeaderActions dt { color: #667a7f; font-size: 9px; font-weight: 800; }
 .guideHeaderActions dd { margin: 0; font-size: 16px; font-weight: 900; }
@@ -30,7 +30,7 @@
 .contextSources a { min-height: 44px; display: inline-flex; align-items: center; color: #d6ea4b; font-size: 11px; font-weight: 900; }
 .contextEmpty { display: flex; justify-content: space-between; gap: 18px; align-items: center; }
 .contextEmpty span { color: #c7d7d4; font-size: 11px; line-height: 1.55; }
-.guideTabs { position: sticky; z-index: 5; top: calc(var(--header-height, 72px) + var(--island-rail-height, 78px) + 6px); display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; padding: 6px; background: rgba(246,241,235,.96); border: 1px solid rgba(23,50,58,.12); border-radius: 14px; backdrop-filter: blur(12px); }
+.guideTabs { position: sticky; z-index: 5; top: calc(var(--header-height, 72px) + var(--island-rail-height, 78px) + 6px); display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; padding: 6px; background: rgba(246,241,235,.96); border: 1px solid rgba(23,50,58,.12); border-radius: 14px; backdrop-filter: blur(12px); }
 .guideTabs button { display: grid; grid-template-columns: 1fr auto; gap: 1px 9px; min-height: 58px; padding: 9px 12px; color: #53686e; text-align: left; background: transparent; border: 1px solid transparent; border-radius: 10px; cursor: pointer; }
 .guideTabs small { grid-column: 1; color: #0c6573; font-size: 8px; font-weight: 900; letter-spacing: .1em; }
 .guideTabs strong { grid-column: 1; font-size: 12px; }
@@ -44,19 +44,32 @@
 .panelIntro label { display: grid; gap: 6px; min-width: min(330px,45%); font-size: 10px; font-weight: 900; }
 .panelIntro input { width: 100%; min-height: 44px; padding: 10px 12px; color: #17323a; background: #fff; border: 1px solid rgba(23,50,58,.26); border-radius: 9px; font: inherit; }
 .currentGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
-.currentCard, .experienceCard { color: #17323a; background: #fffdf4; border: 1px solid rgba(23,50,58,.14); border-radius: 12px; overflow: clip; }
-.currentCard summary, .experienceCard summary { display: flex; justify-content: space-between; gap: 14px; align-items: center; min-height: 66px; padding: 14px 16px; cursor: pointer; list-style: none; }
-.currentCard summary::-webkit-details-marker, .experienceCard summary::-webkit-details-marker { display: none; }
-.currentCard summary > span, .experienceCard summary > span { display: grid; gap: 4px; }
-.currentCard summary small, .experienceCard summary small { color: #0c6573; font-size: 8px; font-weight: 900; letter-spacing: .09em; }
+.currentCard, .experienceCard, .deepCard { color: #17323a; background: #fffdf4; border: 1px solid rgba(23,50,58,.14); border-radius: 12px; overflow: clip; }
+.currentCard summary, .experienceCard summary, .deepCard summary { display: flex; justify-content: space-between; gap: 14px; align-items: center; min-height: 66px; padding: 14px 16px; cursor: pointer; list-style: none; }
+.currentCard summary::-webkit-details-marker, .experienceCard summary::-webkit-details-marker, .deepCard summary::-webkit-details-marker { display: none; }
+.currentCard summary > span, .experienceCard summary > span, .deepCard summary > span { display: grid; gap: 4px; }
+.currentCard summary small, .experienceCard summary small, .deepCard summary small { color: #0c6573; font-size: 8px; font-weight: 900; letter-spacing: .09em; }
 .currentCard summary strong { font-size: 15px; }
-.currentCard summary b, .experienceCard summary b { flex: 0 0 auto; padding: 7px 9px; color: #743221; background: #f5d7c8; border-radius: 999px; font-size: 10px; }
+.currentCard summary b, .experienceCard summary b, .deepCard summary b { flex: 0 0 auto; padding: 7px 9px; color: #743221; background: #f5d7c8; border-radius: 999px; font-size: 10px; }
 .currentBody { padding: 0 16px 15px; border-top: 1px solid rgba(23,50,58,.1); }
 .currentBody ul { margin: 12px 0; padding-left: 18px; }
 .currentBody li, .currentBody p { color: #52696f; font-size: 11px; line-height: 1.65; }
 .currentBody p { padding: 10px; background: #fff0e7; border-radius: 8px; }
 .currentBody > div { display: flex; flex-wrap: wrap; gap: 8px; }
 .currentBody a, .sources a, .anchorRail a { min-height: 44px; display: inline-flex; align-items: center; color: #0c6573; font-size: 11px; font-weight: 900; }
+.deepGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+.deepCard summary { min-height: 76px; }
+.deepCard summary strong { font-size: 16px; line-height: 1.35; }
+.deepCard summary b { color: #17323a; background: #d6ea4b; }
+.deepBody { display: grid; gap: 9px; padding: 14px; border-top: 1px solid rgba(23,50,58,.1); }
+.deepBody > p { margin: 0; color: #17323a; font-size: 12px; font-weight: 800; line-height: 1.7; }
+.deepBody > div { padding: 11px; background: #edf4f1; border-radius: 9px; }
+.deepBody strong { font-size: 11px; }
+.deepBody ul { margin: 7px 0 0; padding-left: 18px; }
+.deepBody li { color: #52696f; font-size: 11px; line-height: 1.65; }
+.deepWarning { background: #fff0e7 !important; }
+.deepBody nav { display: flex; flex-wrap: wrap; gap: 9px; }
+.deepBody nav a { min-height: 44px; display: inline-flex; align-items: center; color: #0c6573; font-size: 11px; font-weight: 900; }
 .experienceGrid { display: grid; gap: 8px; }
 .experienceCard summary { min-height: 72px; }
 .experienceCard summary strong { font-size: 17px; }
@@ -80,7 +93,7 @@
   .guideHeaderActions dl { display: grid; grid-template-columns:repeat(2,minmax(0,1fr)); overflow:visible; }
   .safetyBand { display: grid; gap: 5px; padding: 14px 17px; }
   .guideBody { padding: 10px; }
-  .contextColumns, .currentGrid, .cardBody, .anchorRail { grid-template-columns: 1fr; }
+  .contextColumns, .currentGrid, .deepGrid, .cardBody, .anchorRail { grid-template-columns: 1fr; }
   .contextEmpty { display: grid; }
   .guideTabs { display: grid; grid-template-columns:repeat(2,minmax(0,1fr)); overflow:visible; }
   .guideTabs button { min-width:0; }

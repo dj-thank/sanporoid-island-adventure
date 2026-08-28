@@ -1,5 +1,5 @@
 import { getChatGPTUser } from "../../chatgpt-auth";
-import { currentFactsFor, experiencesFor, islandCurrentFacts, type TripIslandSlug } from "../../adventure/islandKnowledge";
+import { currentFactsFor, deepKnowledgeFor, experiencesFor, islandCurrentFacts, islandDeepKnowledge, type TripIslandSlug } from "../../adventure/islandKnowledge";
 import { islandsBySlug, type Island } from "../../discover/island-data";
 import { islandMapProfiles } from "../../adventure/islandMapProfiles";
 
@@ -32,6 +32,7 @@ export async function POST(request: Request) {
   const island = islandsBySlug[slug];
   const researchedExperiences = experiencesFor(slug as TripIslandSlug);
   const currentFacts = currentFactsFor(slug as TripIslandSlug);
+  const deepThemes = deepKnowledgeFor(slug as TripIslandSlug);
   const mapProfile = islandMapProfiles[slug as TripIslandSlug];
   const context = [
     `島: ${island.name} (${island.english})`,
@@ -42,6 +43,7 @@ export async function POST(request: Request) {
     `写真ミッション: ${island.friendMissions.map((mission) => `${mission.title}: ${mission.copy}`).join(" / ")}`,
     `地図: カテゴリ=${mapProfile.categories.map((category) => category.label).join("、")} / 安全注意=${mapProfile.safetyNote} / 公式MAP=${mapProfile.officialMapUrl} / 防災データ=${mapProfile.hazardUrl} / 点線は徒歩経路ではない`,
     `現行公式情報（${islandCurrentFacts.checkedAt}確認）:\n${currentFacts.map((entry) => `- ${entry.category}｜${entry.title}｜事実=${entry.facts.join("、")}｜注意=${entry.cautions.join("、")}｜出典=${entry.sources.map((source) => source.url).join(" ")}`).join("\n")}`,
+    `島の深層知識（${islandDeepKnowledge.checkedAt}確認、${deepThemes.length}テーマ）:\n${deepThemes.map((theme) => `- ${theme.category}｜${theme.title}｜要約=${theme.summary}｜事実=${theme.facts.join("、")}｜地図接続=${theme.mapLinks.join("、")}｜注意=${theme.cautions.join("、")}｜出典=${theme.sources.map((source) => source.url).join(" ")}`).join("\n")}`,
     `Sanporoid全国・関東調査からの島別候補（${researchedExperiences.length}件、候補であり安全確認済み連続ルートではない）:\n${researchedExperiences.map((entry) => [
       `- ${entry.title}`,
       `順番候補=${entry.orderedStops.join(" → ")}`,

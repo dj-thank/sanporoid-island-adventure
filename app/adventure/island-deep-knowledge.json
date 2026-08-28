@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-08-29",
+  "tripWindow": "2026-08-29/2026-09-01",
+  "tripContext": {
+    "route": "神津島 → 新島 → 式根島",
+    "lodging": "神津島 → 新島 → 新島（式根島は日帰り）",
+    "nightSky": "2026年8月28日が満月。旅行中の夜は月明かりが強く、暗い天の川より月・明るい星座・土星を観察しやすい条件。"
+  },
+  "islands": [
+    {
+      "island": "神津島",
+      "identity": "18以上の流紋岩質単成火山、水と海上交易の伝承、希少な生態系、暗い夜を守る島。",
+      "themes": [
+        {
+          "id": "kozu-volcanic-layers",
+          "category": "地質・火山",
+          "title": "天上山だけではない、18以上の火山が重なる島",
+          "summary": "神津島は一つの成層火山ではなく、祗苗島・恩馳島を含む18以上の流紋岩質単成火山からなる。天上山は9世紀の最新活動で加わった。",
+          "facts": ["天上山は標高572mで、神津島全体の誕生点ではなく最新の火山活動の一つ", "流紋岩質火山は粘性が高く、溶岩ドーム・厚い溶岩流・火砕流・火砕サージを伴う", "天上山以前の噴火年代には研究差があり、島の形成史は完全には確定していない"],
+          "questionAliases": ["火山", "地質", "天上山", "白い砂", "838年", "噴火"],
+          "mapLinks": ["天上山", "多幸湾"],
+          "cautions": ["不入が沢付近から頂上方向の一部は現行通行止め", "火山地形の説明を現在の安全宣言に使わない", "夜間登山を勧めない"],
+          "sources": [{"label": "気象庁 神津島", "url": "https://www.data.jma.go.jp/vois/data/tokyo/319_Kozushima/319_index.html"}, {"label": "国土地理院 火山土地条件図", "url": "https://www.gsi.go.jp/bousaichiri/bousaichiri61054.html"}]
+        },
+        {
+          "id": "kozu-water-belief",
+          "category": "水・信仰",
+          "title": "水配りの伝承と、火山島の暮らしを分けて読む",
+          "summary": "神々が集まり水を配ったという伝承は、湧水が暮らしを支える島の価値観を伝える。神話と地質学は同じ説明ではない。",
+          "facts": ["物忌奈命神社と天上山の水配り伝承は島の文化を読む入口", "不入が沢は名前どおり立入を避ける聖域として扱われる", "神話は科学的な形成史の代替ではなく、島民の水への敬意を示す文化資料"],
+          "questionAliases": ["水", "神話", "水配り", "不入が沢", "神社", "湧水"],
+          "mapLinks": ["物忌奈命神社", "天上山"],
+          "cautions": ["不入が沢へ立ち入らない", "宗教的伝承を科学的事実として断定しない", "境内・祭礼の作法と撮影可否を現地で確認"],
+          "sources": [{"label": "東京都環境局 神津島の歴史", "url": "https://www.kankyo1.metro.tokyo.lg.jp/naturepark/know/park/introduction/kokuritsu/fujihakone/koudushima/history.html"}, {"label": "環境省 神津島エコツーリズム", "url": "https://www.env.go.jp/nature/ecotourism/try-ecotourism/certification/kozushima/"}]
+        },
+        {
+          "id": "kozu-obsidian-sea",
+          "category": "黒曜石・海上交流",
+          "title": "黒曜石は、観光船よりはるか前に海を渡った",
+          "summary": "神津島産黒曜石は関東各地の遺跡へ運ばれた。海は孤立の壁だけでなく、人・石・漁具を動かす道だった。",
+          "facts": ["神津島産黒曜石は本土側の先史時代遺跡でも確認される", "郷土資料館の考古資料・民具・船具を同じ時間軸で見ると海上交流がつながる", "黒曜石の採取や持ち帰りを現地で勝手に行わない"],
+          "questionAliases": ["黒曜石", "縄文", "交易", "石器", "郷土資料館", "海上交通"],
+          "mapLinks": ["神津島村郷土資料館", "前浜海岸"],
+          "cautions": ["自然物・文化財を採取しない", "展示撮影は施設ルールを確認"],
+          "sources": [{"label": "東京都環境局 神津島の歴史", "url": "https://www.kankyo1.metro.tokyo.lg.jp/naturepark/know/park/introduction/kokuritsu/fujihakone/koudushima/history.html"}, {"label": "神津島村 郷土資料館", "url": "https://www.vill.kouzushima.tokyo.jp/kankou/"}]
+        },
+        {
+          "id": "kozu-fishing-ecology",
+          "category": "漁・文化・生態",
+          "title": "鰹を釣る所作と、採らずに観察する島の生き物",
+          "summary": "かつお釣り行事は漁の仕事を神社で再演する重要無形民俗文化財。島は希少な鳥・昆虫・植物の生息地でもある。",
+          "facts": ["物忌奈命神社の例大祭では出船・一本釣り・帰港・入札を模擬的に再現", "神津島は絶滅危惧II類ナミエヤマガラの主要生息地", "ミクラミヤマクワガタは神津島と御蔵島に生息し、条例で採集禁止"],
+          "questionAliases": ["祭り", "鰹", "文化財", "鳥", "虫", "植物", "生態"],
+          "mapLinks": ["物忌奈命神社", "赤崎遊歩道"],
+          "cautions": ["野生動物へ餌を与えない", "昆虫・植物・溶岩を採らない", "祭礼日と公開方法は当年の案内を確認"],
+          "sources": [{"label": "文化庁 神津島のかつお釣り行事", "url": "https://online.bunka.go.jp/heritages/detail/200376"}, {"label": "東京都環境局 神津島の動植物", "url": "https://www.kankyo1.metro.tokyo.lg.jp/naturepark/know/park/introduction/kokuritsu/fujihakone/koudushima/animals_and_plants.html"}]
+        },
+        {
+          "id": "kozu-dark-sky-full-moon",
+          "category": "星空・光環境",
+          "title": "星空保護区でも、旅行初夜は満月直後",
+          "summary": "神津島は400基超の道路照明を改修して暗い夜を守った。今回は8月28日満月の直後なので、天の川の暗部より月・明るい星・土星を主役にする。",
+          "facts": ["DarkSky Internationalは神津島を2020年にInternational Dark Sky Parkとして指定", "2020年5〜6月に400基超の街路・道路照明をダークスカイ対応へ交換", "国立天文台は2026年8月28日を満月、土星を真夜中の東〜南東と案内"],
+          "questionAliases": ["星", "星空", "月", "満月", "天の川", "土星", "夜"],
+          "mapLinks": ["よたね広場周辺", "前浜海岸", "多幸湾"],
+          "cautions": ["満月直後は暗い天の川が見えにくい", "赤色灯でも足元と交通安全を優先", "海鳥・住民・車へ強い光を向けない", "星を見るために天上山へ夜間入山しない"],
+          "sources": [{"label": "DarkSky International 神津島", "url": "https://darksky.org/places/kozushima-island-dark-sky-park/"}, {"label": "国立天文台 2026年8月の星空", "url": "https://www.nao.ac.jp/astro/sky/2026/08.html"}]
+        }
+      ]
+    },
+    {
+      "island": "新島",
+      "identity": "複数の流紋岩火山、異なる白の海岸、コーガ石を建築・彫刻・ガラスへ変えた暮らし、流人史と大踊の島。",
+      "themes": [
+        {
+          "id": "niijima-rhyolite-coasts",
+          "category": "地質・海岸",
+          "title": "砂浜・火山灰・コーガ石を一つの白にしない",
+          "summary": "新島・式根島・地内島・早島は流紋岩単成火山群。南部の向山は886年噴火に関係するが、新島全体が886年に生まれたわけではない。",
+          "facts": ["新島は複数の流紋岩質溶岩・火山砕屑物からなる", "向山火山の886年噴火は南部の白い火山地形を考える基準", "羽伏浦・前浜・間々下・若郷では波・砂・集落との関係が異なる"],
+          "questionAliases": ["地質", "火山", "886年", "白ママ", "羽伏浦", "白い砂", "向山"],
+          "mapLinks": ["白ママ断崖", "羽伏浦海岸", "前浜海岸"],
+          "cautions": ["白ママ断崖の崖端へ近づかない", "海岸の美しさと遊泳可否を分ける", "波・風・工事・漂着物・現地掲示を優先"],
+          "sources": [{"label": "産総研 新島周辺の地質", "url": "https://gbank.gsj.jp/volcano/Act_Vol/niijima/page2_4.html"}, {"label": "産総研 向山火山", "url": "https://gbank.gsj.jp/volcano/Act_Vol/niijima/page3_18.html"}]
+        },
+        {
+          "id": "niijima-koga-transformations",
+          "category": "コーガ石・工芸",
+          "title": "切る・積む・彫る・溶かす、島の石の四変化",
+          "summary": "向山産の多孔質な黒雲母流紋岩は、建材・墓・モヤイ・ガラスへ姿を変えた。",
+          "facts": ["コーガ石は加工しやすく、軽量・耐火・断熱・耐酸性を持つと東京都が説明", "軽いものは水に浮き、呼称も軽石・浮石・剛化石・抗火石・コーガ石と変化", "原料を溶かすと新島ガラスとなり、鉄分由来のオリーブ色につながる"],
+          "questionAliases": ["コーガ石", "モヤイ", "ガラス", "石の建物", "抗火石", "浮く石"],
+          "mapLinks": ["モヤイ像の丘", "新島ガラスアートセンター", "湯の浜露天温泉", "新島村博物館"],
+          "cautions": ["採石場跡や私有地へ無断で入らない", "制作体験と施設開館は予約・当日確認", "『世界で二か所だけ』は東京都資料に基づく紹介表現として扱う"],
+          "sources": [{"label": "東京都 コーガ石", "url": "https://www.chiikishigen.metro.tokyo.lg.jp/introduction/details/introduction_124.html"}, {"label": "新島村 ガラスアートセンター", "url": "https://niijima.com/facility/community/glassartcenter.html"}]
+        },
+        {
+          "id": "niijima-prehistory-exile",
+          "category": "縄文・流人史",
+          "title": "流刑地より前から続く暮らしへ、外来の知識が重なった",
+          "summary": "本村・若郷の遺跡は縄文期の居住を示す。江戸期の流人は既存の島社会に教育・医療・農業などの知識を重ねた。",
+          "facts": ["新島と式根島では縄文時代の居住を示す遺物が見つかる", "流人には政治・宗教上の理由で送られた人もいた", "流人だけが島文化を作ったと単純化せず、在来の漁・祭礼・生活史と併せて読む"],
+          "questionAliases": ["流人", "流刑", "縄文", "天宥法印", "歴史", "博物館"],
+          "mapLinks": ["新島村博物館", "前浜海岸"],
+          "cautions": ["墓地・寺院・私有地の撮影と立入に配慮", "人数や逸話は資料の年代と出典を添える"],
+          "sources": [{"label": "東京都環境局 新島と式根島の歴史", "url": "https://www.kankyo1.metro.tokyo.lg.jp/naturepark/know/park/introduction/kokuritsu/fujihakone/niijima/history.html"}, {"label": "新島村 DATA NIIJIMA", "url": "https://www.niijima.com/gyousei/keikaku/files/dataniijima_2025_final.pdf"}]
+        },
+        {
+          "id": "niijima-odori-cooperation",
+          "category": "大踊・共同体",
+          "title": "本村と若郷で異なる大踊と、モヤイという助け合い",
+          "summary": "大踊は本村と若郷で装束・演目・動きに差を残す重要無形民俗文化財。モヤイは島の方言で助け合いを意味する。",
+          "facts": ["大踊は本村と若郷に伝承される小歌踊で、双方に共通演目と固有演目がある", "本村のカバは紫、若郷は赤など装束にも差がある", "モヤイ像はコーガ石の彫刻で、方言の『助け合う・協力する』を島外へ伝える"],
+          "questionAliases": ["大踊", "祭り", "文化財", "モヤイ", "助け合い", "本村", "若郷"],
+          "mapLinks": ["モヤイ像の丘", "新島村博物館"],
+          "cautions": ["祭礼日・公開可否を当年の村案内で確認", "踊りの場や寺院で観客線を越えない", "住民や踊り手を無断撮影しない"],
+          "sources": [{"label": "文化庁 新島の大踊", "url": "https://online.bunka.go.jp/heritages/detail/161491"}, {"label": "東京都 コーガ石とモヤイ", "url": "https://www.chiikishigen.metro.tokyo.lg.jp/introduction/details/introduction_124.html"}]
+        },
+        {
+          "id": "niijima-wind-ecology",
+          "category": "風・生態・移動",
+          "title": "風で樹形が変わり、海況で一日の重心が変わる",
+          "summary": "潮風に強いヒメユズリハやシチトウメジロなど、島の生態は風と海岸環境を映す。強風日は海から石・文化・博物館へ切り替える。",
+          "facts": ["村木ヒメユズリハは強風地で低木状、風の弱い場所で高く育つ", "シチトウメジロは伊豆諸島に分布するメジロ亜種", "若郷方面は平成新島トンネルを徒歩・自転車で通れず、車と道路情報が必要"],
+          "questionAliases": ["鳥", "植物", "風", "若郷", "自転車", "雨", "海況"],
+          "mapLinks": ["羽伏浦海岸", "新島村博物館", "新島ガラスアートセンター"],
+          "cautions": ["野生動物へ餌を与えない", "強風・高波時は海岸へ固執しない", "若郷へ徒歩・自転車でトンネル通過を案内しない"],
+          "sources": [{"label": "東京都環境局 新島と式根島の動植物", "url": "https://www.kankyo1.metro.tokyo.lg.jp/naturepark/know/park/introduction/kokuritsu/fujihakone/niijima/animals_and_plants.html"}, {"label": "新島観光案内所 島内移動", "url": "https://niijima-info.jp/ido/"}]
+        }
+      ]
+    },
+    {
+      "island": "式根島",
+      "identity": "流紋岩溶岩ドームの低い台地、縄文遺跡、入り江と潮が温度を変える温泉、新島と生活航路で結ばれた島。",
+      "themes": [
+        {
+          "id": "shikine-rhyolite-platform",
+          "category": "地質・海岸線",
+          "title": "低い台地も、一つの流紋岩火山",
+          "summary": "式根島は黒雲母流紋岩の溶岩ドームと火山砕屑性堆積物からなる独立した火山体。向山軽石層や天上山火山灰も島の地層へ重なる。",
+          "facts": ["式根島火山は流紋岩溶岩と火山砕屑性堆積物からなる", "カンビキ浦には式根島火山の流紋岩標本地点がある", "新島向山の軽石と神津島天上山の火山灰が式根島の地層にも記録される"],
+          "questionAliases": ["地質", "火山", "流紋岩", "神引", "台地", "海岸線", "入り江"],
+          "mapLinks": ["神引展望台", "泊海水浴場", "石白川海水浴場"],
+          "cautions": ["露頭や崖へ近づいて採取しない", "展望台と海岸の風・落石・足元を確認", "地層から現在の安全を推定しない"],
+          "sources": [{"label": "産総研 式根島火山", "url": "https://gbank.gsj.jp/volcano/Act_Vol/niijima/page3_15.html"}, {"label": "産総研 式根島流紋岩標本", "url": "https://gbank.gsj.jp/ld/resource/musee/R50024.html"}]
+        },
+        {
+          "id": "shikine-jomon-separation",
+          "category": "縄文・島の成り立ち",
+          "title": "吹之江・石白川の縄文遺跡と、1703年分離説",
+          "summary": "式根島には縄文期の遺跡がある。1703年津波で新島と分離したという説明は公式ページにも『説』として掲載され、確定した地質事実とは分ける。",
+          "facts": ["吹之江遺跡と石白川遺跡は縄文時代の居住を考える根拠", "式根島観光協会は紀元前6500年頃からの居住を紹介", "1703年津波による新島との分離は東京都ページでも説として記載"],
+          "questionAliases": ["縄文", "遺跡", "吹之江", "石白川", "1703年", "津波", "新島とつながっていた"],
+          "mapLinks": ["石白川海水浴場", "野伏港"],
+          "cautions": ["遺跡地点で採取・掘削しない", "1703年分離を確定事実として断言しない", "津波史は現在の避難判断と分け、最新ハザード図を使う"],
+          "sources": [{"label": "東京都環境局 新島と式根島の歴史", "url": "https://www.kankyo1.metro.tokyo.lg.jp/naturepark/know/park/introduction/kokuritsu/fujihakone/niijima/history.html"}, {"label": "式根島観光協会 歴史", "url": "https://shikinejima.tokyo/learn/history/"}]
+        },
+        {
+          "id": "shikine-tide-heat",
+          "category": "温泉・潮",
+          "title": "地鉈温泉では、源泉ではなく潮と混ざる場所を探す",
+          "summary": "地鉈温泉の源泉は約80度。海水と混ざる位置で湯加減が変わるため、潮位・波・足元・やけどを一つの判断にする。",
+          "facts": ["地鉈温泉は無料・24時間・水着着用", "源泉約80度で、海水と混ざる場所を探して入る", "2026年8月28日満月前後は大潮となり、旅行期間は干満差が大きい時期"],
+          "questionAliases": ["温泉", "地鉈", "潮", "湯加減", "満潮", "干潮", "水着", "やけど"],
+          "mapLinks": ["地鉈温泉", "松が下雅湯"],
+          "cautions": ["JMA神津島潮位表は地域参考で、地鉈の入浴可能時刻を保証しない", "波・湯温・濡れた岩を現地で確認", "夜は外灯が少なく単独行動しない"],
+          "sources": [{"label": "式根島観光協会 地鉈温泉", "url": "https://shikinejima.tokyo/hotspring/jinata/"}, {"label": "気象庁 神津島潮位表", "url": "https://www.data.jma.go.jp/kaiyou/db/tide/suisan/suisan.php?stn=QO"}]
+        },
+        {
+          "id": "shikine-coves-ecology",
+          "category": "入り江・生態",
+          "title": "同じ島でも、入り江ごとに波・砂・使い方が変わる",
+          "summary": "泊・大浦・中の浦・石白川は形と風向きへの反応が異なる。島の木や植物も潮風へ適応している。",
+          "facts": ["泊海水浴場は扇形の入り江、石白川は集落と商店に近い海岸", "東要寺のイヌマキは高さ28m・幹回り5.3mで東京都天然記念物", "強風地では自転車を降り、海へ入らない選択を含めて比較する"],
+          "questionAliases": ["泊", "大浦", "中の浦", "石白川", "海水浴", "植物", "イヌマキ", "風"],
+          "mapLinks": ["泊海水浴場", "石白川海水浴場", "神引展望台"],
+          "cautions": ["遊泳可否とライフガード配置を当日確認", "海岸間を泳いで移動しない", "天然記念物・植生へ触れたり採取したりしない"],
+          "sources": [{"label": "東京都環境局 新島と式根島の動植物", "url": "https://www.kankyo1.metro.tokyo.lg.jp/naturepark/know/park/introduction/kokuritsu/fujihakone/niijima/animals_and_plants.html"}, {"label": "式根島観光協会 海水浴", "url": "https://shikinejima.tokyo/play/beach/"}]
+        },
+        {
+          "id": "shikine-night-return",
+          "category": "星空・生活航路",
+          "title": "星の島だが、今回は16時に新島へ戻る日帰り章",
+          "summary": "式根島には街灯の少ない星空地点が多いが、今回の旅では連絡船で新島へ戻る。夜の魅力を日帰り計画へ混ぜない。",
+          "facts": ["観光協会は神引展望台・出会い橋・大浦・泊・野伏港・小の口公園を星空地点として紹介", "夜道では懐中電灯・二人以上・住民への騒音配慮・宿への声掛けを案内", "8月31日までの夏期ダイヤ候補は新島8:20発、式根島16:00発だが当日運航確認が必要"],
+          "questionAliases": ["星空", "夜", "連絡船", "にしき", "日帰り", "16時", "野伏港"],
+          "mapLinks": ["神引展望台", "泊海水浴場", "野伏港"],
+          "cautions": ["今回は夜の式根島探索を提案しない", "連絡船の時刻表を運航確定と扱わない", "式根島の野営場は令和8年度も閉鎖、野宿禁止"],
+          "sources": [{"label": "式根島観光協会 星空", "url": "https://shikinejima.tokyo/play/star/"}, {"label": "新島村 連絡船にしき", "url": "https://niijima.com/shoukai/access/nishiki/unkou.html"}]
+        }
+      ]
+    }
+  ]
+}
