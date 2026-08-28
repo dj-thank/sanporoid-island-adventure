@@ -226,8 +226,11 @@
   background:linear-gradient(120deg,rgba(247,241,229,.97),rgba(225,239,234,.96));
   border-color:rgba(11,37,49,.18);
   border-radius:10px 30px 10px 30px;
+  transition:min-height .2s ease,padding .2s ease;
 }
-.sheetHandle { width:52px; height:4px; margin:-8px auto 10px; background:var(--coral); border-radius:99px; }
+.sheetToggle { display:grid; place-items:center; width:100%; min-height:44px; margin:-12px 0 -1px; padding:0; background:transparent; border:0; cursor:pointer; }
+.sheetToggle span { width:52px; height:4px; background:var(--coral); border-radius:99px; }
+.sheetToggle:focus-visible { outline:3px solid #176877; outline-offset:-3px; border-radius:10px; }
 .companionSheet header { display:flex; align-items:center; gap:10px; }
 .guideMark { display:grid; place-items:center; width:34px; height:34px; color:#fffaf0; background:var(--ink); border-radius:7px 16px 7px 16px; font-size:13px; font-weight:900; }
 .companionSheet header>div { display:grid; gap:1px; }
@@ -242,6 +245,9 @@
 .companionSheet nav { display:grid; grid-template-columns:repeat(3,1fr); margin-top:5px; border-top:1px solid rgba(11,37,49,.14); }
 .companionSheet nav button { min-width:0; min-height:44px; color:#176877; background:transparent; border:0; border-right:1px solid rgba(11,37,49,.1); font-size:10px; font-weight:900; cursor:pointer; }
 .companionSheet nav button:last-child { border-right:0; }
+.sheetCollapsed { min-height:0; }
+.sheetCollapsed p,.sheetCollapsed .islandSafety,.sheetCollapsed .mapLinks { display:none; }
+.sheetCollapsed .nextHint { margin-top:6px; }
 .mapStatus { position:absolute; z-index:3; left:8px; bottom:4px; color:rgba(11,37,49,.62); font-size:7px; pointer-events:none; }
 .poiMarker {
   display:grid;
@@ -263,22 +269,22 @@
 .completedMarker { color:#fff; background:#318d79; box-shadow:0 0 0 4px rgba(101,200,192,.52),0 6px 14px rgba(7,29,39,.3); }
 .currentDot { width:20px; height:20px; background:var(--coral); border:4px solid #fff; border-radius:50%; box-shadow:0 0 0 8px rgba(242,120,98,.22); }
 @media (max-height:500px) and (min-width:761px) {
-  .routeCard { display:none; }
+  .routeCard,.clockCard { display:none; }
   .islandSwitcher button,.categoryFilters button { min-height:44px; }
   .floatingControls { top:88px; }
   .companionSheet { right:auto; bottom:10px; left:20px; width:440px; min-height:0; padding:10px 14px 7px; }
-  .sheetHandle { margin:-5px auto 6px; }
+  .sheetToggle { display:none; }
   .companionSheet p,.islandSafety,.mapLinks { display:none; }
   .companionSheet nav { margin-top:4px; }
   .infoDrawer { inset:8px 244px 8px 8px; }
 }
 @media (max-width:760px) {
   .shell { height:calc(100dvh - 132px - env(safe-area-inset-bottom)); min-height:620px; border-radius:0; }
-  .locationCard { left:12px; top:12px; min-width:0; width:calc(100% - 178px); padding:8px 10px 8px 8px; }
+  .locationCard { left:12px; top:12px; min-width:0; width:calc(100% - 84px); padding:8px 10px 8px 8px; }
   .locationCard>span { width:34px; height:36px; }
   .locationCard strong { font-size:13px; }
-  .clockCard,.compassButton { top:12px; min-width:60px; min-height:56px; }
-  .clockCard { right:78px; }
+  .clockCard { display:none; }
+  .compassButton { top:12px; min-width:60px; min-height:56px; }
   .compassButton { right:12px; }
   .islandSwitcher { left:12px; top:76px; }
   .islandSwitcher button { min-width:58px; min-height:44px; padding-inline:7px; }
@@ -290,15 +296,15 @@
   .floatingControls button { width:56px; height:56px; }
   .selectionCard { left:12px; bottom:248px; width:calc(100% - 82px); }
   .companionSheet { right:12px; bottom:88px; left:12px; min-height:158px; padding:12px 14px 9px; }
+  .companionSheet.sheetCollapsed { min-height:0; }
   .companionSheet header strong { font-size:15px; }
   .mapStatus { display:none; }
   .infoDrawer { inset:56px 8px calc(88px + env(safe-area-inset-bottom)); border-radius:8px 24px 8px 24px; }
 }
 @media (max-width:380px) {
-  .locationCard { width:calc(100% - 150px); }
+  .locationCard { width:calc(100% - 84px); }
   .locationCard>span { display:none; }
-  .clockCard,.compassButton { min-width:54px; }
-  .clockCard { right:72px; }
+  .compassButton { min-width:54px; }
   .islandSwitcher button { min-width:54px; padding-inline:5px; }
   .companionSheet nav button { font-size:9px; }
 }

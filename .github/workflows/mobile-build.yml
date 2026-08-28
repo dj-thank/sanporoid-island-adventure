@@ -13,39 +13,37 @@ jobs:
   android:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
         with:
-          version: 10
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - uses: actions/setup-java@v5
+          version: 11.24.0
+          runtime: node@24
+          cache: true
+          install: false
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 21
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
       - run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
       - run: pnpm install --frozen-lockfile
       - run: pnpm android:apk:ci
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: kaketa-shiose-android-debug
+          name: kaketa-shioboshi-android-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
   ios:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
         with:
-          version: 10
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
+          version: 11.24.0
+          runtime: node@24
+          cache: true
+          install: false
       - run: pnpm install --frozen-lockfile
       - run: pnpm ios:sync
       - name: Build unsigned iOS Simulator app
@@ -58,8 +56,8 @@ jobs:
           -derivedDataPath ios/DerivedData
           CODE_SIGNING_ALLOWED=NO
           build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: kaketa-shiose-ios-simulator
+          name: kaketa-shioboshi-ios-simulator
           path: ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app
           if-no-files-found: error

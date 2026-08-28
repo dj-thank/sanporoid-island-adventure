@@ -277,13 +277,14 @@ test("keeps the PWA shell offline without caching private API data", async () =>
 });
 
 test("prepares PC-free Android and iPhone installation surfaces for GitHub", async () => {
-  const [nativeIndex, nativeMain, installGuide, installManifestText, installWorker, pagesWorkflow, pagesBuilder, nativeConfig, adventure, androidGradle, iosProject, packageText] = await Promise.all([
+  const [nativeIndex, nativeMain, installGuide, installManifestText, installWorker, pagesWorkflow, mobileWorkflow, pagesBuilder, nativeConfig, adventure, androidGradle, iosProject, packageText] = await Promise.all([
     readFile(new URL("../native/index.html", import.meta.url), "utf8"),
     readFile(new URL("../native/main.tsx", import.meta.url), "utf8"),
     readFile(new URL("../native/PwaInstallGuide.tsx", import.meta.url), "utf8"),
     readFile(new URL("../public/install.webmanifest", import.meta.url), "utf8"),
     readFile(new URL("../public/install-sw.js", import.meta.url), "utf8"),
     readFile(new URL("../.github/workflows/github-pages.yml", import.meta.url), "utf8"),
+    readFile(new URL("../.github/workflows/mobile-build.yml", import.meta.url), "utf8"),
     readFile(new URL("../scripts/prepare-github-pages.mjs", import.meta.url), "utf8"),
     readFile(new URL("../vite.native.config.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),
@@ -301,18 +302,31 @@ test("prepares PC-free Android and iPhone installation surfaces for GitHub", asy
   assert.equal(installManifest.icons.length, 2);
   assert.match(installWorker, /new URL\("\.\/", self\.location\.href\)/);
   assert.doesNotMatch(installWorker, /\/api\//);
-  assert.match(pagesWorkflow, /actions\/configure-pages@v5/);
-  assert.match(pagesWorkflow, /actions\/upload-pages-artifact@v4/);
-  assert.match(pagesWorkflow, /actions\/deploy-pages@v4/);
+  assert.match(pagesWorkflow, /actions\/checkout@v7/);
+  assert.match(pagesWorkflow, /pnpm\/setup@v2/);
+  assert.match(pagesWorkflow, /version: 11\.24\.0/);
+  assert.match(pagesWorkflow, /actions\/configure-pages@v6/);
+  assert.match(pagesWorkflow, /actions\/upload-pages-artifact@v5/);
+  assert.match(pagesWorkflow, /actions\/deploy-pages@v5/);
+  assert.doesNotMatch(pagesWorkflow, /actions\/setup-node|pnpm\/action-setup/);
+  assert.match(mobileWorkflow, /actions\/checkout@v7/);
+  assert.match(mobileWorkflow, /pnpm\/setup@v2/);
+  assert.match(mobileWorkflow, /version: 11\.24\.0/);
+  assert.match(mobileWorkflow, /actions\/setup-java@v6/);
+  assert.match(mobileWorkflow, /android-actions\/setup-android@v4/);
+  assert.match(mobileWorkflow, /actions\/upload-artifact@v7/);
+  assert.match(mobileWorkflow, /kaketa-shioboshi-android-debug/);
+  assert.doesNotMatch(mobileWorkflow, /actions\/setup-node|pnpm\/action-setup|kaketa-shiose/);
   assert.match(pagesBuilder, /root-absolute public asset paths/);
   assert.match(nativeConfig, /VITE_HOSTED_PWA/);
   assert.match(adventure, /GitHub Pages版はAPIキーを受け取らず/);
   assert.match(installWorker, /shioboshi-install-/);
-  assert.match(installWorker, /v4/);
-  assert.match(androidGradle, /versionCode 4/);
-  assert.match(androidGradle, /versionName "0\.2\.2"/);
-  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.2/);
-  assert.equal(JSON.parse(packageText).version, "0.2.2");
+  assert.match(installWorker, /v5/);
+  assert.match(androidGradle, /versionCode 5/);
+  assert.match(androidGradle, /versionName "0\.2\.3"/);
+  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.3/);
+  assert.equal(JSON.parse(packageText).version, "0.2.3");
+  assert.equal(JSON.parse(packageText).packageManager, "pnpm@11.24.0");
 });
 
 test("keeps the canonical Sanporoid map core under a distinct Shioboshi UI", async () => {
@@ -366,6 +380,8 @@ test("keeps the phone map, island guide, and sky finder focused and touchable", 
   assert.match(adventure, /質問する/);
   assert.match(adventure, /!isHostedPwa && <label>OpenAI APIキー/);
   assert.match(adventure, /現在地で到着判定/);
+  assert.match(adventure, /mapMissionSummary/);
+  assert.match(adventure, /expandedMissionId/);
   assert.match(guide, /SHIOBOSHI ISLAND INTELLIGENCE/);
   assert.match(guide, /島を理解する/);
   assert.match(guide, /候補 ≠ 安全確認済みルート/);
@@ -373,8 +389,12 @@ test("keeps the phone map, island guide, and sky finder focused and touchable", 
   assert.match(currentFacts, /指定キャンプ場以外の野営は禁止/);
   assert.match(map, /useState\("mission"\)/);
   assert.match(map, /地図に表示/);
+  assert.match(map, /sheetExpanded/);
+  assert.match(map, /島の通信記録を広げる/);
   assert.match(mapCss, /\.poiMarker\s*\{[^}]*width:44px;[^}]*height:44px;/s);
   assert.match(mapCss, /\.mobileCategorySelect select \{[^}]*min-height:44px;/s);
+  assert.match(mapCss, /\.sheetCollapsed p/);
+  assert.match(mapCss, /\.clockCard \{ display:none; \}/);
   assert.match(mapCss, /@media \(max-height:500px\) and \(min-width:761px\)/);
   assert.doesNotMatch(mapCss, /\.playerHud|\.tideCompass/);
   assert.match(star, /useState\(56\)/);

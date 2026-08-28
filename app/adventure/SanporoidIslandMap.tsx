@@ -62,6 +62,7 @@ export default function SanporoidIslandMap({
   const [mapStatus, setMapStatus] = useState("潮星地図を準備中");
   const [drawer, setDrawer] = useState<"missions" | "guide" | null>(null);
   const [activeCategory, setActiveCategory] = useState("mission");
+  const [sheetExpanded, setSheetExpanded] = useState(false);
 
   useEffect(() => {
     if (!mapNode.current) return;
@@ -123,6 +124,7 @@ export default function SanporoidIslandMap({
           button.setAttribute("aria-label", `${point.title}を選ぶ`);
           button.addEventListener("click", () => {
             setSelected(point);
+            setSheetExpanded(true);
             onSelectionChange?.(point);
             map?.easeTo({ center: [point.position[1], point.position[0]], zoom: Math.max(map.getZoom(), 15.2), duration: 650 });
           });
@@ -209,7 +211,7 @@ export default function SanporoidIslandMap({
         <div><small>SHIOBOSHI FIELD</small><strong>{islandName} / {currentPosition ? "現在地" : "島中心"}</strong></div>
       </div>
       <nav className={styles.islandSwitcher} aria-label="3島を切り替える">
-        {(Object.entries(islandMapProfiles) as Array<[TripIslandSlug, IslandMapProfile]>).map(([slug, entry], index) => <button type="button" className={slug === island ? styles.activeIsland : ""} aria-pressed={slug === island} onClick={() => { setActiveCategory("mission"); onIslandChange(slug); }} key={slug}><span>0{index + 1}</span><b>{entry.name}</b></button>)}
+        {(Object.entries(islandMapProfiles) as Array<[TripIslandSlug, IslandMapProfile]>).map(([slug, entry], index) => <button type="button" className={slug === island ? styles.activeIsland : ""} aria-pressed={slug === island} onClick={() => { setActiveCategory("mission"); setSheetExpanded(false); onIslandChange(slug); }} key={slug}><span>0{index + 1}</span><b>{entry.name}</b></button>)}
       </nav>
       <button type="button" className={styles.clockCard} onClick={() => setDrawer("missions")}><strong>{completedCount}/{totalCount}</strong><small>記録</small></button>
       <button type="button" className={styles.compassButton} onClick={() => mapRef.current?.easeTo({ bearing: 0, duration: 350 })} aria-label="地図を北向きに戻す"><b>N</b><span>↑</span></button>
@@ -241,11 +243,11 @@ export default function SanporoidIslandMap({
         <div>{drawer === "missions" ? missionPanel : guidePanel}</div>
       </section>}
 
-      <aside className={styles.companionSheet}>
-        <div className={styles.sheetHandle} />
+      <aside className={`${styles.companionSheet} ${sheetExpanded ? styles.sheetExpanded : styles.sheetCollapsed}`}>
+        <button type="button" className={styles.sheetToggle} aria-expanded={sheetExpanded} onClick={() => setSheetExpanded((value) => !value)} aria-label={sheetExpanded ? "島の通信記録を折りたたむ" : "島の通信記録を広げる"}><span aria-hidden="true" /></button>
         <header><span className={styles.guideMark} aria-hidden="true">潮</span><div><small>SHIOBOSHI GUIDE</small><strong>島の通信記録</strong></div><em>{completedCount}/{totalCount} 地点</em></header>
         <p>{selected ? `${selected.title}を選びました。現地の安全と掲示を確認して近づこう。` : locationMessage}</p>
-        <strong className={styles.nextHint}>次の任務 · {nextTitle || `${islandName}を開拓`}</strong>
+        <strong className={styles.nextHint}>{selected ? `選択中 · ${selected.title}` : `次の任務 · ${nextTitle || `${islandName}を開拓`}`}</strong>
         <small className={styles.islandSafety}>{profile.safetyNote}</small>
         <div className={styles.mapLinks}><a href={profile.officialMapUrl} target="_blank" rel="noreferrer">公式MAP</a><a href={profile.hazardUrl} target="_blank" rel="noreferrer">防災データ</a></div>
         <nav><button type="button" onClick={onRequestLocation}>⌖ 現在地</button><button type="button" onClick={() => setDrawer("missions")}>01 任務</button><button type="button" onClick={() => setDrawer("guide")}>島ガイド</button></nav>

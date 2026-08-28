@@ -99,6 +99,7 @@ export default function AdventureApp() {
   const [selectedMapPoint, setSelectedMapPoint] = useState<MapPoint | null>(null);
   const [researchOpen, setResearchOpen] = useState(false);
   const [mapGuideMode, setMapGuideMode] = useState<"knowledge" | "ask">("knowledge");
+  const [expandedMissionId, setExpandedMissionId] = useState<string | null>(() => checkpoints.find((checkpoint) => checkpoint.island === "kozushima")?.id ?? null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -178,7 +179,10 @@ export default function AdventureApp() {
         bestLocationAccuracyRef.current = coords.accuracy;
         setCurrentPosition([coords.latitude, coords.longitude]);
         const detectedIsland = islandForPosition([coords.latitude, coords.longitude]);
-        if (detectedIsland) setIsland(detectedIsland);
+        if (detectedIsland) {
+          setIsland(detectedIsland);
+          setExpandedMissionId(checkpoints.find((checkpoint) => checkpoint.island === detectedIsland)?.id ?? null);
+        }
         const next = Object.fromEntries(checkpoints.map((checkpoint) => [checkpoint.id, haversineMeters(coords.latitude, coords.longitude, ...checkpoint.position)]));
         setDistances(next);
         setLocationMessage(`現在地を精度約${Math.round(coords.accuracy)}mで更新しました。数値は保存・送信していません。`);
@@ -269,12 +273,20 @@ export default function AdventureApp() {
     <div className={styles.mapSheetStatus}><div><strong>{currentPosition ? "現在地を取得済み" : "現在地は未取得"}</strong><span>{locationMessage}</span></div><button type="button" onClick={locateNearby}>{currentPosition ? "位置を更新" : "現在地を使う"}</button></div>
     {selectedCheckpoints.map((checkpoint, index) => {
       const isComplete = completed.includes(checkpoint.id);
+      const isExpanded = expandedMissionId === checkpoint.id;
       const distance = distances[checkpoint.id];
+      const missionIndex = missionAreas.find((area) => area.id === checkpoint.id)?.index ?? index + 1;
       return <article className={`${styles.mapMissionCard} ${isComplete ? styles.completed : ""}`} key={checkpoint.id}>
-        <header><span>0{index + 1} · {missionCategoryLabels[checkpoint.category] ?? checkpoint.category}</span><b>{distance === undefined ? "距離未確認" : formatDistance(distance)}</b></header>
-        <h3>{checkpoint.title}</h3><strong>{checkpoint.mission}</strong><p>{checkpoint.photoPrompt}</p>
-        <div><button type="button" onClick={() => confirmCheckpoint(checkpoint)}>{isComplete ? "到着済み" : "現在地で到着判定"}</button><label className={isComplete ? "" : styles.locked}>{isComplete ? "写真を撮る" : "到着後に写真"}<input type="file" accept="image/*" capture="environment" disabled={!isComplete} onChange={(event) => void addPhoto(checkpoint, event)} /></label></div>
-        <small>REWARD · {checkpoint.reward}</small>
+        <button type="button" className={styles.mapMissionSummary} aria-expanded={isExpanded} onClick={() => setExpandedMissionId(isExpanded ? null : checkpoint.id)}>
+          <span className={styles.mapMissionMeta}><small>0{missionIndex} · {missionCategoryLabels[checkpoint.category] ?? checkpoint.category}</small><b>{distance === undefined ? "距離未確認" : formatDistance(distance)}</b></span>
+          <span className={styles.mapMissionTitle}><strong>{checkpoint.title}</strong><em>{checkpoint.mission}</em></span>
+          <span className={styles.mapMissionDisclosure}>{isExpanded ? "閉じる" : "詳細"}</span>
+        </button>
+        {isExpanded && <div className={styles.mapMissionBody}>
+          <p>{checkpoint.photoPrompt}</p>
+          <div className={styles.mapMissionActions}><button type="button" onClick={() => confirmCheckpoint(checkpoint)}>{isComplete ? "到着済み" : "現在地で到着判定"}</button><label className={isComplete ? "" : styles.locked}>{isComplete ? "写真を撮る" : "到着後に写真"}<input type="file" accept="image/*" capture="environment" disabled={!isComplete} onChange={(event) => void addPhoto(checkpoint, event)} /></label></div>
+          <small>REWARD · {checkpoint.reward}</small>
+        </div>}
       </article>;
     })}
     {photos.length > 0 && <div className={styles.mapPhotoRail}>{photos.map((photo) => <figure key={photo.id}><img src={photo.url} alt={`${photo.checkpointTitle}の標本`} /><figcaption>{photo.tag}</figcaption></figure>)}</div>}
@@ -319,7 +331,7 @@ export default function AdventureApp() {
         {tripIslands.map((entry) => {
           const data = islandsBySlug[entry.slug];
           const isActive = island === entry.slug;
-          return <button type="button" className={isActive ? styles.activeIsland : ""} aria-pressed={isActive} onClick={() => { setIsland(entry.slug); setSelectedMapPoint(null); setResearchOpen(false); }} key={entry.slug}><small>{entry.day}</small><strong>{data.name}</strong><span>{entry.story} · {entry.note}</span></button>;
+          return <button type="button" className={isActive ? styles.activeIsland : ""} aria-pressed={isActive} onClick={() => { setIsland(entry.slug); setExpandedMissionId(checkpoints.find((checkpoint) => checkpoint.island === entry.slug)?.id ?? null); setSelectedMapPoint(null); setResearchOpen(false); }} key={entry.slug}><small>{entry.day}</small><strong>{data.name}</strong><span>{entry.story} · {entry.note}</span></button>;
         })}
       </section>
 
@@ -387,6 +399,7 @@ export default function AdventureApp() {
                 missionAreas={missionAreas}
                 onIslandChange={(nextIsland) => {
                   setIsland(nextIsland);
+                  setExpandedMissionId(checkpoints.find((checkpoint) => checkpoint.island === nextIsland)?.id ?? null);
                   setSelectedMapPoint(null);
                   setResearchOpen(false);
                 }}

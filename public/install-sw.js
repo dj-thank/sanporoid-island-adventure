@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "shioboshi-install-";
-const CACHE_NAME = `${CACHE_PREFIX}v4`;
+const CACHE_NAME = `${CACHE_PREFIX}v5`;
 const ROOT_URL = new URL("./", self.location.href).href;
 const CORE_URLS = [
   ROOT_URL,
