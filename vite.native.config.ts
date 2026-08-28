@@ -11,6 +11,7 @@ export default defineConfig({
     "import.meta.env.VITE_NATIVE_APP": JSON.stringify("true"),
   },
   plugins: [react()],
+  optimizeDeps: { exclude: ["maplibre-gl"] },
   build: {
     outDir: resolve("native-dist"),
     emptyOutDir: true,

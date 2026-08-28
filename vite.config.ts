@@ -44,6 +44,7 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    optimizeDeps: { exclude: ["maplibre-gl"] },
     define: {
       CESIUM_BASE_URL: JSON.stringify("/cesiumStatic"),
     },

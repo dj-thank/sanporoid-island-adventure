@@ -39,7 +39,15 @@
  .modeAnnouncer{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
  .modePage{min-height:calc(100dvh - var(--header-height) - var(--island-rail-height));scroll-margin-top:calc(var(--header-height) + var(--island-rail-height));}
  .modePage:focus{outline:none;}
- .modePage[hidden]{display:none !important;}
+.modePage[hidden]{display:none !important;}
+.exploreMode{display:flex;flex-direction:column;}
+.exploreMode .exploreWorkspace{order:0;display:block;max-width:none;width:100%;margin:0;padding:0;}
+.exploreMode .mapPanel{border-radius:0;box-shadow:none;}
+.exploreMode .mapHeading{display:none;}
+.exploreMode .mapWrapCesium{min-height:0;border-radius:0;}
+.exploreMode .nowPanel{max-width:920px;margin:18px auto 0;}
+.exploreMode .hero{order:1;}
+.exploreMode .worldBrief{order:2;}
  .hero{position:relative;min-height:520px;padding:62px clamp(22px,5vw,76px) 42px;color:#fffdf4;background:linear-gradient(110deg,rgba(10,47,54,.98),rgba(12,101,115,.82) 50%,rgba(108,159,182,.42)),url("/photos/kozushima-tako.jpg") center 55% / cover;overflow:hidden;}
  .hero::before{content:"";position:absolute;inset:0;opacity:.26;background-image:linear-gradient(rgba(255,255,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.1) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 92%);}
  .hero::after{content:"";position:absolute;right:-120px;bottom:-220px;width:520px;height:520px;border:1px solid rgba(255,255,255,.18);border-radius:50%;box-shadow:0 0 0 72px rgba(255,255,255,.04),0 0 0 144px rgba(255,255,255,.025);}
@@ -204,6 +212,7 @@
  .photoGrid{grid-template-columns:repeat(2,1fr);}
 }
  @media (max-width:760px){.appShell{--header-height:58px;--island-rail-height:74px;padding-bottom:calc(72px + env(safe-area-inset-bottom));}
+ .mapShell .appHeader,.mapShell .islandRail{display:none;}
  .appHeader{grid-template-columns:1fr;min-height:var(--header-height);padding:5px 14px;}
  .brandButton{min-width:0;min-height:46px;}
  .brandButton small{font-size:7px;}
@@ -264,7 +273,7 @@
  .guideForm{padding:20px 16px;}
  .guideForm>div{grid-template-columns:1fr;}
  .answer{padding:20px 18px;}
- .mobileBottomNav{position:fixed;z-index:1200;inset:auto 0 0;display:grid;grid-template-columns:repeat(4,1fr);min-height:calc(66px + env(safe-area-inset-bottom));padding:5px 6px calc(5px + env(safe-area-inset-bottom));color:#17323a;background:rgba(255,253,244,.96);border-top:1px solid rgba(23,50,58,.18);box-shadow:0 -10px 30px rgba(23,50,58,.12);backdrop-filter:blur(18px);}
+ .mobileBottomNav{position:fixed;z-index:1200;inset:auto 12px calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);min-height:66px;padding:5px 6px;color:#17323a;background:rgba(255,253,244,.96);border:1px solid rgba(95,205,221,.32);border-radius:24px;box-shadow:0 10px 30px rgba(45,139,122,.2);backdrop-filter:blur(18px);}
  .mobileBottomNav button{grid-template-columns:1fr;grid-template-rows:auto auto auto;justify-items:center;gap:0;min-height:56px;padding:3px 2px;text-align:center;border-radius:10px;}
  .mobileBottomNav button>span{grid-row:auto;font-size:18px;}
  .mobileBottomNav small{font-size:6px;}

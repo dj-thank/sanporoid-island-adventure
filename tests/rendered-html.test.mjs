@@ -241,7 +241,7 @@ test("server-renders the installable Sanporoid island adventure", async () => {
   assert.match(html, /島の異変図鑑/);
   assert.match(html, /神津島 → 新島 → 式根島/);
   assert.match(html, /近くのチェックポイント/);
-  assert.match(html, /CESIUM 3D ISLAND EXPLORER/);
+  assert.match(html, /Sanporoid探索地図/);
   assert.match(html, /aria-label="アプリのモード"/);
   assert.match(html, /STARS/);
   assert.match(html, /島のことを聞く/);
@@ -281,40 +281,43 @@ test("keeps the PWA shell offline without caching private API data", async () =>
   assert.doesNotMatch(guideRoute, /console\.(?:log|error).*api/i);
 });
 
-test("uses Cesium as the adventure map with a token-free mobile fallback", async () => {
-  const [component, viteConfig, packageJson] = await Promise.all([
-    readFile(new URL("../app/adventure/CesiumIslandMap.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../vite.config.ts", import.meta.url), "utf8"),
+test("uses the canonical Sanporoid MapLibre UI and local map assets", async () => {
+  const [component, styleJson, packageJson, provenance] = await Promise.all([
+    readFile(new URL("../app/adventure/SanporoidIslandMap.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../public/sanporoid/map/sanpo-vector-game-style.json", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(new URL("../docs/sanporoid-map-ui-brief.md", import.meta.url), "utf8"),
   ]);
-  assert.match(component, /OpenStreetMapImageryProvider/);
-  assert.match(component, /EllipsoidTerrainProvider/);
-  assert.match(component, /GridImageryProvider/);
-  assert.match(component, /requestRenderMode:\s*true/);
-  assert.match(component, /resolutionScale/);
-  assert.match(component, /IntersectionObserver/);
-  assert.match(component, /3D起動/);
+  const mapStyle = JSON.parse(styleJson);
+  assert.equal(mapStyle.name, "Sanpo Vector Game");
+  assert.equal(mapStyle.layers.length, 28);
+  assert.equal(mapStyle.sources.openmaptiles.url, "https://tiles.openfreemap.org/planet");
+  assert.match(component, /maplibre-gl/);
+  assert.match(component, /sanpo-vector-game-style\.json/);
+  assert.match(component, /sanpo_sensing_ring_wa/);
+  assert.match(component, /osm-raster-fallback/);
+  assert.match(component, /現在地/);
+  assert.match(component, /探索開始/);
   assert.match(component, /currentPosition/);
-  assert.doesNotMatch(component, /Ion\.defaultAccessToken\s*=/);
-  assert.match(viteConfig, /cesiumStatic/);
   await Promise.all([
-    access(new URL("../public/cesiumStatic/Assets/approximateTerrainHeights.json", import.meta.url)),
-    access(new URL("../public/cesiumStatic/Assets/IAU2006_XYS/IAU2006_XYS_18.json", import.meta.url)),
-    access(new URL("../public/cesiumStatic/Widgets/widgets.css", import.meta.url)),
-    access(new URL("../public/cesiumStatic/Workers/createGeometry.js", import.meta.url)),
-    access(new URL("../public/cesiumStatic/LICENSE.md", import.meta.url)),
+    access(new URL("../public/sanporoid/map/sanpo_washi_map_overlay_v2.webp", import.meta.url)),
+    access(new URL("../public/sanporoid/map/sanpo_sensing_ring_wa.png", import.meta.url)),
+    access(new URL("../public/sanporoid/map/sanpo_compass_wa.png", import.meta.url)),
+    access(new URL("../public/sanporoid/map/avatar_idle_n_01.webp", import.meta.url)),
+    access(new URL("../docs/ui-reference/sanporoid-map-primary.png", import.meta.url)),
   ]);
-  assert.equal(JSON.parse(packageJson).dependencies.cesium, "^1.144.0");
+  assert.equal(JSON.parse(packageJson).dependencies["maplibre-gl"], "^6.6.0");
+  assert.match(provenance, /68295c62912f37b87d6e735d3ec9b183a047f5cd/);
 });
 
 test("organizes the island adventure into accessible responsive app modes", async () => {
   const [app, map, fieldGuide, starGuide, shellCss, mapCss, fieldCss, starCss] = await Promise.all([
     readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/adventure/CesiumIslandMap.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/SanporoidIslandMap.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/adventure/IslandFieldGuide.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/adventure/StarGuide.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/adventure/adventure.module.css", import.meta.url), "utf8"),
-    readFile(new URL("../app/adventure/cesium-island-map.module.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/sanporoid-island-map.module.css", import.meta.url), "utf8"),
     readFile(new URL("../app/adventure/island-field-guide.module.css", import.meta.url), "utf8"),
     readFile(new URL("../app/adventure/star-guide.module.css", import.meta.url), "utf8"),
   ]);
@@ -328,7 +331,8 @@ test("organizes the island adventure into accessible responsive app modes", asyn
   assert.match(app, /hidden=\{activeMode !==/);
   assert.match(app, /19件の調査候補と12件の現行公式情報/);
   assert.match(map, /onSelectionChange/);
-  assert.match(map, /pointRail/);
+  assert.match(map, /floatingControls/);
+  assert.match(map, /companionSheet/);
   assert.match(fieldGuide, /role="tablist"/);
   assert.match(fieldGuide, /selectedPoint/);
   assert.match(starGuide, /starWorkspace/);

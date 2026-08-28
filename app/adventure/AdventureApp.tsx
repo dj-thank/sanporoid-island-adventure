@@ -4,7 +4,7 @@
 
 import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { islandsBySlug, type Island, type MapPoint } from "../discover/island-data";
-import CesiumIslandMap from "./CesiumIslandMap";
+import SanporoidIslandMap from "./SanporoidIslandMap";
 import { formatDistance, haversineMeters } from "./geoMath";
 import IslandFieldGuide from "./IslandFieldGuide";
 import { answerFromExperiencePack, buildIslandLlmContext, enrichMapPointsWithResearch, officialAnchorMapPoints, type TripIslandSlug } from "./islandKnowledge";
@@ -226,7 +226,7 @@ export default function AdventureApp() {
   }
 
   return (
-    <main className={`${styles.appShell} ${activeMode === "stars" ? styles.starShell : ""}`}>
+    <main className={`${styles.appShell} ${activeMode === "stars" ? styles.starShell : ""} ${activeMode === "explore" ? styles.mapShell : ""}`}>
       <header className={styles.appHeader}>
         <button type="button" className={styles.brandButton} onClick={() => activateMode("explore")} aria-label="欠けた潮星の探索モードへ">
           <small>SANPOROID / ISLAND ADVENTURE</small>
@@ -252,7 +252,7 @@ export default function AdventureApp() {
 
       <p className={styles.modeAnnouncer} aria-live="polite">{activeModeLabel}モードを表示中</p>
 
-      <section id="mode-explore" className={styles.modePage} hidden={activeMode !== "explore"} tabIndex={-1} aria-labelledby="explore-title">
+      <section id="mode-explore" className={`${styles.modePage} ${styles.exploreMode}`} hidden={activeMode !== "explore"} tabIndex={-1} aria-labelledby="explore-title">
         <header className={styles.hero}>
           <div className={styles.heroCopy}>
             <p>三島航路譚 · 8/29 — 9/1</p>
@@ -295,17 +295,28 @@ export default function AdventureApp() {
               <div><button type="button" onClick={locateNearby}>近くを探す</button><button type="button" className={styles.secondaryButton} aria-expanded={researchOpen} onClick={() => setResearchOpen((value) => !value)}>{researchOpen ? "調査ノートを閉じる" : "調査ノートを開く"}</button></div>
             </div>
             <div className={styles.mapWrapCesium}>
-              <CesiumIslandMap
+              <SanporoidIslandMap
                 key={selectedIsland.slug}
                 center={selectedIsland.mapCenter}
                 islandName={selectedIsland.name}
                 points={mapPoints}
                 currentPosition={currentPosition}
+                completedCount={completedCount}
+                totalCount={selectedCheckpoints.length}
+                nextTitle={nextCheckpoint?.title ?? "島を開拓"}
+                locationMessage={locationMessage}
                 onRequestLocation={locateNearby}
                 onSelectionChange={setSelectedMapPoint}
+                onOpenMissions={() => activateMode("missions")}
+                onOpenGuide={() => activateMode("guide")}
+                onNextIsland={() => {
+                  const index = tripIslands.findIndex((entry) => entry.slug === island);
+                  const next = tripIslands[(index + 1) % tripIslands.length];
+                  setIsland(next.slug);
+                  setSelectedMapPoint(null);
+                  setResearchOpen(false);
+                }}
               />
-              <img className={styles.mapCompanion} src="/sanporoid/avatar_idle_e_01.webp" alt="地図のさんぽろいど" />
-              <img className={styles.arrivalRing} src="/sanporoid/arrival_ring.webp" alt="" />
             </div>
             <div className={styles.locationStrip} role="status"><strong>端末内の現在地</strong><span>{locationMessage}</span></div>
             <p className={styles.privacyNote}>正確な現在地は端末内の距離計算だけに使い、サイト・Bot・OpenAIへ送りません。</p>

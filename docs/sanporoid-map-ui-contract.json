@@ -1,0 +1,133 @@
+{
+  "schema_version": "1.0",
+  "contract_id": "kaketa-shiose-sanporoid-map",
+  "product": "欠けた潮星 / Sanporoid map",
+  "intent": "神津島・新島・式根島をSanporoid本体と同じ地図文法で歩き、現在地、探索地点、ルート、相棒を一画面で理解できる",
+  "reference": {
+    "primary_image": "docs/ui-reference/sanporoid-map-primary.png",
+    "primary_dimensions_px": [1080, 2424],
+    "comparison_image": "docs/ui-reference/pre-sanporoid-map.png",
+    "implementation_capture": "docs/ui-reference/kaketa-sanporoid-map-implementation.png",
+    "implementation_dimensions_px": [393, 881],
+    "authority": "pixel_9a_device_capture_visual_reference_not_current_runtime_proof",
+    "notes": "Sanporoid commit ad07e6d and main have identical UI tree hashes. The capture contains a historical synthetic route state, not the island app state."
+  },
+  "copy_policy": {
+    "observed_copy": "画像に見える文言を省略記号も含めて転記する",
+    "authoritative_copy": "島アプリでは同じ役割を神津島・新島・式根島の実データへ置換する",
+    "confidence_values": ["exact", "inferred", "illegible"],
+    "forbidden_shortcuts": ["historical Tokyo route copy promotion", "fake GPS", "provider-connected claim"]
+  },
+  "coordinate_system": {
+    "origin": "top-left",
+    "units": "normalized_0_to_1",
+    "bounds_order": ["x", "y", "width", "height"]
+  },
+  "visual_tokens": {
+    "aqua": "#5fcddd",
+    "aqua_dark": "#2d8b7a",
+    "map_land": "#9fdcc4",
+    "road_major": "#ffd866",
+    "washi_white": "rgba(255,253,244,.96)",
+    "card_radius_px": 28,
+    "floating_control_dp": 72
+  },
+  "regions": [
+    {
+      "id": "vector_map_world",
+      "title": "Sanporoid vector map world",
+      "bounds": [0, 0, 1, 1],
+      "observed_copy": [],
+      "authoritative_copy": ["Sanporoid Vector Game 地図"],
+      "purpose": "全操作の空間的な土台",
+      "states": ["loading", "ready", "dragging", "location_unavailable"],
+      "interactions": ["pan", "pinch_zoom", "tap_marker"],
+      "visual_contract": ["Use the exact 28-layer Sanpo Vector Game style", "Apply the canonical washi overlay at low opacity", "Keep labels readable under overlays"],
+      "source_assets": ["public/sanporoid/map/sanpo-vector-game-style.json", "public/sanporoid/map/sanpo_washi_map_overlay_v2.webp"],
+      "implementation": {"fidelity": "exact", "target": "SanporoidIslandMap", "evidence": ["app/adventure/SanporoidIslandMap.tsx", "docs/ui-reference/kaketa-sanporoid-map-implementation.png"], "deviation": "MapLibre GL JS replaces Android MapLibre while retaining the exact style JSON."}
+    },
+    {
+      "id": "top_location_status",
+      "title": "Location and walk status",
+      "bounds": [0.03, 0.07, 0.66, 0.06],
+      "observed_copy": [{"text": "世田谷区 / 等々力駅", "confidence": "exact", "role": "heading"}, {"text": "準備中", "confidence": "exact", "role": "status"}],
+      "authoritative_copy": ["選択中の島 / 現在地または仮位置", "準備中・探索中・位置未許可"],
+      "purpose": "現在の場所と探索状態を最優先で示す",
+      "states": ["fallback", "locating", "ready", "walking"],
+      "interactions": ["tap_to_recenter"],
+      "visual_contract": ["Large translucent washi pill", "Red heart status glyph", "Aqua status copy"],
+      "source_assets": [],
+      "implementation": {"fidelity": "semantic", "target": "SanporoidIslandMap status HUD", "evidence": ["app/adventure/SanporoidIslandMap.tsx"], "deviation": "Tokyo station copy is replaced with island and GPS truth."}
+    },
+    {
+      "id": "route_progress_card",
+      "title": "Exploration route progress",
+      "bounds": [0.43, 0.15, 0.54, 0.07],
+      "observed_copy": [{"text": "等々力の緑から二子…", "confidence": "exact", "role": "heading"}, {"text": "訪問 0/4 地点 / 予定", "confidence": "exact", "role": "status"}],
+      "authoritative_copy": ["選択島の探索章", "訪問 n/N 地点"],
+      "purpose": "ゲームとして次の目的と達成度を地図上に固定する",
+      "states": ["planned", "active", "complete"],
+      "interactions": ["tap_to_open_missions"],
+      "visual_contract": ["Right-aligned floating washi card", "Single-line route title", "Aqua progress line"],
+      "source_assets": [],
+      "implementation": {"fidelity": "semantic", "target": "SanporoidIslandMap route card", "evidence": ["app/adventure/SanporoidIslandMap.tsx"], "deviation": "Uses island checkpoints and local completion state."}
+    },
+    {
+      "id": "floating_map_controls",
+      "title": "Map floating controls",
+      "bounds": [0.81, 0.39, 0.16, 0.25],
+      "observed_copy": [{"text": "現在地", "confidence": "exact", "role": "button"}, {"text": "拡大", "confidence": "exact", "role": "button"}, {"text": "縮小", "confidence": "exact", "role": "button"}],
+      "authoritative_copy": ["現在地", "拡大", "縮小"],
+      "purpose": "片手で地図カメラを制御する",
+      "states": ["idle", "following", "location_unavailable"],
+      "interactions": ["tap"],
+      "visual_contract": ["72dp rounded vertical buttons", "Current location active button uses aqua fill", "44px minimum targets"],
+      "source_assets": [],
+      "implementation": {"fidelity": "exact", "target": "SanporoidIslandMap controls", "evidence": ["app/adventure/sanporoid-island-map.module.css"], "deviation": "Uses text glyphs instead of Material icons while preserving roles and size."}
+    },
+    {
+      "id": "player_hud",
+      "title": "Sanporoid player HUD",
+      "bounds": [0.38, 0.38, 0.22, 0.24],
+      "observed_copy": [],
+      "authoritative_copy": ["いまここ", "見渡し中"],
+      "purpose": "現在地を相棒キャラクターとして表現する",
+      "states": ["following", "inspecting", "walking"],
+      "interactions": ["tap_companion"],
+      "visual_contract": ["Canonical sensing ring", "Canonical compass", "Canonical avatar", "Player remains legible above map labels"],
+      "source_assets": ["public/sanporoid/map/sanpo_sensing_ring_wa.png", "public/sanporoid/map/sanpo_compass_wa.png", "public/sanporoid/map/avatar_idle_n_01.webp"],
+      "implementation": {"fidelity": "exact", "target": "SanporoidIslandMap player HUD", "evidence": ["app/adventure/SanporoidIslandMap.tsx"], "deviation": "DOM overlay follows map center because MapLibre GL JS cannot use Android drawables directly."}
+    },
+    {
+      "id": "companion_sheet",
+      "title": "Companion conversation sheet",
+      "bounds": [0.03, 0.73, 0.94, 0.14],
+      "observed_copy": [{"text": "さんぽろいど", "confidence": "exact", "role": "heading"}, {"text": "まわり", "confidence": "exact", "role": "button"}, {"text": "散歩開始", "confidence": "exact", "role": "button"}, {"text": "会話をひらく", "confidence": "exact", "role": "button"}],
+      "authoritative_copy": ["さんぽろいど", "まわり", "探索開始", "会話をひらく"],
+      "purpose": "地図を離れず探索・会話・現在地行動へ移る",
+      "states": ["peek", "message", "walking"],
+      "interactions": ["open_nearby", "start_exploration", "open_guide"],
+      "visual_contract": ["Bottom translucent washi sheet", "Companion name and one short contextual line", "Three equal action buttons"],
+      "source_assets": ["public/sanporoid/map/conversation_sanporoido_icon_map.webp"],
+      "implementation": {"fidelity": "semantic", "target": "SanporoidIslandMap companion sheet", "evidence": ["app/adventure/SanporoidIslandMap.tsx"], "deviation": "Health metrics are replaced by island checkpoint progress; no fake HC state."}
+    },
+    {
+      "id": "bottom_navigation",
+      "title": "Primary app navigation",
+      "bounds": [0.03, 0.88, 0.94, 0.09],
+      "observed_copy": [{"text": "会話", "confidence": "exact", "role": "tab"}, {"text": "開拓", "confidence": "exact", "role": "tab"}, {"text": "地図", "confidence": "exact", "role": "tab"}, {"text": "マイページ", "confidence": "exact", "role": "tab"}],
+      "authoritative_copy": ["探索", "任務", "星空", "案内"],
+      "purpose": "アプリの4モードを常時片手で切り替える",
+      "states": ["one_selected"],
+      "interactions": ["tap"],
+      "visual_contract": ["Floating 24px washi pill", "Four equal tabs", "Aqua active icon and label", "Safe-area aware"],
+      "source_assets": [],
+      "implementation": {"fidelity": "adapted", "target": "AdventureApp mobileBottomNav", "evidence": ["app/adventure/adventure.module.css"], "deviation": "The island app must retain missions and stars, so labels adapt while the Sanporoid layout and tokens remain."}
+    }
+  ],
+  "screen_state_acceptance": [
+    {"state": "map_ready_fallback", "required_regions": ["vector_map_world", "top_location_status", "route_progress_card", "floating_map_controls", "player_hud", "companion_sheet", "bottom_navigation"], "evidence": "docs/ui-reference/kaketa-sanporoid-map-implementation.png"},
+    {"state": "location_unavailable", "required_regions": ["vector_map_world", "top_location_status", "floating_map_controls"], "evidence": "tests/rendered-html.test.mjs"}
+  ],
+  "completion_criteria": ["No horizontal page scrolling at 320px", "Exact Sanporoid style JSON loads", "Every island checkpoint is selectable on-map", "Location permission remains user initiated", "Original and implementation captures are compared at 1080x2424", "Map/mission/star/guide tests pass"]
+}
