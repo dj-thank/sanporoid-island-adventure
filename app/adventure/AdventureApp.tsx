@@ -368,7 +368,7 @@ export default function AdventureApp() {
       </section>
 
       <section id="mode-stars" className={`${styles.modePage} ${styles.starMode}`} hidden={activeMode !== "stars"} tabIndex={-1} aria-label={`${selectedIsland.name}の星空モード`}>
-        <StarGuide key={selectedIsland.slug} fallbackPosition={selectedIsland.mapCenter} islandName={selectedIsland.name} />
+        <StarGuide key={selectedIsland.slug} active={activeMode === "stars"} fallbackPosition={selectedIsland.mapCenter} islandName={selectedIsland.name} />
       </section>
 
       <section id="mode-guide" className={`${styles.modePage} ${styles.guideMode}`} hidden={activeMode !== "guide"} tabIndex={-1} aria-labelledby="guide-title">

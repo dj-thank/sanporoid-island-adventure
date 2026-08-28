@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import hygCatalog from "./hyg-bright-stars-v41.json";
-import { calculateSky, cardinal, deviceViewFromOrientation, normalizeDegrees, projectStar, sideLabel, smoothHeading, type CatalogStar } from "./starMath";
+import { calculateSky, cardinal, deviceViewFromOrientation, normalizeDegrees, normalizeSigned, projectStar, sideLabel, smoothHeading, type CatalogStar } from "./starMath";
 import styles from "./star-guide.module.css";
 
 const localizedNames: Record<string, string> = {
@@ -36,7 +36,7 @@ const constellationLines = [
 type OrientationEventWithCompass = DeviceOrientationEvent & { webkitCompassHeading?: number; webkitCompassAccuracy?: number };
 type OrientationConstructorWithPermission = typeof DeviceOrientationEvent & { requestPermission?: (absolute?: boolean) => Promise<"granted" | "denied"> };
 
-export default function StarGuide({ fallbackPosition, islandName }: { fallbackPosition: [number, number]; islandName: string }) {
+export default function StarGuide({ active, fallbackPosition, islandName }: { active: boolean; fallbackPosition: [number, number]; islandName: string }) {
   const [heading, setHeading] = useState(0);
   const [viewAltitude, setViewAltitude] = useState(35);
   const [sensorEnabled, setSensorEnabled] = useState(false);
@@ -51,8 +51,15 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
   const [search, setSearch] = useState("");
   const [selectedName, setSelectedName] = useState("");
   const [showLines, setShowLines] = useState(true);
+  const [headingOffset, setHeadingOffset] = useState(0);
   const absoluteSensorSeen = useRef(false);
   const dragStart = useRef<{ x: number; y: number; heading: number; altitude: number } | null>(null);
+  const latestSensorSample = useRef<{ heading: number; altitude: number; source: "absolute" | "relative" | "iphone"; accuracy?: number } | null>(null);
+  const lastSensorAt = useRef(0);
+  const lastSensorFlushAt = useRef(0);
+  const lastSensorSource = useRef("");
+  const rawSensorHeading = useRef<number | null>(null);
+  const headingOffsetRef = useRef(0);
 
   useEffect(() => {
     const initialSync = window.setTimeout(() => setClockBase(new Date()), 0);
@@ -61,29 +68,68 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
   }, []);
 
   useEffect(() => {
-    if (!sensorEnabled) return;
+    if (!sensorEnabled || !active) return;
+    absoluteSensorSeen.current = false;
+    let relativeListening = false;
+    let frame = 0;
+    let fallbackTimer = 0;
+    let staleTimer = 0;
+
+    const flushLatest = (now: number) => {
+      frame = 0;
+      const sample = latestSensorSample.current;
+      if (!sample || now - lastSensorFlushAt.current < 45) return;
+      lastSensorFlushAt.current = now;
+      rawSensorHeading.current = sample.heading;
+      setHeading((previous) => smoothHeading(previous, normalizeDegrees(sample.heading + headingOffsetRef.current), 0.22));
+      setViewAltitude((previous) => previous + (sample.altitude - previous) * 0.22);
+      const sourceKey = `${sample.source}-${sample.accuracy === undefined ? "" : Math.round(sample.accuracy / 5)}`;
+      if (sourceKey !== lastSensorSource.current) {
+        lastSensorSource.current = sourceKey;
+        if (sample.source === "iphone") setSensorStatus(`iPhone方位センサーを使用中${sample.accuracy === undefined ? "" : `（精度 ±${Math.round(sample.accuracy)}°）`}`);
+        else if (sample.source === "absolute") setSensorStatus("絶対方位センサーを使用中");
+        else setSensorStatus("相対方位のみです。北極星などで手動補正してください");
+      }
+    };
+
     const onOrientation = (raw: Event) => {
       const event = raw as OrientationEventWithCompass;
       const isAbsolute = event.type === "deviceorientationabsolute" || event.absolute || typeof event.webkitCompassHeading === "number";
       if (isAbsolute) absoluteSensorSeen.current = true;
       if (!isAbsolute && absoluteSensorSeen.current) return;
-      let nextHeading: number | undefined;
-      if (typeof event.webkitCompassHeading === "number") {
-        nextHeading = normalizeDegrees(event.webkitCompassHeading);
-        setSensorStatus(`iPhone方位センサーを使用中${typeof event.webkitCompassAccuracy === "number" ? `（精度 ±${Math.round(event.webkitCompassAccuracy)}°）` : ""}`);
-      } else if (typeof event.alpha === "number" && typeof event.beta === "number" && typeof event.gamma === "number") {
-        const screenAngle = window.screen.orientation?.angle ?? (window.orientation as number | undefined) ?? 0;
-        const view = deviceViewFromOrientation({ alpha: event.alpha, beta: event.beta, gamma: event.gamma, screenAngle });
-        nextHeading = view.heading;
-        setViewAltitude((previous) => previous + (view.altitude - previous) * 0.18);
-        setSensorStatus(event.absolute ? "絶対方位センサーを使用中" : "相対方位です。北極星や既知の目標で補正してください");
-      }
-      if (nextHeading !== undefined) setHeading((previous) => smoothHeading(previous, nextHeading));
+      if (typeof event.alpha !== "number" || typeof event.beta !== "number" || typeof event.gamma !== "number") return;
+      const view = deviceViewFromOrientation({ alpha: event.alpha, beta: event.beta, gamma: event.gamma });
+      latestSensorSample.current = {
+        heading: typeof event.webkitCompassHeading === "number" ? normalizeDegrees(event.webkitCompassHeading) : view.heading,
+        altitude: view.altitude,
+        source: typeof event.webkitCompassHeading === "number" ? "iphone" : isAbsolute ? "absolute" : "relative",
+        accuracy: typeof event.webkitCompassAccuracy === "number" ? event.webkitCompassAccuracy : undefined,
+      };
+      lastSensorAt.current = performance.now();
+      if (!frame) frame = window.requestAnimationFrame(flushLatest);
+    };
+
+    const addRelativeListener = () => {
+      if (relativeListening) return;
+      relativeListening = true;
+      window.addEventListener("deviceorientation", onOrientation);
     };
     window.addEventListener("deviceorientationabsolute", onOrientation);
-    window.addEventListener("deviceorientation", onOrientation);
-    return () => { window.removeEventListener("deviceorientationabsolute", onOrientation); window.removeEventListener("deviceorientation", onOrientation); };
-  }, [sensorEnabled]);
+    const constructor = window.DeviceOrientationEvent as OrientationConstructorWithPermission | undefined;
+    if (constructor?.requestPermission) addRelativeListener();
+    else fallbackTimer = window.setTimeout(() => { if (!absoluteSensorSeen.current) addRelativeListener(); }, 1200);
+    staleTimer = window.setInterval(() => {
+      if (lastSensorAt.current && performance.now() - lastSensorAt.current > 2500) setSensorStatus("センサー更新が止まりました。端末を動かすか、手動操作を使ってください");
+    }, 1000);
+    return () => {
+      window.removeEventListener("deviceorientationabsolute", onOrientation);
+      if (relativeListening) window.removeEventListener("deviceorientation", onOrientation);
+      window.clearTimeout(fallbackTimer);
+      window.clearInterval(staleTimer);
+      if (frame) window.cancelAnimationFrame(frame);
+      latestSensorSample.current = null;
+    };
+  }, [active, sensorEnabled]);
 
   const displayedTime = useMemo(() => clockBase ? new Date(clockBase.getTime() + offsetHours * 3_600_000) : null, [clockBase, offsetHours]);
   const sky = useMemo(() => displayedTime ? calculateSky(stars, displayedTime, position[0], position[1], heading) : [], [displayedTime, heading, position]);
@@ -115,6 +161,31 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
     );
   }
 
+  function toggleSensors() {
+    if (sensorEnabled) {
+      setSensorEnabled(false);
+      setSensorStatus("センサーを停止しました。手動操作を使えます。");
+      return;
+    }
+    void startSensors();
+  }
+
+  function calibrateToTarget() {
+    if (!target || rawSensorHeading.current === null) return;
+    const correction = normalizeSigned(target.azimuth - rawSensorHeading.current);
+    headingOffsetRef.current = correction;
+    setHeadingOffset(correction);
+    setHeading(normalizeDegrees(rawSensorHeading.current + correction));
+    setSensorStatus(`${target.japanese}を基準に方位を補正しました（${correction >= 0 ? "+" : ""}${Math.round(correction)}°、この画面だけ）`);
+  }
+
+  function resetCalibration() {
+    headingOffsetRef.current = 0;
+    setHeadingOffset(0);
+    if (rawSensorHeading.current !== null) setHeading(rawSensorHeading.current);
+    setSensorStatus("方位補正を解除しました。端末の絶対方位を使用します。");
+  }
+
   function startSkyDrag(event: React.PointerEvent<HTMLDivElement>) {
     dragStart.current = { x: event.clientX, y: event.clientY, heading, altitude: viewAltitude };
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -132,7 +203,7 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
       <header className={styles.starHeader}>
         <div><small>HYG 4.1 · {hygCatalog.starCount.toLocaleString("ja-JP")} REAL STARS</small><h2 id="star-guide-title">潮星スカイ・ファインダー</h2><p>{islandName}の空へスマートフォンを向けると、実星データ・時刻・方位・端末の上下角から端末内で再構成します。検索した星へ左右・上下の誘導を表示します。</p></div>
         <div className={styles.starActions}>
-          <button type="button" aria-pressed={sensorEnabled} onClick={() => void startSensors()}>{sensorEnabled ? "センサー使用中" : "センサー開始"}</button>
+          <button type="button" aria-pressed={sensorEnabled} onClick={toggleSensors}>{sensorEnabled ? "センサー停止" : "センサー開始"}</button>
           <button type="button" aria-pressed={showLines} onClick={() => setShowLines((value) => !value)}>{showLines ? "星座線を隠す" : "星座線を表示"}</button>
           <button type="button" aria-pressed={nightRed} onClick={() => setNightRed((value) => !value)}>{nightRed ? "通常色へ" : "暗所用の赤へ"}</button>
         </div>
@@ -166,6 +237,7 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
           <article className={styles.targetCard} aria-live="polite">
             <small>あれが何座？</small>
             {target ? <><h3>{sideLabel(target.delta)}に {target.japanese}</h3><strong>{target.constellation}</strong><p>高度 約{Math.round(target.altitude)}°・方位 {Math.round(target.azimuth)}°。{directionText(target.delta, target.altitude - viewAltitude)}。雲・障害物・磁気ずれは含みません。</p></> : <><h3>星空を同期しています</h3><p>現在時刻の端末計算を準備中です。</p></>}
+            {sensorEnabled && target && <div className={styles.calibrationActions}><button type="button" onClick={calibrateToTarget}>中央の星で方位補正</button>{headingOffset !== 0 && <button type="button" onClick={resetCalibration}>補正を解除</button>}</div>}
           </article>
 
           <div className={styles.sensorReadout} role="status"><p><strong>方位</strong>{sensorStatus}</p><p><strong>位置</strong>{locationStatus}。緯度・経度の数値は保存・送信しません。</p></div>

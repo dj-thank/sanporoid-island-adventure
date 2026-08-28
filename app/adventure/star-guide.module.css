@@ -63,6 +63,9 @@
 .targetCard > strong { color: #87bfff; }
 .nightRed .targetCard > strong { color: #ff6350; }
 .targetCard p, .sensorReadout p { color: #9fb2c7; font-size: 11px; line-height: 1.65; }
+.calibrationActions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.calibrationActions button { min-height: 44px; padding: 8px 11px; color: #050a12; background: #87bfff; border: 0; border-radius: 999px; font-size: 10px; font-weight: 900; cursor: pointer; }
+.nightRed .calibrationActions button { color: #090000; background: #ff6350; }
 .nightRed :is(.targetCard p,.sensorReadout p) { color: #c9796d; }
 .sensorReadout { display: grid; gap: 10px; }
 .sensorReadout p { display: grid; gap: 3px; margin: 0; }

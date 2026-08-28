@@ -20,17 +20,21 @@ export type ProjectedStar = SkyStar & {
   inView: boolean;
 };
 
-export function deviceViewFromOrientation({ alpha, beta, gamma, screenAngle = 0 }: {
+export function deviceViewFromOrientation({ alpha, beta, gamma }: {
   alpha: number;
   beta: number;
   gamma: number;
-  screenAngle?: number;
 }) {
-  const landscape = Math.abs(screenAngle) === 90;
-  return {
-    heading: normalizeDegrees(360 - alpha + screenAngle),
-    altitude: clamp(90 - Math.abs(landscape ? gamma : beta), -10, 90),
-  };
+  const x = radians(beta);
+  const y = radians(gamma);
+  const z = radians(alpha);
+  const viewX = -Math.cos(z) * Math.sin(y) - Math.sin(z) * Math.sin(x) * Math.cos(y);
+  const viewY = -Math.sin(z) * Math.sin(y) + Math.cos(z) * Math.sin(x) * Math.cos(y);
+  const viewZ = -Math.cos(x) * Math.cos(y);
+  const horizontalLength = Math.hypot(viewX, viewY);
+  const heading = horizontalLength < 1e-6 ? normalizeDegrees(360 - alpha) : normalizeDegrees(degrees(Math.atan2(viewX, viewY)));
+  const altitude = clamp(degrees(Math.asin(clamp(viewZ, -1, 1))), -90, 90);
+  return { heading: snapAngle(heading), altitude: snapAngle(altitude) };
 }
 
 export function smoothHeading(previous: number, next: number, amount = 0.18) {
@@ -65,3 +69,9 @@ export function sideLabel(delta: number) { return Math.abs(delta) < 8 ? "正面"
 export function radians(value: number) { return value * Math.PI / 180; }
 export function degrees(value: number) { return value * 180 / Math.PI; }
 function clamp(value: number, min: number, max: number) { return Math.max(min, Math.min(max, value)); }
+function snapAngle(value: number) {
+  if (Math.abs(value) < 1e-10) return 0;
+  if (Math.abs(value - 90) < 1e-10) return 90;
+  if (Math.abs(value + 90) < 1e-10) return -90;
+  return value;
+}

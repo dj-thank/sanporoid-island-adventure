@@ -360,9 +360,13 @@ test("computes the night sky locally and requests sensor permission explicitly",
 test("maps portrait and landscape phone orientation into a stable sky view", async () => {
   const { deviceViewFromOrientation } = await import(new URL("../app/adventure/starMath.ts", import.meta.url));
 
-  assert.deepEqual(deviceViewFromOrientation({ alpha: 0, beta: 90, gamma: 0, screenAngle: 0 }), { heading: 0, altitude: 0 });
-  assert.deepEqual(deviceViewFromOrientation({ alpha: 90, beta: 0, gamma: -90, screenAngle: 90 }), { heading: 0, altitude: 0 });
-  assert.deepEqual(deviceViewFromOrientation({ alpha: 270, beta: 0, gamma: 90, screenAngle: -90 }), { heading: 0, altitude: 0 });
+  assert.deepEqual(deviceViewFromOrientation({ alpha: 0, beta: 90, gamma: 0 }), { heading: 0, altitude: 0 });
+  assert.deepEqual(deviceViewFromOrientation({ alpha: 90, beta: 90, gamma: 0 }), { heading: 270, altitude: 0 });
+  assert.deepEqual(deviceViewFromOrientation({ alpha: 0, beta: 0, gamma: 0 }), { heading: 0, altitude: -90 });
+  assert.deepEqual(deviceViewFromOrientation({ alpha: 0, beta: 180, gamma: 0 }), { heading: 0, altitude: 90 });
+  const rolled = deviceViewFromOrientation({ alpha: 35, beta: 60, gamma: 40 });
+  assert.ok(Math.abs(rolled.heading - 280.905) < 0.01);
+  assert.ok(Math.abs(rolled.altitude + 22.521) < 0.01);
 });
 
 test("keeps deterministic astronomy transforms testable outside React", async () => {
