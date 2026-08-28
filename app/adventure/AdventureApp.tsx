@@ -39,6 +39,10 @@ const appModes = [
   { id: "stars", label: "星座", eyebrow: "SKY", icon: "✦" },
 ] as const;
 
+const missionCategoryLabels: Record<string, string> = {
+  SEA: "海", VOLCANO: "火山", SUNSET: "夕景", WHITE: "白い地質", FACE: "島の顔", STEAM: "湯気と風", COVE: "入り江", EARTH: "地熱", TURN: "小径",
+};
+
 type AppMode = (typeof appModes)[number]["id"];
 const isNativeApp = import.meta.env.VITE_NATIVE_APP === "true";
 const isHostedPwa = import.meta.env.VITE_HOSTED_PWA === "true";
@@ -94,6 +98,7 @@ export default function AdventureApp() {
   const [askError, setAskError] = useState("");
   const [selectedMapPoint, setSelectedMapPoint] = useState<MapPoint | null>(null);
   const [researchOpen, setResearchOpen] = useState(false);
+  const [mapGuideMode, setMapGuideMode] = useState<"knowledge" | "ask">("knowledge");
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -261,14 +266,14 @@ export default function AdventureApp() {
   }
 
   const mapMissionPanel = <div className={styles.mapSheetStack}>
-    <div className={styles.mapSheetStatus}><span>{locationMessage}</span><button type="button" onClick={locateNearby}>現在地を更新</button></div>
+    <div className={styles.mapSheetStatus}><div><strong>{currentPosition ? "現在地を取得済み" : "現在地は未取得"}</strong><span>{locationMessage}</span></div><button type="button" onClick={locateNearby}>{currentPosition ? "位置を更新" : "現在地を使う"}</button></div>
     {selectedCheckpoints.map((checkpoint, index) => {
       const isComplete = completed.includes(checkpoint.id);
       const distance = distances[checkpoint.id];
       return <article className={`${styles.mapMissionCard} ${isComplete ? styles.completed : ""}`} key={checkpoint.id}>
-        <header><span>0{index + 1} · {checkpoint.category}</span><b>{distance === undefined ? "距離未確認" : formatDistance(distance)}</b></header>
+        <header><span>0{index + 1} · {missionCategoryLabels[checkpoint.category] ?? checkpoint.category}</span><b>{distance === undefined ? "距離未確認" : formatDistance(distance)}</b></header>
         <h3>{checkpoint.title}</h3><strong>{checkpoint.mission}</strong><p>{checkpoint.photoPrompt}</p>
-        <div><button type="button" onClick={() => confirmCheckpoint(checkpoint)}>{isComplete ? "到着済み" : "到着を確認"}</button><label className={isComplete ? "" : styles.locked}>写真<input type="file" accept="image/*" capture="environment" disabled={!isComplete} onChange={(event) => void addPhoto(checkpoint, event)} /></label></div>
+        <div><button type="button" onClick={() => confirmCheckpoint(checkpoint)}>{isComplete ? "到着済み" : "現在地で到着判定"}</button><label className={isComplete ? "" : styles.locked}>{isComplete ? "写真を撮る" : "到着後に写真"}<input type="file" accept="image/*" capture="environment" disabled={!isComplete} onChange={(event) => void addPhoto(checkpoint, event)} /></label></div>
         <small>REWARD · {checkpoint.reward}</small>
       </article>;
     })}
@@ -276,15 +281,21 @@ export default function AdventureApp() {
   </div>;
 
   const mapGuidePanel = <div className={styles.mapGuidePanel}>
-    <p>{selectedIsland.name}の地点・安全・成り立ちを、まず端末内の調査データから答えます。OpenAI APIキーは任意で保存しません。</p>
-    <form onSubmit={askIsland}>
-      <label>質問<textarea name="question" required rows={3} placeholder={`${selectedIsland.name}で今いる場所の近くには何がある？`} /></label>
-      <label>OpenAI APIキー（任意）<input name="apiKey" type="password" autoComplete="off" placeholder="空欄なら端末内回答" /></label>
-      <input name="model" type="hidden" value="gpt-5.6-luna" />
-      <button disabled={asking}>{asking ? "確認中…" : "さんぽろいどに聞く"}</button>
-      {askError && <p className={styles.error} role="alert">{askError}</p>}
-    </form>
-    <div className={styles.mapGuideAnswer} aria-live="polite">{answer || "地点を選ぶと、その場所の情報・注意・出典も地図内に表示されます。"}</div>
+    <nav className={styles.mapGuideTabs} aria-label="島ガイドの表示">
+      <button type="button" aria-pressed={mapGuideMode === "knowledge"} className={mapGuideMode === "knowledge" ? styles.activeMapGuideTab : ""} onClick={() => setMapGuideMode("knowledge")}>島を知る</button>
+      <button type="button" aria-pressed={mapGuideMode === "ask"} className={mapGuideMode === "ask" ? styles.activeMapGuideTab : ""} onClick={() => setMapGuideMode("ask")}>質問する</button>
+    </nav>
+    {mapGuideMode === "knowledge" ? <IslandFieldGuide embedded key={`map-${island}`} island={island} islandName={selectedIsland.name} currentPosition={currentPosition} selectedPoint={selectedMapPoint} open onOpenChange={() => undefined} /> : <div className={styles.mapAskPanel}>
+      <p>{isHostedPwa ? `${selectedIsland.name}の深層知識から端末内で回答します。公開Web版はAPIキーを受け取りません。` : `${selectedIsland.name}の調査データから端末内で回答し、必要な場合だけ入力したAPIキーでOpenAIへ接続します。キーは保存しません。`}</p>
+      <form onSubmit={askIsland}>
+        <label>質問<textarea name="question" required rows={3} placeholder={`${selectedIsland.name}で今いる場所の近くには何がある？`} /></label>
+        {!isHostedPwa && <label>OpenAI APIキー（任意）<input name="apiKey" type="password" autoComplete="off" placeholder="空欄なら端末内回答" /></label>}
+        <input name="model" type="hidden" value="gpt-5.6-luna" />
+        <button disabled={asking}>{asking ? "確認中…" : "潮星ガイドに聞く"}</button>
+        {askError && <p className={styles.error} role="alert">{askError}</p>}
+      </form>
+      <div className={styles.mapGuideAnswer} aria-live="polite">{answer || "例：『天上山は838年にできたの？』『満月でも星は見える？』"}</div>
+    </div>}
   </div>;
 
   return (
@@ -399,9 +410,6 @@ export default function AdventureApp() {
             <dl className={styles.nowStats}><div><dt>この島の任務</dt><dd>{completedCount} / {selectedCheckpoints.length}</dd></div><div><dt>図鑑標本</dt><dd>{photos.filter((photo) => photo.islandName === selectedIsland.name).length}</dd></div><div><dt>事実と物語</dt><dd>分離表示</dd></div></dl>
           </aside>
 
-          <div className={styles.fieldGuideSlot}>
-            <IslandFieldGuide key={island} island={island} islandName={selectedIsland.name} currentPosition={currentPosition} selectedPoint={selectedMapPoint} open={researchOpen} onOpenChange={setResearchOpen} />
-          </div>
         </section>
 
         <footer className={styles.footer}><img src="/sanporoid/avatar_treasure_01.webp" alt="宝箱を見つけたさんぽろいど" /><div><strong>旅は、行った場所の数ではなく、見つけた証拠で残る。</strong><p>運航、海況、立入、温泉、宿泊は現地掲示と公式案内を優先してください。</p></div></footer>

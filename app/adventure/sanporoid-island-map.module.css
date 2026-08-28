@@ -152,6 +152,7 @@
   backdrop-filter:blur(12px);
 }
 .categoryFilters .activeCategory { color:var(--ink); background:var(--sea-glass); border-color:var(--sea-glass); }
+.mobileCategorySelect { display:none; }
 .floatingControls { position:absolute; z-index:6; right:20px; top:39%; display:grid; gap:7px; }
 .floatingControls button {
   display:grid;
@@ -171,37 +172,6 @@
 .floatingControls span { font-size:8px; font-weight:800; }
 .floatingControls .controlActive { color:var(--ink); background:var(--sea-glass); }
 .floatingControls .controlActive b { color:var(--ink); }
-.playerHud {
-  position:absolute;
-  z-index:4;
-  left:50%;
-  top:50%;
-  display:grid;
-  justify-items:center;
-  gap:4px;
-  width:154px;
-  transform:translate(-50%,-50%);
-  pointer-events:none;
-}
-.tideCompass {
-  position:relative;
-  display:grid;
-  place-items:center;
-  width:116px;
-  height:116px;
-  border:1px solid rgba(247,241,229,.82);
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(101,200,192,.44) 0 14%,rgba(11,37,49,.72) 15% 23%,rgba(11,37,49,.12) 24% 52%,transparent 53%);
-  box-shadow:0 0 0 10px rgba(101,200,192,.12),0 0 0 22px rgba(242,120,98,.08),0 12px 28px rgba(7,29,39,.2);
-  animation:pulse 2.6s ease-in-out infinite alternate;
-}
-.tideCompass::before,.tideCompass::after { content:""; position:absolute; background:rgba(247,241,229,.68); }
-.tideCompass::before { width:1px; height:86%; }
-.tideCompass::after { width:86%; height:1px; }
-.tideCompass span { position:absolute; top:7px; color:var(--coral); font-size:9px; font-weight:900; }
-.tideCompass i { z-index:1; display:grid; place-items:center; width:34px; height:34px; color:#fff8e8; background:var(--coral); border-radius:50%; font-size:16px; font-style:normal; box-shadow:0 0 0 5px rgba(242,120,98,.22); }
-.playerHud>strong { padding:4px 9px; color:#fff8e8; background:rgba(9,34,45,.88); border-radius:5px; font-size:8px; letter-spacing:.12em; }
-.playerHud>small { color:var(--ink); font-size:9px; font-weight:900; text-shadow:0 1px 0 rgba(255,255,255,.8); }
 .selectionCard {
   position:absolute;
   z-index:7;
@@ -261,13 +231,14 @@
 .companionSheet header { display:flex; align-items:center; gap:10px; }
 .guideMark { display:grid; place-items:center; width:34px; height:34px; color:#fffaf0; background:var(--ink); border-radius:7px 16px 7px 16px; font-size:13px; font-weight:900; }
 .companionSheet header>div { display:grid; gap:1px; }
-.companionSheet header small { color:#407b82; font-size:7px; font-weight:900; letter-spacing:.13em; }
-.companionSheet header strong { font-size:17px; }
+.companionSheet header small { color:#407b82; font-size:8px; font-weight:900; letter-spacing:.13em; }
+.companionSheet header strong { font-size:18px; }
 .companionSheet header em { margin-left:auto; color:#6d5f51; font-size:10px; font-style:normal; font-weight:800; }
-.companionSheet p { min-height:30px; margin:7px 0 3px; overflow:hidden; font-size:11px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
-.islandSafety { display:block; overflow:hidden; color:#8a594d; font-size:8px; line-height:1.4; text-overflow:ellipsis; white-space:nowrap; }
+.companionSheet p { min-height:0; margin:7px 0 3px; overflow:hidden; font-size:12px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; }
+.nextHint { display:block; overflow:hidden; color:#176877; font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
+.islandSafety { display:-webkit-box; overflow:hidden; color:#8a594d; font-size:10px; line-height:1.4; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
 .mapLinks { display:flex; gap:6px; margin-top:4px; }
-.mapLinks a { padding:3px 7px; color:#176877; background:rgba(101,200,192,.18); border:1px solid rgba(23,104,119,.14); border-radius:5px; font-size:8px; font-weight:900; text-decoration:none; }
+.mapLinks a { display:inline-flex; align-items:center; min-height:44px; padding:6px 10px; color:#176877; background:rgba(101,200,192,.18); border:1px solid rgba(23,104,119,.14); border-radius:7px; font-size:10px; font-weight:900; text-decoration:none; }
 .companionSheet nav { display:grid; grid-template-columns:repeat(3,1fr); margin-top:5px; border-top:1px solid rgba(11,37,49,.14); }
 .companionSheet nav button { min-width:0; min-height:44px; color:#176877; background:transparent; border:0; border-right:1px solid rgba(11,37,49,.1); font-size:10px; font-weight:900; cursor:pointer; }
 .companionSheet nav button:last-child { border-right:0; }
@@ -275,8 +246,8 @@
 .poiMarker {
   display:grid;
   place-items:center;
-  width:38px;
-  height:38px;
+  width:44px;
+  height:44px;
   padding:0;
   color:#fffaf0;
   background:var(--ink);
@@ -291,7 +262,16 @@
 .missionMarker { color:var(--ink); background:var(--gold); border-color:#fff7df; box-shadow:0 0 0 4px rgba(242,120,98,.5),0 6px 14px rgba(7,29,39,.34); font-size:13px; }
 .completedMarker { color:#fff; background:#318d79; box-shadow:0 0 0 4px rgba(101,200,192,.52),0 6px 14px rgba(7,29,39,.3); }
 .currentDot { width:20px; height:20px; background:var(--coral); border:4px solid #fff; border-radius:50%; box-shadow:0 0 0 8px rgba(242,120,98,.22); }
-@keyframes pulse { from { transform:scale(.94); opacity:.72; } to { transform:scale(1.05); opacity:1; } }
+@media (max-height:500px) and (min-width:761px) {
+  .routeCard { display:none; }
+  .islandSwitcher button,.categoryFilters button { min-height:44px; }
+  .floatingControls { top:88px; }
+  .companionSheet { right:auto; bottom:10px; left:20px; width:440px; min-height:0; padding:10px 14px 7px; }
+  .sheetHandle { margin:-5px auto 6px; }
+  .companionSheet p,.islandSafety,.mapLinks { display:none; }
+  .companionSheet nav { margin-top:4px; }
+  .infoDrawer { inset:8px 244px 8px 8px; }
+}
 @media (max-width:760px) {
   .shell { height:calc(100dvh - 132px - env(safe-area-inset-bottom)); min-height:620px; border-radius:0; }
   .locationCard { left:12px; top:12px; min-width:0; width:calc(100% - 178px); padding:8px 10px 8px 8px; }
@@ -301,17 +281,18 @@
   .clockCard { right:78px; }
   .compassButton { right:12px; }
   .islandSwitcher { left:12px; top:76px; }
-  .islandSwitcher button { min-width:58px; min-height:36px; padding-inline:7px; }
-  .routeCard { top:126px; right:12px; max-width:74%; min-height:60px; padding:9px 12px; }
-  .categoryFilters { left:12px; top:193px; width:calc(100% - 88px); }
-  .floatingControls { right:12px; top:43%; }
+  .islandSwitcher button { min-width:58px; min-height:44px; padding-inline:7px; }
+  .routeCard { display:none; }
+  .categoryFilters { display:none; }
+  .mobileCategorySelect { position:absolute; z-index:7; left:12px; top:132px; display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px; align-items:center; width:calc(100% - 88px); min-height:44px; padding:6px 8px; color:#e8f1ed; background:rgba(9,34,45,.88); border:1px solid rgba(245,239,225,.2); border-radius:9px; font-size:10px; font-weight:900; backdrop-filter:blur(12px); }
+  .mobileCategorySelect select { width:100%; min-height:44px; padding:4px 8px; color:var(--ink); background:var(--paper); border:0; border-radius:7px; font:inherit; font-size:14px; }
+  .floatingControls { right:12px; top:31%; }
   .floatingControls button { width:56px; height:56px; }
-  .playerHud { top:54%; transform:translate(-50%,-50%) scale(.86); }
-  .selectionCard { left:12px; bottom:268px; width:calc(100% - 82px); }
-  .companionSheet { right:12px; bottom:82px; left:12px; min-height:184px; padding:14px 14px 11px; }
+  .selectionCard { left:12px; bottom:248px; width:calc(100% - 82px); }
+  .companionSheet { right:12px; bottom:88px; left:12px; min-height:158px; padding:12px 14px 9px; }
   .companionSheet header strong { font-size:15px; }
   .mapStatus { display:none; }
-  .infoDrawer { inset:56px 8px calc(82px + env(safe-area-inset-bottom)); border-radius:8px 24px 8px 24px; }
+  .infoDrawer { inset:56px 8px calc(88px + env(safe-area-inset-bottom)); border-radius:8px 24px 8px 24px; }
 }
 @media (max-width:380px) {
   .locationCard { width:calc(100% - 150px); }
@@ -319,7 +300,5 @@
   .clockCard,.compassButton { min-width:54px; }
   .clockCard { right:72px; }
   .islandSwitcher button { min-width:54px; padding-inline:5px; }
-  .routeCard { max-width:80%; }
   .companionSheet nav button { font-size:9px; }
 }
-@media (prefers-reduced-motion:reduce) { .tideCompass { animation:none; } }

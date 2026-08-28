@@ -48,7 +48,7 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
   const [offsetHours, setOffsetHours] = useState(0);
   const [nightRed, setNightRed] = useState(true);
   const [magnitudeLimit, setMagnitudeLimit] = useState(4);
-  const [nightBrightness, setNightBrightness] = useState(42);
+  const [nightBrightness, setNightBrightness] = useState(56);
   const [search, setSearch] = useState("");
   const [selectedName, setSelectedName] = useState("");
   const [showLines, setShowLines] = useState(true);
@@ -259,10 +259,18 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
           </div>
 
           <div className={styles.skyViewport} aria-label={`方位${Math.round(heading)}度・高度${Math.round(viewAltitude)}度の星空`} onPointerDown={startSkyDrag} onPointerMove={moveSkyDrag} onPointerUp={() => { dragStart.current = null; }} onPointerCancel={() => { dragStart.current = null; }}>
-            <div className={styles.mobileSkyHint}>{sensorEnabled ? "端末を空へ向ける" : "空を指で動かす · センサー開始で追従"}</div>
+            <div className={styles.mobileSkyHint}>満月直後 · {sensorEnabled ? "端末を空へ向ける" : "指で空を動かせます"}</div>
             <div className={styles.compassLine}><span>左</span><strong>{Math.round(heading)}° · {cardinal(heading)} / 高度 {Math.round(viewAltitude)}°</strong><span>右</span></div>
             {showLines && <svg className={styles.constellationLayer} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">{constellationLines.flatMap((line, lineIndex) => line.slice(1).map((name, index) => { const from = projectedByName.get(line[index]); const to = projectedByName.get(name); return from?.inView && to?.inView ? <line key={`${lineIndex}-${name}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y} /> : null; }))}</svg>}
-            {visibleStars.slice(0, 260).map((star) => <button type="button" className={styles.star} aria-label={`${star.japanese}、${star.constellation}、高度${Math.round(star.altitude)}度`} aria-pressed={selectedName === star.name} onClick={() => setSelectedName(star.name)} key={`${star.name}-${star.raHours}`} style={{ left: `${star.x}%`, top: `${star.y}%`, "--star-size": `${Math.max(3, 11 - star.magnitude * 1.55)}px` } as React.CSSProperties}><b /><span>{star.magnitude <= 2.2 ? star.japanese : ""}<small>{star.magnitude <= 1.7 ? star.constellation : ""}</small></span></button>)}
+            {visibleStars.slice(0, 260).map((star) => {
+              const selected = selectedName === star.name;
+              const selectable = selected || star.magnitude <= 2.5;
+              const showLabel = star.magnitude <= 2.2 && star.x >= 13 && star.x <= 87 && star.y >= 8 && star.y <= 88;
+              const className = `${styles.star} ${star.magnitude <= 1.7 ? styles.majorStar : ""}`;
+              const style = { left: `${star.x}%`, top: `${star.y}%`, "--star-size": `${Math.max(3, 11 - star.magnitude * 1.55)}px` } as React.CSSProperties;
+              if (!selectable) return <span aria-hidden="true" className={`${className} ${styles.decorativeStar}`} key={`${star.name}-${star.raHours}`} style={style}><b /></span>;
+              return <button type="button" className={className} aria-label={`${star.japanese}、${star.constellation}、高度${Math.round(star.altitude)}度`} aria-pressed={selected} onClick={() => setSelectedName(star.name)} key={`${star.name}-${star.raHours}`} style={style}><b /><span>{showLabel ? star.japanese : ""}<small>{showLabel && star.magnitude <= 1.7 ? star.constellation : ""}</small></span></button>;
+            })}
             <div className={styles.reticle}><span /><span /></div>
             {target && (!projectStar(target, viewAltitude).inView || searchedTarget) && <div className={styles.locateArrow} style={{ "--arrow-angle": `${Math.atan2(target.delta, target.altitude - viewAltitude) * 180 / Math.PI}deg` } as React.CSSProperties}><b>↑</b><span>{target.japanese}<small>{directionText(target.delta, target.altitude - viewAltitude)}</small></span></div>}
           </div>

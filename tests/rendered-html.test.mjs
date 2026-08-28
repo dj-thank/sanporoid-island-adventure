@@ -251,13 +251,7 @@ test("server-renders the installable Shioboshi island adventure", async () => {
   assert.match(html, /潮星スカイ・ファインダー/);
   assert.match(html, /スマートフォンを向ける/);
   assert.match(html, /あれが何座/);
-  assert.match(html, /開拓フィールドノート/);
-  assert.match(html, /SHIOBOSHI ISLAND INTELLIGENCE/);
-  assert.match(html, /島を理解する/);
-  assert.match(html, /候補 ≠ 安全確認済みルート/);
-  assert.match(html, /指定キャンプ場以外の野営は禁止/);
-  assert.match(html, /CHECKED/);
-  assert.match(html, /2026-08-29/);
+  assert.match(html, /島ガイド/);
 });
 
 test("keeps the PWA shell offline without caching private API data", async () => {
@@ -313,10 +307,12 @@ test("prepares PC-free Android and iPhone installation surfaces for GitHub", asy
   assert.match(pagesBuilder, /root-absolute public asset paths/);
   assert.match(nativeConfig, /VITE_HOSTED_PWA/);
   assert.match(adventure, /GitHub Pages版はAPIキーを受け取らず/);
-  assert.match(androidGradle, /versionCode 3/);
-  assert.match(androidGradle, /versionName "0\.2\.1"/);
-  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.1/);
-  assert.equal(JSON.parse(packageText).version, "0.2.1");
+  assert.match(installWorker, /shioboshi-install-/);
+  assert.match(installWorker, /v4/);
+  assert.match(androidGradle, /versionCode 4/);
+  assert.match(androidGradle, /versionName "0\.2\.2"/);
+  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.2/);
+  assert.equal(JSON.parse(packageText).version, "0.2.2");
 });
 
 test("keeps the canonical Sanporoid map core under a distinct Shioboshi UI", async () => {
@@ -332,7 +328,9 @@ test("keeps the canonical Sanporoid map core under a distinct Shioboshi UI", asy
   assert.equal(mapStyle.sources.openmaptiles.url, "https://tiles.openfreemap.org/planet");
   assert.match(component, /maplibre-gl/);
   assert.match(component, /sanpo-vector-game-style\.json/);
-  assert.match(component, /tideCompass/);
+  assert.match(component, /useState\("mission"\)/);
+  assert.match(component, /mobileCategorySelect/);
+  assert.doesNotMatch(component, /tideCompass|playerHud/);
   assert.match(component, /SHIOBOSHI FIELD LOG/);
   assert.match(component, /Sanporoid map core/);
   assert.doesNotMatch(component, /sanpo_sensing_ring_wa|avatar_idle_n_01/);
@@ -349,6 +347,44 @@ test("keeps the canonical Sanporoid map core under a distinct Shioboshi UI", asy
   ]);
   assert.equal(JSON.parse(packageJson).dependencies["maplibre-gl"], "^6.6.0");
   assert.match(provenance, /68295c62912f37b87d6e735d3ec9b183a047f5cd/);
+});
+
+test("keeps the phone map, island guide, and sky finder focused and touchable", async () => {
+  const [adventure, adventureCss, guide, currentFacts, map, mapCss, star, starCss] = await Promise.all([
+    readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/adventure.module.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/IslandFieldGuide.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/island-current-facts.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/SanporoidIslandMap.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/sanporoid-island-map.module.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/StarGuide.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/star-guide.module.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(adventure, /IslandFieldGuide embedded/);
+  assert.match(adventure, /島を知る/);
+  assert.match(adventure, /質問する/);
+  assert.match(adventure, /!isHostedPwa && <label>OpenAI APIキー/);
+  assert.match(adventure, /現在地で到着判定/);
+  assert.match(guide, /SHIOBOSHI ISLAND INTELLIGENCE/);
+  assert.match(guide, /島を理解する/);
+  assert.match(guide, /候補 ≠ 安全確認済みルート/);
+  assert.match(guide, /anchors\.length > 0 && <button/);
+  assert.match(currentFacts, /指定キャンプ場以外の野営は禁止/);
+  assert.match(map, /useState\("mission"\)/);
+  assert.match(map, /地図に表示/);
+  assert.match(mapCss, /\.poiMarker\s*\{[^}]*width:44px;[^}]*height:44px;/s);
+  assert.match(mapCss, /\.mobileCategorySelect select \{[^}]*min-height:44px;/s);
+  assert.match(mapCss, /@media \(max-height:500px\) and \(min-width:761px\)/);
+  assert.doesNotMatch(mapCss, /\.playerHud|\.tideCompass/);
+  assert.match(star, /useState\(56\)/);
+  assert.match(star, /majorStar/);
+  assert.match(star, /selectable = selected \|\| star\.magnitude <= 2\.5/);
+  assert.match(star, /decorativeStar/);
+  assert.match(starCss, /height:100dvh/);
+  assert.match(starCss, /\.majorStar > span/);
+  assert.match(starCss, /input\[type="search"\][^}]*font-size:16px/s);
+  assert.match(adventureCss, /@media \(max-height:500px\) and \(min-width:761px\)/);
 });
 
 test("gives all three islands bounded map profiles without fake walk routes", async () => {

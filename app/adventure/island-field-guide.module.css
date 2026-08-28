@@ -1,4 +1,16 @@
 .fieldGuide { color: #17323a; background: #fffdf4; border: 1px solid rgba(23,50,58,.15); border-radius: 18px; box-shadow: 0 18px 44px rgba(23,50,58,.08); overflow: clip; }
+.srOnly { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.embedded { border: 0; border-radius: 12px; box-shadow: none; }
+.embedded > header { grid-template-columns: 1fr; gap: 12px; padding: 16px; }
+.embedded h2 { font-size: 25px; }
+.embedded > header p { font-size: 11px; line-height: 1.6; }
+.embedded .guideHeaderActions dl { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.embedded .guideHeaderActions dl div { padding: 7px; }
+.embedded .safetyBand { padding: 11px 14px; }
+.embedded .guideBody { padding: 9px; }
+.embedded .guideTabs { top: 0; }
+.embedded .contextEmpty { margin-bottom:8px; padding:12px 14px; }
+.embedded .guideTabsWithoutAnchors button:last-child { grid-column:span 2; }
 .fieldGuide :where(button, a, input, summary):focus-visible { outline: 3px solid #d6ea4b; outline-offset: 3px; }
 .fieldGuide > header { display: grid; grid-template-columns: minmax(0,1fr) minmax(310px,.58fr); gap: 30px; align-items: end; padding: 26px; }
 .fieldGuide header small, .panelIntro small, .contextCard header small { color: #e76f51; font-size: 9px; font-weight: 900; letter-spacing: .14em; }
@@ -90,6 +102,9 @@
 .empty { margin: 0; padding: 24px; text-align: center; }
 @media (max-width: 760px) {
   .fieldGuide > header { grid-template-columns: 1fr; gap: 17px; padding: 20px 17px; }
+  .embedded > header { gap: 12px; padding: 14px 12px; }
+  .embedded h2 { font-size: 22px; }
+  .embedded .guideHeaderActions dl { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .guideHeaderActions dl { display: grid; grid-template-columns:repeat(2,minmax(0,1fr)); overflow:visible; }
   .safetyBand { display: grid; gap: 5px; padding: 14px 17px; }
   .guideBody { padding: 10px; }

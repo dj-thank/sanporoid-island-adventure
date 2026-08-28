@@ -56,11 +56,12 @@ export default function SanporoidIslandMap({
   const mapRef = useRef<MapLibreMap | null>(null);
   const pointMarkers = useRef<Array<{ marker: Marker; category: string }>>([]);
   const currentMarker = useRef<Marker | null>(null);
+  const activeCategoryRef = useRef("mission");
   const [selected, setSelected] = useState<MapPoint | null>(null);
   const [following, setFollowing] = useState(true);
   const [mapStatus, setMapStatus] = useState("潮星地図を準備中");
   const [drawer, setDrawer] = useState<"missions" | "guide" | null>(null);
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("mission");
 
   useEffect(() => {
     if (!mapNode.current) return;
@@ -127,6 +128,7 @@ export default function SanporoidIslandMap({
           });
           return { marker: new maplibre.Marker({ element: button, anchor: "bottom" }).setLngLat([point.position[1], point.position[0]]).addTo(map!), category };
         });
+        pointMarkers.current.forEach(({ marker, category }) => { marker.getElement().hidden = activeCategoryRef.current !== "all" && category !== activeCategoryRef.current; });
         map.once("style.load", () => {
           if (!map) return;
           map.addSource("mission-radius-source", { type: "geojson", data: {
@@ -161,6 +163,7 @@ export default function SanporoidIslandMap({
   }, [center, missionAreas, onSelectionChange, points, profile]);
 
   useEffect(() => {
+    activeCategoryRef.current = activeCategory;
     pointMarkers.current.forEach(({ marker, category }) => { marker.getElement().hidden = activeCategory !== "all" && category !== activeCategory; });
     const showMissions = activeCategory === "all" || activeCategory === "mission";
     for (const layerId of ["mission-radius-fill", "mission-radius-line", "mission-order-hint"]) {
@@ -206,7 +209,7 @@ export default function SanporoidIslandMap({
         <div><small>SHIOBOSHI FIELD</small><strong>{islandName} / {currentPosition ? "現在地" : "島中心"}</strong></div>
       </div>
       <nav className={styles.islandSwitcher} aria-label="3島を切り替える">
-        {(Object.entries(islandMapProfiles) as Array<[TripIslandSlug, IslandMapProfile]>).map(([slug, entry], index) => <button type="button" className={slug === island ? styles.activeIsland : ""} aria-pressed={slug === island} onClick={() => onIslandChange(slug)} key={slug}><span>0{index + 1}</span><b>{entry.name}</b></button>)}
+        {(Object.entries(islandMapProfiles) as Array<[TripIslandSlug, IslandMapProfile]>).map(([slug, entry], index) => <button type="button" className={slug === island ? styles.activeIsland : ""} aria-pressed={slug === island} onClick={() => { setActiveCategory("mission"); onIslandChange(slug); }} key={slug}><span>0{index + 1}</span><b>{entry.name}</b></button>)}
       </nav>
       <button type="button" className={styles.clockCard} onClick={() => setDrawer("missions")}><strong>{completedCount}/{totalCount}</strong><small>記録</small></button>
       <button type="button" className={styles.compassButton} onClick={() => mapRef.current?.easeTo({ bearing: 0, duration: 350 })} aria-label="地図を北向きに戻す"><b>N</b><span>↑</span></button>
@@ -219,17 +222,12 @@ export default function SanporoidIslandMap({
       <div className={styles.categoryFilters} aria-label={`${islandName}の地点カテゴリ`}>
         {profile.categories.map((category) => <button type="button" aria-pressed={activeCategory === category.id} className={activeCategory === category.id ? styles.activeCategory : ""} onClick={() => setActiveCategory(category.id)} key={category.id}>{category.label}</button>)}
       </div>
+      <label className={styles.mobileCategorySelect}>地図に表示<select value={activeCategory} onChange={(event) => setActiveCategory(event.target.value)}>{profile.categories.map((category) => <option value={category.id} key={category.id}>{category.label}</option>)}</select></label>
 
       <div className={styles.floatingControls}>
         <button type="button" className={following ? styles.controlActive : ""} onClick={recenter}><b>⌖</b><span>現在地</span></button>
         <button type="button" onClick={() => changeZoom(1)}><b>＋</b><span>拡大</span></button>
         <button type="button" onClick={() => changeZoom(-1)}><b>−</b><span>縮小</span></button>
-      </div>
-
-      <div className={styles.playerHud} aria-label={following ? "現在地を追跡中" : "地図を見渡し中"}>
-        <div className={styles.tideCompass} aria-hidden="true"><span>N</span><i>✦</i></div>
-        <strong>{following ? "POSITION LOCK" : "FREE LOOK"}</strong>
-        <small>{following ? "現在地を同期中" : "地図を見渡し中"}</small>
       </div>
 
       {selected && <article className={styles.selectionCard}>
@@ -247,9 +245,10 @@ export default function SanporoidIslandMap({
         <div className={styles.sheetHandle} />
         <header><span className={styles.guideMark} aria-hidden="true">潮</span><div><small>SHIOBOSHI GUIDE</small><strong>島の通信記録</strong></div><em>{completedCount}/{totalCount} 地点</em></header>
         <p>{selected ? `${selected.title}を選びました。現地の安全と掲示を確認して近づこう。` : locationMessage}</p>
+        <strong className={styles.nextHint}>次の任務 · {nextTitle || `${islandName}を開拓`}</strong>
         <small className={styles.islandSafety}>{profile.safetyNote}</small>
         <div className={styles.mapLinks}><a href={profile.officialMapUrl} target="_blank" rel="noreferrer">公式MAP</a><a href={profile.hazardUrl} target="_blank" rel="noreferrer">防災データ</a></div>
-        <nav><button type="button" onClick={onRequestLocation}>⌖ 現在地</button><button type="button" onClick={() => setDrawer("missions")}>01 任務</button><button type="button" onClick={() => setDrawer("guide")}>AI 島に聞く</button></nav>
+        <nav><button type="button" onClick={onRequestLocation}>⌖ 現在地</button><button type="button" onClick={() => setDrawer("missions")}>01 任務</button><button type="button" onClick={() => setDrawer("guide")}>島ガイド</button></nav>
       </aside>
 
       <footer className={styles.mapStatus}>{mapStatus} · Sanporoid map core · 順番線は徒歩経路ではありません · © OpenStreetMap contributors</footer>
