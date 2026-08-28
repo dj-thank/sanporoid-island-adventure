@@ -8,7 +8,7 @@ Android / iPhone 版は Capacitor でパッケージ化され、サイトやロ�
 
 ## Android
 
-GitHub Releases の `kaketa-shiose-android-debug.apk` を端末へダウンロードしてインストールしてください。これは動作確認用のデバッグ署名 APK です。
+Android端末だけで [APKを直接ダウンロード](https://github.com/dj-thank/sanporoid-island-adventure/releases/latest/download/kaketa-shioboshi-android.apk) してインストールできます。これは動作確認用のデバッグ署名APKです。初回だけAndroidの案内に従い、利用中のブラウザへ「不明なアプリのインストール」を許可してください。
 
 ローカルで再ビルドする場合:
 
@@ -20,6 +20,12 @@ pnpm android:apk
 要件は Node.js 22 以上、JDK 21、Android SDK（compileSdk 36）です。APK は `android/app/build/outputs/apk/debug/app-debug.apk` に生成されます。
 
 ## iPhone / iPad
+
+PCへ接続せず使う場合は、Safariで [GitHub Pages版](https://dj-thank.github.io/sanporoid-island-adventure/) を開き、共有ボタン →「ホーム画面に追加」→「Web Appとして開く」を選びます。地図、現在地、チェックポイント、写真、星空、端末内回答を利用できます。
+
+これはApple署名を必要としないホーム画面Web Appです。ネイティブiOSアプリを友人へ配る場合は、Apple Developer Programの署名済みビルドをTestFlightへ登録するか、登録済み端末を含むAd Hocプロファイルで署名する必要があります。未署名IPAやiOSシミュレーター用`.app`はiPhoneへ直接インストールできません。
+
+### ネイティブiOSソース
 
 GitHub のソースをダウンロードし、macOS 上で次を実行します。
 

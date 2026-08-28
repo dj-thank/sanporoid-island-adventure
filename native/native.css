@@ -13,6 +13,37 @@ button, input, textarea, select { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 img { max-width: 100%; }
 
+.pwa-install-guide {
+  position: fixed;
+  z-index: 1600;
+  top: calc(10px + env(safe-area-inset-top));
+  right: 10px;
+  left: 10px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  max-width: 520px;
+  margin-inline: auto;
+  padding: 10px;
+  color: #fffaf0;
+  background: rgba(9, 34, 45, .97);
+  border: 1px solid rgba(242, 120, 98, .56);
+  border-radius: 9px 24px 9px 24px;
+  box-shadow: 0 14px 38px rgba(7, 29, 39, .38);
+  backdrop-filter: blur(18px);
+}
+.pwa-install-guide>span { display: grid; place-items: center; width: 42px; height: 42px; color: #0b2531; background: #f27862; border-radius: 7px 17px 7px 17px; font-size: 18px; }
+.pwa-install-guide>div { display: grid; gap: 1px; min-width: 0; }
+.pwa-install-guide small { color: #65c8c0; font-size: 7px; font-weight: 900; letter-spacing: .12em; }
+.pwa-install-guide strong { font-size: 13px; }
+.pwa-install-guide p { margin: 2px 0 0; color: #d7ece8; font-size: 9px; line-height: 1.45; }
+.pwa-install-guide button { min-width: 48px; min-height: 44px; padding: 4px 8px; color: #fffaf0; background: transparent; border: 1px solid rgba(255, 250, 240, .24); border-radius: 7px; font-size: 9px; font-weight: 900; cursor: pointer; }
+
+@media (min-width: 761px) {
+  .pwa-install-guide { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

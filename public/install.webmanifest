@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "欠けた潮星 — 三島冒険",
+  "short_name": "欠けた潮星",
+  "description": "神津島・新島・式根島を現在地、地図、任務、星空で冒険する旅アプリ。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b2531",
+  "theme_color": "#0b2531",
+  "lang": "ja",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "./shioboshi-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./shioboshi-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "name": "openclos-island-trip-board",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -16,6 +16,7 @@
     "android:apk": "pnpm native:build && cap sync android && cd android && gradlew.bat assembleDebug",
     "android:apk:ci": "pnpm native:build && cap sync android && cd android && ./gradlew assembleDebug",
     "ios:sync": "pnpm native:build && cap sync ios",
+    "pages:build": "vite build --config vite.native.config.ts --mode pages && node scripts/prepare-github-pages.mjs",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

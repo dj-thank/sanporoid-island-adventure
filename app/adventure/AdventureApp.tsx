@@ -41,6 +41,7 @@ const appModes = [
 
 type AppMode = (typeof appModes)[number]["id"];
 const isNativeApp = import.meta.env.VITE_NATIVE_APP === "true";
+const isHostedPwa = import.meta.env.VITE_HOSTED_PWA === "true";
 
 const tripIslands: Array<{
   slug: TripIslandSlug;
@@ -231,7 +232,7 @@ export default function AdventureApp() {
     if (!question) return;
 
     setAskError("");
-    if (!apiKey) {
+    if (!apiKey || isHostedPwa) {
       setAnswer(offlineAnswer(question, selectedIsland));
       return;
     }
@@ -455,8 +456,8 @@ export default function AdventureApp() {
             <div className={styles.guideIntro}><small>ISLAND GUIDE LLM</small><h2>島のことを聞く</h2><p>アプリ内の島情報を先に使い、APIキーが入力された一回だけOpenAIへ問い合わせます。APIキーは保存しません。</p><dl><div><dt>位置情報</dt><dd>送信しない</dd></div><div><dt>写真</dt><dd>送信しない</dd></div><div><dt>APIキー</dt><dd>保存しない</dd></div></dl></div>
             <form onSubmit={askIsland} className={styles.guideForm}>
               <label>質問<textarea name="question" required rows={4} placeholder={`${selectedIsland.name}で雨の日にできることは？`} /></label>
-              <div><label>OpenAI APIキー（任意）<input name="apiKey" type="password" autoComplete="off" placeholder="入力しなければローカル回答" /></label><label>モデル<select name="model" defaultValue="gpt-5.6-luna"><option>gpt-5.6-luna</option><option>gpt-5.6-terra</option><option>gpt-5.4-mini</option></select></label></div>
-              <p>{isNativeApp ? "キーはこの入力欄と端末からOpenAIへの一回の通信だけで使い、端末保存・サイト・ログへ残しません。" : "キーはこの入力欄と一回の通信だけで使い、ブラウザ保存・D1・R2・ログへ残しません。公開アクセスでは利用せず、ChatGPTサインイン済みの所有者だけが接続できます。"}</p>
+              {!isHostedPwa && <div><label>OpenAI APIキー（任意）<input name="apiKey" type="password" autoComplete="off" placeholder="入力しなければローカル回答" /></label><label>モデル<select name="model" defaultValue="gpt-5.6-luna"><option>gpt-5.6-luna</option><option>gpt-5.6-terra</option><option>gpt-5.4-mini</option></select></label></div>}
+              <p>{isHostedPwa ? "GitHub Pages版はAPIキーを受け取らず、端末内の島データだけで回答します。" : isNativeApp ? "キーはこの入力欄と端末からOpenAIへの一回の通信だけで使い、端末保存・サイト・ログへ残しません。" : "キーはこの入力欄と一回の通信だけで使い、ブラウザ保存・D1・R2・ログへ残しません。公開アクセスでは利用せず、ChatGPTサインイン済みの所有者だけが接続できます。"}</p>
               <button disabled={asking}>{asking ? "島へ聞いています…" : "島ガイドに聞く"}</button>
               {askError && <p className={styles.error} role="alert">{askError}</p>}
             </form>

@@ -281,6 +281,43 @@ test("keeps the PWA shell offline without caching private API data", async () =>
   assert.doesNotMatch(guideRoute, /console\.(?:log|error).*api/i);
 });
 
+test("prepares PC-free Android and iPhone installation surfaces for GitHub", async () => {
+  const [nativeIndex, nativeMain, installGuide, installManifestText, installWorker, pagesWorkflow, pagesBuilder, nativeConfig, adventure, androidGradle, iosProject, packageText] = await Promise.all([
+    readFile(new URL("../native/index.html", import.meta.url), "utf8"),
+    readFile(new URL("../native/main.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../native/PwaInstallGuide.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../public/install.webmanifest", import.meta.url), "utf8"),
+    readFile(new URL("../public/install-sw.js", import.meta.url), "utf8"),
+    readFile(new URL("../.github/workflows/github-pages.yml", import.meta.url), "utf8"),
+    readFile(new URL("../scripts/prepare-github-pages.mjs", import.meta.url), "utf8"),
+    readFile(new URL("../vite.native.config.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../android/app/build.gradle", import.meta.url), "utf8"),
+    readFile(new URL("../ios/App/App.xcodeproj/project.pbxproj", import.meta.url), "utf8"),
+    readFile(new URL("../package.json", import.meta.url), "utf8"),
+  ]);
+  const installManifest = JSON.parse(installManifestText);
+  assert.match(nativeIndex, /rel="manifest" href="\.\/install\.webmanifest"/);
+  assert.match(nativeIndex, /apple-mobile-web-app-capable/);
+  assert.match(nativeMain, /serviceWorker\.register\("\.\/install-sw\.js"\)/);
+  assert.match(installGuide, /Safariで共有ボタン/);
+  assert.equal(installManifest.start_url, "./");
+  assert.equal(installManifest.display, "standalone");
+  assert.equal(installManifest.icons.length, 2);
+  assert.match(installWorker, /new URL\("\.\/", self\.location\.href\)/);
+  assert.doesNotMatch(installWorker, /\/api\//);
+  assert.match(pagesWorkflow, /actions\/configure-pages@v5/);
+  assert.match(pagesWorkflow, /actions\/upload-pages-artifact@v4/);
+  assert.match(pagesWorkflow, /actions\/deploy-pages@v4/);
+  assert.match(pagesBuilder, /root-absolute public asset paths/);
+  assert.match(nativeConfig, /VITE_HOSTED_PWA/);
+  assert.match(adventure, /GitHub Pages版はAPIキーを受け取らず/);
+  assert.match(androidGradle, /versionCode 2/);
+  assert.match(androidGradle, /versionName "0\.2\.0"/);
+  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.0/);
+  assert.equal(JSON.parse(packageText).version, "0.2.0");
+});
+
 test("keeps the canonical Sanporoid map core under a distinct Shioboshi UI", async () => {
   const [component, styleJson, packageJson, provenance] = await Promise.all([
     readFile(new URL("../app/adventure/SanporoidIslandMap.tsx", import.meta.url), "utf8"),
