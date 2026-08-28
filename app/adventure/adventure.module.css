@@ -8,7 +8,7 @@
  .brandButton small{color:#0c6573;font-size:8px;font-weight:900;letter-spacing:.14em;}
  .starShell .brandButton small{color:#ff6350;}
  .brandButton strong{font-size:19px;letter-spacing:-.03em;}
- .desktopModeNav{display:grid;grid-template-columns:repeat(4,minmax(96px,1fr));gap:6px;width:min(620px,100%);margin-inline:auto;}
+ .desktopModeNav{display:grid;grid-template-columns:repeat(2,minmax(110px,1fr));gap:6px;width:min(360px,100%);margin-inline:auto;}
  .desktopModeNav button,.mobileBottomNav button{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;gap:0 8px;align-items:center;min-height:50px;padding:7px 12px;color:#53686e;text-align:left;background:transparent;border:1px solid transparent;border-radius:12px;cursor:pointer;}
  .desktopModeNav button>span,.mobileBottomNav button>span{grid-row:1 / -1;color:#0c6573;font-size:21px;}
  .desktopModeNav small,.mobileBottomNav small{font-size:8px;font-weight:900;letter-spacing:.12em;}
@@ -48,6 +48,10 @@
 .exploreMode .nowPanel{max-width:920px;margin:18px auto 0;}
 .exploreMode .hero{order:1;}
 .exploreMode .worldBrief{order:2;}
+.mapShell{height:100dvh;min-height:100dvh;padding-bottom:0;overflow:hidden;}
+.mapShell .appHeader,.mapShell .islandRail,.mapShell .hero,.mapShell .worldBrief,.mapShell .nowPanel,.mapShell .fieldGuideSlot,.mapShell .locationStrip,.mapShell .privacyNote,.mapShell .footer{display:none !important;}
+.mapShell .exploreMode,.mapShell .exploreWorkspace,.mapShell .mapPanel,.mapShell .mapWrapCesium{width:100%;height:100dvh;min-height:100dvh;margin:0;padding:0;border:0;}
+.mapShell .mapWrapCesium>*{height:100% !important;min-height:100% !important;}
  .hero{position:relative;min-height:520px;padding:62px clamp(22px,5vw,76px) 42px;color:#fffdf4;background:linear-gradient(110deg,rgba(10,47,54,.98),rgba(12,101,115,.82) 50%,rgba(108,159,182,.42)),url("/photos/kozushima-tako.jpg") center 55% / cover;overflow:hidden;}
  .hero::before{content:"";position:absolute;inset:0;opacity:.26;background-image:linear-gradient(rgba(255,255,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.1) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 92%);}
  .hero::after{content:"";position:absolute;right:-120px;bottom:-220px;width:520px;height:520px;border:1px solid rgba(255,255,255,.18);border-radius:50%;box-shadow:0 0 0 72px rgba(255,255,255,.04),0 0 0 144px rgba(255,255,255,.025);}
@@ -273,7 +277,7 @@
  .guideForm{padding:20px 16px;}
  .guideForm>div{grid-template-columns:1fr;}
  .answer{padding:20px 18px;}
- .mobileBottomNav{position:fixed;z-index:1200;inset:auto 12px calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);min-height:66px;padding:5px 6px;color:#17323a;background:rgba(255,253,244,.96);border:1px solid rgba(95,205,221,.32);border-radius:24px;box-shadow:0 10px 30px rgba(45,139,122,.2);backdrop-filter:blur(18px);}
+ .mobileBottomNav{position:fixed;z-index:1200;inset:auto 12px calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,1fr);min-height:66px;padding:5px 6px;color:#17323a;background:rgba(255,253,244,.96);border:1px solid rgba(95,205,221,.32);border-radius:24px;box-shadow:0 10px 30px rgba(45,139,122,.2);backdrop-filter:blur(18px);}
  .mobileBottomNav button{grid-template-columns:1fr;grid-template-rows:auto auto auto;justify-items:center;gap:0;min-height:56px;padding:3px 2px;text-align:center;border-radius:10px;}
  .mobileBottomNav button>span{grid-row:auto;font-size:18px;}
  .mobileBottomNav small{font-size:6px;}
@@ -292,5 +296,10 @@
  .heroCompanion{width:138px;}
  .checkpointActions{display:grid;}
 }
+.mapSheetStack{display:grid;gap:10px;}
+.mapSheetStatus{position:sticky;z-index:2;top:0;display:flex;align-items:center;gap:10px;padding:10px 12px;background:#eef8f3;border-radius:14px;}.mapSheetStatus span{flex:1;font-size:11px;line-height:1.5;}.mapSheetStatus button,.mapMissionCard button,.mapMissionCard label,.mapGuidePanel button{min-height:44px;padding:8px 12px;color:#fffdf4;background:#2d8b7a;border:0;border-radius:999px;font-weight:900;cursor:pointer;}
+.mapMissionCard{padding:14px;color:#4b3a2c;background:#fffdf4;border:1px solid rgba(95,205,221,.3);border-radius:18px;}.mapMissionCard>header{display:flex;justify-content:space-between;gap:8px;color:#36aebe;font-size:9px;font-weight:900;}.mapMissionCard h3{margin:7px 0 3px;font-size:19px;}.mapMissionCard>strong{display:block;color:#2d8b7a;}.mapMissionCard p{font-size:11px;line-height:1.6;}.mapMissionCard>div{display:flex;gap:8px;}.mapMissionCard label{display:grid;place-items:center;}.mapMissionCard input{display:none;}.mapMissionCard>small{display:block;margin-top:9px;color:#6e634e;font-size:9px;}.mapMissionCard.completed{border-color:#5fcb67;}.mapMissionCard .locked{opacity:.42;cursor:not-allowed;}
+.mapPhotoRail{display:flex;gap:8px;overflow-x:auto;}.mapPhotoRail figure{flex:0 0 100px;margin:0;}.mapPhotoRail img{width:100px;height:100px;object-fit:cover;border-radius:14px;}.mapPhotoRail figcaption{padding-top:4px;font-size:9px;font-weight:900;}
+.mapGuidePanel{display:grid;gap:12px;}.mapGuidePanel>p{margin:0;font-size:11px;line-height:1.65;}.mapGuidePanel form{display:grid;gap:10px;}.mapGuidePanel label{display:grid;gap:5px;font-size:10px;font-weight:900;}.mapGuidePanel textarea,.mapGuidePanel input{width:100%;min-height:44px;padding:10px;color:#4b3a2c;background:#fff;border:1px solid rgba(45,139,122,.3);border-radius:12px;}.mapGuideAnswer{padding:13px;background:#eef8f3;border-radius:14px;font-size:11px;line-height:1.65;}
  @media (prefers-reduced-motion:reduce){.appShell *,.appShell *::before,.appShell *::after{scroll-behavior:auto !important;transition-duration:.01ms !important;animation-duration:.01ms !important;animation-iteration-count:1 !important;}
 }

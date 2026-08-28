@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "contract_id": "kaketa-shiose-sanporoid-map",
   "product": "欠けた潮星 / Sanporoid map",
-  "intent": "神津島・新島・式根島をSanporoid本体と同じ地図文法で歩き、現在地、探索地点、ルート、相棒を一画面で理解できる",
+  "intent": "現在地とSanporoid地図をアプリの本体にし、島情報・任務・写真・案内を地図内で完結させ、第二画面として高精度な星座案内だけを持つ",
   "reference": {
     "primary_image": "docs/ui-reference/sanporoid-map-primary.png",
     "primary_dimensions_px": [1080, 2424],
@@ -116,18 +116,18 @@
       "title": "Primary app navigation",
       "bounds": [0.03, 0.88, 0.94, 0.09],
       "observed_copy": [{"text": "会話", "confidence": "exact", "role": "tab"}, {"text": "開拓", "confidence": "exact", "role": "tab"}, {"text": "地図", "confidence": "exact", "role": "tab"}, {"text": "マイページ", "confidence": "exact", "role": "tab"}],
-      "authoritative_copy": ["探索", "任務", "星空", "案内"],
-      "purpose": "アプリの4モードを常時片手で切り替える",
+      "authoritative_copy": ["地図", "星座"],
+      "purpose": "地図と星座の2画面だけを常時片手で切り替える",
       "states": ["one_selected"],
       "interactions": ["tap"],
-      "visual_contract": ["Floating 24px washi pill", "Four equal tabs", "Aqua active icon and label", "Safe-area aware"],
+      "visual_contract": ["Floating 24px washi pill", "Two equal tabs", "Aqua active icon and label", "Safe-area aware"],
       "source_assets": [],
-      "implementation": {"fidelity": "adapted", "target": "AdventureApp mobileBottomNav", "evidence": ["app/adventure/adventure.module.css"], "deviation": "The island app must retain missions and stars, so labels adapt while the Sanporoid layout and tokens remain."}
+      "implementation": {"fidelity": "adapted", "target": "AdventureApp mobileBottomNav", "evidence": ["app/adventure/adventure.module.css"], "deviation": "Sanporoidの形状と色は保持し、ユーザー指定により地図・星座の2タブへ縮約。任務と案内は地図内シートへ移した。"}
     }
   ],
   "screen_state_acceptance": [
     {"state": "map_ready_fallback", "required_regions": ["vector_map_world", "top_location_status", "route_progress_card", "floating_map_controls", "player_hud", "companion_sheet", "bottom_navigation"], "evidence": "docs/ui-reference/kaketa-sanporoid-map-implementation.png"},
     {"state": "location_unavailable", "required_regions": ["vector_map_world", "top_location_status", "floating_map_controls"], "evidence": "tests/rendered-html.test.mjs"}
   ],
-  "completion_criteria": ["No horizontal page scrolling at 320px", "Exact Sanporoid style JSON loads", "Every island checkpoint is selectable on-map", "Location permission remains user initiated", "Original and implementation captures are compared at 1080x2424", "Map/mission/star/guide tests pass"]
+  "completion_criteria": ["No horizontal page scrolling at 320px", "Exact Sanporoid style JSON loads", "Every island checkpoint is selectable on-map", "Mission and guide open inside the map", "Location permission remains user initiated", "Only map and constellation are primary modes", "Map and constellation tests pass"]
 }

@@ -324,15 +324,20 @@ test("organizes the island adventure into accessible responsive app modes", asyn
 
   assert.match(app, /const appModes/);
   assert.match(app, /id: "explore"/);
-  assert.match(app, /id: "missions"/);
   assert.match(app, /id: "stars"/);
-  assert.match(app, /id: "guide"/);
+  assert.doesNotMatch(app, /id: "missions"/);
+  assert.doesNotMatch(app, /id: "guide"/);
+  assert.match(app, /label: "地図"/);
+  assert.match(app, /label: "星座"/);
   assert.match(app, /mobileBottomNav/);
   assert.match(app, /hidden=\{activeMode !==/);
   assert.match(app, /19件の調査候補と12件の現行公式情報/);
   assert.match(map, /onSelectionChange/);
   assert.match(map, /floatingControls/);
   assert.match(map, /companionSheet/);
+  assert.match(map, /infoDrawer/);
+  assert.match(map, /missionPanel/);
+  assert.match(map, /guidePanel/);
   assert.match(fieldGuide, /role="tablist"/);
   assert.match(fieldGuide, /selectedPoint/);
   assert.match(starGuide, /starWorkspace/);
@@ -351,7 +356,10 @@ test("computes the night sky locally and requests sensor permission explicitly",
   assert.match(starGuide, /DeviceOrientationEvent/);
   assert.match(starGuide, /requestPermission/);
   assert.match(starGuide, /deviceorientationabsolute/);
-  assert.match(starGuide, /navigator\.geolocation\.getCurrentPosition/);
+  assert.match(starGuide, /navigator\.geolocation\.watchPosition/);
+  assert.match(starGuide, /isHeadingReliable/);
+  assert.match(starGuide, /sensorSmoothingAmount/);
+  assert.match(starMath, /apparentAltitude/);
   assert.match(starMath, /2440587\.5/);
   assert.match(starGuide, /北極星/);
   assert.match(starGuide, /星・星座を探す/);
@@ -362,7 +370,7 @@ test("computes the night sky locally and requests sensor permission explicitly",
 });
 
 test("maps portrait and landscape phone orientation into a stable sky view", async () => {
-  const { deviceViewFromOrientation } = await import(new URL("../app/adventure/starMath.ts", import.meta.url));
+  const { apparentAltitude, deviceViewFromOrientation, isHeadingReliable, sensorSmoothingAmount } = await import(new URL("../app/adventure/starMath.ts", import.meta.url));
 
   assert.deepEqual(deviceViewFromOrientation({ alpha: 0, beta: 90, gamma: 0 }), { heading: 0, altitude: 0 });
   assert.deepEqual(deviceViewFromOrientation({ alpha: 90, beta: 90, gamma: 0 }), { heading: 270, altitude: 0 });
@@ -371,6 +379,11 @@ test("maps portrait and landscape phone orientation into a stable sky view", asy
   const rolled = deviceViewFromOrientation({ alpha: 35, beta: 60, gamma: 40 });
   assert.ok(Math.abs(rolled.heading - 280.905) < 0.01);
   assert.ok(Math.abs(rolled.altitude + 22.521) < 0.01);
+  assert.equal(isHeadingReliable(179.9, 0), false);
+  assert.equal(deviceViewFromOrientation({ alpha: 270, beta: 179.9, gamma: 0, fallbackHeading: 123 }).heading, 123);
+  assert.ok(sensorSmoothingAmount(1, 16, undefined) < 0.2);
+  assert.ok(sensorSmoothingAmount(65, 16, undefined) > 0.45);
+  assert.ok(apparentAltitude(0) > 0.45 && apparentAltitude(0) < 0.6);
 });
 
 test("keeps deterministic astronomy transforms testable outside React", async () => {

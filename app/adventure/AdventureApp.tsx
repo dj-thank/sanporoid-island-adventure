@@ -34,10 +34,8 @@ type PhotoEntry = {
 };
 
 const appModes = [
-  { id: "explore", label: "探索", eyebrow: "EXPLORE", icon: "⌖" },
-  { id: "missions", label: "任務", eyebrow: "MISSIONS", icon: "◇" },
-  { id: "stars", label: "星空", eyebrow: "STARS", icon: "✦" },
-  { id: "guide", label: "案内", eyebrow: "GUIDE", icon: "◌" },
+  { id: "explore", label: "地図", eyebrow: "MAP", icon: "⌖" },
+  { id: "stars", label: "星座", eyebrow: "SKY", icon: "✦" },
 ] as const;
 
 type AppMode = (typeof appModes)[number]["id"];
@@ -86,6 +84,9 @@ export default function AdventureApp() {
   const [locationMessage, setLocationMessage] = useState("現在地はまだ端末内で取得していません");
   const [photos, setPhotos] = useState<PhotoEntry[]>([]);
   const photoUrlsRef = useRef(new Set<string>());
+  const locationWatchRef = useRef<number | null>(null);
+  const locationTimerRef = useRef<number | null>(null);
+  const bestLocationAccuracyRef = useRef(Number.POSITIVE_INFINITY);
   const [answer, setAnswer] = useState("");
   const [asking, setAsking] = useState(false);
   const [askError, setAskError] = useState("");
@@ -112,6 +113,8 @@ export default function AdventureApp() {
 
   useEffect(() => () => {
     photoUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    if (locationWatchRef.current !== null) navigator.geolocation?.clearWatch(locationWatchRef.current);
+    if (locationTimerRef.current !== null) window.clearTimeout(locationTimerRef.current);
   }, []);
 
   const selectedIsland = islandsBySlug[island];
@@ -122,9 +125,22 @@ export default function AdventureApp() {
   );
   const completedCount = selectedCheckpoints.filter((checkpoint) => completed.includes(checkpoint.id)).length;
   const nextCheckpoint = selectedCheckpoints.find((checkpoint) => !completed.includes(checkpoint.id)) ?? selectedCheckpoints[0];
-  const mapPoints = useMemo(() => [...enrichMapPointsWithResearch(island, selectedIsland.spots), ...officialAnchorMapPoints(island)], [island, selectedIsland.spots]);
+  const mapPoints = useMemo(() => [
+    ...selectedCheckpoints.map((checkpoint) => ({
+      id: checkpoint.id,
+      title: checkpoint.title,
+      label: checkpoint.category,
+      position: checkpoint.position,
+      summary: checkpoint.mission,
+      researchedFacts: [checkpoint.photoPrompt, `報酬: ${checkpoint.reward}`],
+      cautions: [`到着判定半径 ${checkpoint.radiusMeters}m`, "危険区域・私有地へ入らず、現地掲示を優先"],
+      sources: [],
+    } satisfies MapPoint)),
+    ...enrichMapPointsWithResearch(island, selectedIsland.spots),
+    ...officialAnchorMapPoints(island),
+  ], [island, selectedCheckpoints, selectedIsland.spots]);
   const tideState = photos.length === 0 ? "未観測" : ["静潮", "逆潮", "星隠し"][photos.length % 3];
-  const activeModeLabel = appModes.find((mode) => mode.id === activeMode)?.label ?? "探索";
+  const activeModeLabel = appModes.find((mode) => mode.id === activeMode)?.label ?? "地図";
 
   function activateMode(nextMode: AppMode) {
     setActiveMode(nextMode);
@@ -140,17 +156,33 @@ export default function AdventureApp() {
       setLocationMessage("この端末では現在地を利用できません。島の一覧はそのまま使えます。");
       return;
     }
-    setLocationMessage("端末内で近いチェックポイントを計算しています…");
-    navigator.geolocation.getCurrentPosition(
+    if (locationWatchRef.current !== null) navigator.geolocation.clearWatch(locationWatchRef.current);
+    if (locationTimerRef.current !== null) window.clearTimeout(locationTimerRef.current);
+    bestLocationAccuracyRef.current = Number.POSITIVE_INFINITY;
+    setLocationMessage("高精度の現在地を端末内で確認しています…");
+    const stopRefinement = () => {
+      if (locationWatchRef.current !== null) navigator.geolocation.clearWatch(locationWatchRef.current);
+      if (locationTimerRef.current !== null) window.clearTimeout(locationTimerRef.current);
+      locationWatchRef.current = null;
+      locationTimerRef.current = null;
+    };
+    locationWatchRef.current = navigator.geolocation.watchPosition(
       ({ coords }) => {
+        if (!Number.isFinite(coords.accuracy) || coords.accuracy >= bestLocationAccuracyRef.current) return;
+        bestLocationAccuracyRef.current = coords.accuracy;
         setCurrentPosition([coords.latitude, coords.longitude]);
         const next = Object.fromEntries(checkpoints.map((checkpoint) => [checkpoint.id, haversineMeters(coords.latitude, coords.longitude, ...checkpoint.position)]));
         setDistances(next);
-        setLocationMessage("近い順に並べました。現在地の数値は保存・送信していません。");
+        setLocationMessage(`現在地を精度約${Math.round(coords.accuracy)}mで更新しました。数値は保存・送信していません。`);
+        if (coords.accuracy <= 20) stopRefinement();
       },
-      () => setLocationMessage("現在地を取得できませんでした。権限を変えなくても一覧は使えます。"),
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 },
+      () => { stopRefinement(); setLocationMessage("現在地を取得できませんでした。島中心の仮位置で地図を使えます。"); },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 5000 },
     );
+    locationTimerRef.current = window.setTimeout(() => {
+      stopRefinement();
+      if (!Number.isFinite(bestLocationAccuracyRef.current)) setLocationMessage("現在地の高精度測位が時間切れです。島中心の仮位置を使います。");
+    }, 12_000);
   }
 
   function confirmCheckpoint(checkpoint: Checkpoint) {
@@ -225,6 +257,33 @@ export default function AdventureApp() {
     }
   }
 
+  const mapMissionPanel = <div className={styles.mapSheetStack}>
+    <div className={styles.mapSheetStatus}><span>{locationMessage}</span><button type="button" onClick={locateNearby}>現在地を更新</button></div>
+    {selectedCheckpoints.map((checkpoint, index) => {
+      const isComplete = completed.includes(checkpoint.id);
+      const distance = distances[checkpoint.id];
+      return <article className={`${styles.mapMissionCard} ${isComplete ? styles.completed : ""}`} key={checkpoint.id}>
+        <header><span>0{index + 1} · {checkpoint.category}</span><b>{distance === undefined ? "距離未確認" : formatDistance(distance)}</b></header>
+        <h3>{checkpoint.title}</h3><strong>{checkpoint.mission}</strong><p>{checkpoint.photoPrompt}</p>
+        <div><button type="button" onClick={() => confirmCheckpoint(checkpoint)}>{isComplete ? "到着済み" : "到着を確認"}</button><label className={isComplete ? "" : styles.locked}>写真<input type="file" accept="image/*" capture="environment" disabled={!isComplete} onChange={(event) => void addPhoto(checkpoint, event)} /></label></div>
+        <small>REWARD · {checkpoint.reward}</small>
+      </article>;
+    })}
+    {photos.length > 0 && <div className={styles.mapPhotoRail}>{photos.map((photo) => <figure key={photo.id}><img src={photo.url} alt={`${photo.checkpointTitle}の標本`} /><figcaption>{photo.tag}</figcaption></figure>)}</div>}
+  </div>;
+
+  const mapGuidePanel = <div className={styles.mapGuidePanel}>
+    <p>{selectedIsland.name}の地点・安全・成り立ちを、まず端末内の調査データから答えます。OpenAI APIキーは任意で保存しません。</p>
+    <form onSubmit={askIsland}>
+      <label>質問<textarea name="question" required rows={3} placeholder={`${selectedIsland.name}で今いる場所の近くには何がある？`} /></label>
+      <label>OpenAI APIキー（任意）<input name="apiKey" type="password" autoComplete="off" placeholder="空欄なら端末内回答" /></label>
+      <input name="model" type="hidden" value="gpt-5.6-luna" />
+      <button disabled={asking}>{asking ? "確認中…" : "さんぽろいどに聞く"}</button>
+      {askError && <p className={styles.error} role="alert">{askError}</p>}
+    </form>
+    <div className={styles.mapGuideAnswer} aria-live="polite">{answer || "地点を選ぶと、その場所の情報・注意・出典も地図内に表示されます。"}</div>
+  </div>;
+
   return (
     <main className={`${styles.appShell} ${activeMode === "stars" ? styles.starShell : ""} ${activeMode === "explore" ? styles.mapShell : ""}`}>
       <header className={styles.appHeader}>
@@ -261,7 +320,7 @@ export default function AdventureApp() {
             <span>海底で三つに割れた「帰り潮の星」。神津島の導き、新島の反響、式根島の約束を、写真と会話で集める。</span>
             <div className={styles.heroActions}>
               <button type="button" onClick={locateNearby}>現在地から探索</button>
-              <button type="button" onClick={() => activateMode("missions")}>写真任務を見る</button>
+              <button type="button" onClick={locateNearby}>写真任務を地図で見る</button>
             </div>
           </div>
           <div className={styles.heroChapter}><small>{selectedTrip.chapter}</small><strong>{selectedIsland.name}｜{selectedTrip.story}</strong><span>{selectedTrip.summary}</span></div>
@@ -307,8 +366,8 @@ export default function AdventureApp() {
                 locationMessage={locationMessage}
                 onRequestLocation={locateNearby}
                 onSelectionChange={setSelectedMapPoint}
-                onOpenMissions={() => activateMode("missions")}
-                onOpenGuide={() => activateMode("guide")}
+                missionPanel={mapMissionPanel}
+                guidePanel={mapGuidePanel}
                 onNextIsland={() => {
                   const index = tripIslands.findIndex((entry) => entry.slug === island);
                   const next = tripIslands[(index + 1) % tripIslands.length];
@@ -331,7 +390,7 @@ export default function AdventureApp() {
               <h3>{nextCheckpoint.title}</h3>
               <strong>{nextCheckpoint.mission}</strong>
               <p>{nextCheckpoint.photoPrompt}</p>
-              <button type="button" onClick={() => activateMode("missions")}>任務の操作を開く</button>
+              <button type="button" onClick={locateNearby}>現在地を更新</button>
             </article>}
             <dl className={styles.nowStats}><div><dt>この島の任務</dt><dd>{completedCount} / {selectedCheckpoints.length}</dd></div><div><dt>図鑑標本</dt><dd>{photos.filter((photo) => photo.islandName === selectedIsland.name).length}</dd></div><div><dt>事実と物語</dt><dd>分離表示</dd></div></dl>
           </aside>
@@ -344,7 +403,7 @@ export default function AdventureApp() {
         <footer className={styles.footer}><img src="/sanporoid/avatar_treasure_01.webp" alt="宝箱を見つけたさんぽろいど" /><div><strong>旅は、行った場所の数ではなく、見つけた証拠で残る。</strong><p>運航、海況、立入、温泉、宿泊は現地掲示と公式案内を優先してください。</p></div></footer>
       </section>
 
-      <section id="mode-missions" className={`${styles.modePage} ${styles.missionMode}`} hidden={activeMode !== "missions"} tabIndex={-1} aria-labelledby="missions-title">
+      <section id="mode-missions" className={`${styles.modePage} ${styles.missionMode}`} hidden tabIndex={-1} aria-labelledby="missions-title">
         <div className={styles.modeFrame}>
           <header className={styles.modeIntro}>
             <div><small>PHOTO ODDITY MISSIONS</small><h2 id="missions-title">{selectedIsland.name}の観測任務</h2><p>到着は端末内の距離だけで確認。解放後の写真も端末内で平均色を解析し、外部へ送信しません。</p></div>
@@ -382,7 +441,7 @@ export default function AdventureApp() {
         <StarGuide key={selectedIsland.slug} active={activeMode === "stars"} fallbackPosition={selectedIsland.mapCenter} islandName={selectedIsland.name} />
       </section>
 
-      <section id="mode-guide" className={`${styles.modePage} ${styles.guideMode}`} hidden={activeMode !== "guide"} tabIndex={-1} aria-labelledby="guide-title">
+      <section id="mode-guide" className={`${styles.modePage} ${styles.guideMode}`} hidden tabIndex={-1} aria-labelledby="guide-title">
         <div className={styles.modeFrame}>
           <header className={styles.modeIntro}>
             <div><small>LOCAL-FIRST ISLAND GUIDE</small><h2 id="guide-title">{selectedIsland.name}のことを聞く</h2><p>まず19件の調査候補と12件の現行公式情報を含む端末内データから回答し、必要な一回だけ任意でOpenAIへ接続します。</p></div>

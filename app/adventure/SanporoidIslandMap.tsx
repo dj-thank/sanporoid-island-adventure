@@ -4,6 +4,7 @@
 
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import type { Map as MapLibreMap, Marker, StyleSpecification } from "maplibre-gl";
 import type { MapPoint } from "../discover/island-data";
 import styles from "./sanporoid-island-map.module.css";
@@ -19,8 +20,8 @@ type Props = {
   locationMessage: string;
   onRequestLocation: () => void;
   onSelectionChange?: (point: MapPoint | null) => void;
-  onOpenMissions: () => void;
-  onOpenGuide: () => void;
+  missionPanel: ReactNode;
+  guidePanel: ReactNode;
   onNextIsland: () => void;
 };
 
@@ -40,8 +41,8 @@ export default function SanporoidIslandMap({
   locationMessage,
   onRequestLocation,
   onSelectionChange,
-  onOpenMissions,
-  onOpenGuide,
+  missionPanel,
+  guidePanel,
   onNextIsland,
 }: Props) {
   const mapNode = useRef<HTMLDivElement | null>(null);
@@ -51,6 +52,7 @@ export default function SanporoidIslandMap({
   const [selected, setSelected] = useState<MapPoint | null>(null);
   const [following, setFollowing] = useState(true);
   const [mapStatus, setMapStatus] = useState("Sanporoid地図を準備中");
+  const [drawer, setDrawer] = useState<"missions" | "guide" | null>(null);
 
   useEffect(() => {
     if (!mapNode.current) return;
@@ -191,10 +193,10 @@ export default function SanporoidIslandMap({
         <span aria-hidden="true">♥</span>
         <div><strong>{islandName} / {currentPosition ? "現在地" : "島中心"}</strong><small>{currentPosition ? "探索中" : "仮位置で準備中"} · 次の島へ</small></div>
       </button>
-      <button type="button" className={styles.clockCard} onClick={onOpenMissions}><strong>{completedCount}/{totalCount}</strong><small>訪問</small></button>
+      <button type="button" className={styles.clockCard} onClick={() => setDrawer("missions")}><strong>{completedCount}/{totalCount}</strong><small>訪問</small></button>
       <button type="button" className={styles.compassButton} onClick={() => mapRef.current?.easeTo({ bearing: 0, duration: 350 })} aria-label="地図を北向きに戻す">△</button>
 
-      <button type="button" className={styles.routeCard} onClick={onOpenMissions}>
+      <button type="button" className={styles.routeCard} onClick={() => setDrawer("missions")}>
         <span><strong>{nextTitle || `${islandName}を開拓`}</strong><small>次の探索地点</small></span>
         <b>{completedCount}/{totalCount}</b>
       </button>
@@ -215,13 +217,19 @@ export default function SanporoidIslandMap({
       {selected && <article className={styles.selectionCard}>
         <button type="button" onClick={() => { setSelected(null); onSelectionChange?.(null); }} aria-label="地点カードを閉じる">×</button>
         <small>{selected.label}</small><strong>{selected.title}</strong><p>{selected.summary}</p>
+        <details><summary>情報・注意・出典</summary><div>{selected.researchedFacts?.length ? <ul>{selected.researchedFacts.map((fact) => <li key={fact}>{fact}</li>)}</ul> : <p>地図に登録された候補地点です。現地掲示を優先してください。</p>}{selected.cautions?.length ? <><b>注意</b><ul>{selected.cautions.map((caution) => <li key={caution}>{caution}</li>)}</ul></> : null}{selected.sources?.length ? <nav>{selected.sources.map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.url}>{source.label}</a>)}</nav> : null}</div></details>
       </article>}
+
+      {drawer && <section className={styles.infoDrawer} aria-label={drawer === "missions" ? "地図内の任務" : "地図内の島案内"}>
+        <header><div><small>SANPOROID MAP SHEET</small><strong>{drawer === "missions" ? "近くの任務と写真" : "島の情報を聞く"}</strong></div><button type="button" onClick={() => setDrawer(null)} aria-label="地図シートを閉じる">×</button></header>
+        <div>{drawer === "missions" ? missionPanel : guidePanel}</div>
+      </section>}
 
       <aside className={styles.companionSheet}>
         <div className={styles.sheetHandle} />
         <header><img src="/sanporoid/map/conversation_sanporoido_icon_map.webp" alt="" /><strong>さんぽろいど</strong><span>{completedCount}/{totalCount} 地点</span></header>
         <p>{selected ? `${selected.title}を選びました。現地の安全と掲示を確認して近づこう。` : locationMessage}</p>
-        <nav><button type="button" onClick={onRequestLocation}>✧ まわり</button><button type="button" onClick={onOpenMissions}>◉ 探索開始</button><button type="button" onClick={onOpenGuide}>⌃ 会話をひらく</button></nav>
+        <nav><button type="button" onClick={onRequestLocation}>✧ まわり</button><button type="button" onClick={() => setDrawer("missions")}>◉ 探索開始</button><button type="button" onClick={() => setDrawer("guide")}>⌃ 会話をひらく</button></nav>
       </aside>
 
       <footer className={styles.mapStatus}>{mapStatus} · © OpenStreetMap contributors</footer>
