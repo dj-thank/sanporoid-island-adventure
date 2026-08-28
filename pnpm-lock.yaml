@@ -17,6 +17,9 @@ importers:
       '@capacitor/ios':
         specifier: ^8.5.0
         version: 8.5.0(@capacitor/core@8.5.0)
+      '@capgo/capacitor-bluetooth-low-energy':
+        specifier: 8.2.0
+        version: 8.2.0(@capacitor/core@8.5.0)
       cesium:
         specifier: ^1.144.0
         version: 1.144.0
@@ -199,6 +202,11 @@ packages:
     resolution: {integrity: sha512-7k1TfohJu5BzRXc1F3g04Q8QQ0fyQgms6h1AvhnHb04VaNr9EdHOx03hL8O+OigEKMQnyJd1ZOjTPPNHCqL5Yw==}
     peerDependencies:
       '@capacitor/core': ^8.5.0
+
+  '@capgo/capacitor-bluetooth-low-energy@8.2.0':
+    resolution: {integrity: sha512-Ql0d1SalNUOBDCq075HNc5V9GNKwYdVxTodNV03uX4YKdtzbzsfdkwp3XTwZtTb+dkzweXbdQC9MkNIUDEs2AA==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
 
   '@cesium/engine@26.2.0':
     resolution: {integrity: sha512-BsfHZpg6LvlUSaTfvzfEzo9JQd9+PtMbzoylwls+aRj6bnqGNTF5F2sMC1eja5L3wg725NyiWQ8s84sIM9Dr6g==}
@@ -2193,6 +2201,7 @@ packages:
   eslint@9.39.4:
     resolution: {integrity: sha512-XoMjdBOwe/esVgEvLmNsD3IRHkm7fbKIUGvrleloJXUZgDHig2IPWNniv+GwjyJXzuNqVjlr5+4yVUZjycJwfQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -3847,6 +3856,10 @@ snapshots:
       tslib: 2.8.1
 
   '@capacitor/ios@8.5.0(@capacitor/core@8.5.0)':
+    dependencies:
+      '@capacitor/core': 8.5.0
+
+  '@capgo/capacitor-bluetooth-low-energy@8.2.0(@capacitor/core@8.5.0)':
     dependencies:
       '@capacitor/core': 8.5.0
 

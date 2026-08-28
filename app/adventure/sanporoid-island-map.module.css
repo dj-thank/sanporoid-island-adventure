@@ -242,7 +242,7 @@
 .islandSafety { display:-webkit-box; overflow:hidden; color:#8a594d; font-size:10px; line-height:1.4; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
 .mapLinks { display:flex; gap:6px; margin-top:4px; }
 .mapLinks a { display:inline-flex; align-items:center; min-height:44px; padding:6px 10px; color:#176877; background:rgba(101,200,192,.18); border:1px solid rgba(23,104,119,.14); border-radius:7px; font-size:10px; font-weight:900; text-decoration:none; }
-.companionSheet nav { display:grid; grid-template-columns:repeat(3,1fr); margin-top:5px; border-top:1px solid rgba(11,37,49,.14); }
+.companionSheet nav { display:grid; grid-template-columns:repeat(4,1fr); margin-top:5px; border-top:1px solid rgba(11,37,49,.14); }
 .companionSheet nav button { min-width:0; min-height:44px; color:#176877; background:transparent; border:0; border-right:1px solid rgba(11,37,49,.1); font-size:10px; font-weight:900; cursor:pointer; }
 .companionSheet nav button:last-child { border-right:0; }
 .sheetCollapsed { min-height:0; }

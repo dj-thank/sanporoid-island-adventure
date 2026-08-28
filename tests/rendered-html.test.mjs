@@ -322,11 +322,11 @@ test("prepares PC-free Android and iPhone installation surfaces for GitHub", asy
   assert.match(nativeConfig, /VITE_HOSTED_PWA/);
   assert.match(adventure, /GitHub Pages版はAPIキーを受け取らず/);
   assert.match(installWorker, /shioboshi-install-/);
-  assert.match(installWorker, /v7/);
-  assert.match(androidGradle, /versionCode 7/);
-  assert.match(androidGradle, /versionName "0\.2\.5"/);
-  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.5/);
-  assert.equal(JSON.parse(packageText).version, "0.2.5");
+  assert.match(installWorker, /v8/);
+  assert.match(androidGradle, /versionCode 8/);
+  assert.match(androidGradle, /versionName "0\.3\.0"/);
+  assert.match(iosProject, /MARKETING_VERSION = 0\.3\.0/);
+  assert.equal(JSON.parse(packageText).version, "0.3.0");
   assert.equal(JSON.parse(packageText).packageManager, "pnpm@11.24.0");
   assert.match(pnpmWorkspace, /allowBuilds:/);
   assert.match(pnpmWorkspace, /esbuild: true/);
@@ -369,6 +369,65 @@ test("keeps the canonical Sanporoid map core under a distinct Shioboshi UI", asy
   assert.match(provenance, /68295c62912f37b87d6e735d3ec9b183a047f5cd/);
 });
 
+test("opens the corresponding mission and photo flow from a numbered map marker", async () => {
+  const [{ actionForMapPoint }, map, adventure] = await Promise.all([
+    import(new URL("../app/adventure/missionInteraction.ts", import.meta.url)),
+    readFile(new URL("../app/adventure/SanporoidIslandMap.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.deepEqual(actionForMapPoint("mission:kozushima-tako"), { kind: "mission", missionId: "kozushima-tako" });
+  assert.deepEqual(actionForMapPoint("spot:kozushima-port"), { kind: "point" });
+  assert.match(map, /onMissionSelect\?\.\(action\.missionId\)/);
+  assert.match(map, /setDrawer\("missions"\)/);
+  assert.match(adventure, /onMissionSelect=\{setExpandedMissionId\}/);
+  assert.match(adventure, /capture="environment"/);
+  assert.match(adventure, /missionPhotoPreview/);
+  assert.match(adventure, /URL\.createObjectURL/);
+});
+
+test("chunks and reconstructs bounded friend progress over BLE-sized messages", async () => {
+  const [protocol, panel, map, adventure, androidManifest, infoPlist, iosPackage, packageText] = await Promise.all([
+    import(new URL("../app/adventure/friendBluetoothProtocol.ts", import.meta.url)),
+    readFile(new URL("../app/adventure/FriendSyncPanel.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/SanporoidIslandMap.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../android/app/src/main/AndroidManifest.xml", import.meta.url), "utf8"),
+    readFile(new URL("../ios/App/App/Info.plist", import.meta.url), "utf8"),
+    readFile(new URL("../ios/App/CapApp-SPM/Package.swift", import.meta.url), "utf8"),
+    readFile(new URL("../package.json", import.meta.url), "utf8"),
+  ]);
+  const { createFriendPacket, chunkFriendPacket, FriendChunkAssembler } = protocol;
+  const packet = createFriendPacket({
+    sender: "ホタカ",
+    island: "kozushima",
+    completed: ["kozushima-tako", "kozushima-tako", "kozushima-tenjo"],
+    photos: [{ checkpointId: "kozushima-tako", checkpointTitle: "多幸湾", tag: "潮色標本", color: "#65c8c0" }],
+    sentAt: 1_777_777_777_777,
+  });
+  const chunks = chunkFriendPacket(packet);
+  assert.ok(chunks.length > 1);
+  assert.ok(chunks.every((chunk) => chunk.length <= 20));
+  const assembler = new FriendChunkAssembler();
+  let received = null;
+  for (const chunk of [...chunks].reverse()) received = assembler.push("friend-a", chunk) ?? received;
+  assert.deepEqual(received, packet);
+  assert.equal(assembler.push("friend-a", [0, 1, 2]), null);
+  assert.match(panel, /plugin\.startAdvertising/);
+  assert.match(panel, /plugin\.startScan/);
+  assert.match(panel, /写真本体は送りません/);
+  assert.match(map, /setDrawer\("friends"\)/);
+  assert.match(map, /friendPanel/);
+  assert.match(adventure, /<FriendSyncPanel/);
+  assert.match(androidManifest, /android\.hardware\.bluetooth_le/);
+  assert.match(androidManifest, /android:required="false"/);
+  assert.match(infoPlist, /NSBluetoothAlwaysUsageDescription/);
+  assert.match(infoPlist, /NSBluetoothPeripheralUsageDescription/);
+  assert.match(iosPackage, /Cap-go\/capacitor-bluetooth-low-energy\.git/);
+  assert.match(iosPackage, /exact: "8\.2\.0"/);
+  assert.equal(JSON.parse(packageText).dependencies["@capgo/capacitor-bluetooth-low-energy"], "8.2.0");
+});
+
 test("keeps the phone map, island guide, and sky finder focused and touchable", async () => {
   const [adventure, adventureCss, guide, currentFacts, map, mapCss, star, starCss] = await Promise.all([
     readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),
@@ -407,9 +466,12 @@ test("keeps the phone map, island guide, and sky finder focused and touchable", 
   assert.match(star, /majorStar/);
   assert.match(star, /selectable = selected \|\| star\.magnitude <= 2\.5/);
   assert.match(star, /decorativeStar/);
+  assert.match(star, /quickTargetNames/);
+  assert.match(star, /quickTargetRail/);
   assert.match(starCss, /height:100dvh/);
   assert.match(starCss, /\.majorStar > span/);
   assert.match(starCss, /input\[type="search"\][^}]*font-size:16px/s);
+  assert.match(starCss, /\.quickTargetRail button \{[^}]*min-height:44px/s);
   assert.match(adventureCss, /@media \(max-height:500px\) and \(min-width:761px\)/);
 });
 

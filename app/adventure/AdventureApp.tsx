@@ -6,6 +6,7 @@ import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "re
 import { islandsBySlug, type Island, type MapPoint } from "../discover/island-data";
 import SanporoidIslandMap from "./SanporoidIslandMap";
 import { formatDistance, haversineMeters } from "./geoMath";
+import FriendSyncPanel from "./FriendSyncPanel";
 import IslandFieldGuide from "./IslandFieldGuide";
 import { answerFromExperiencePack, buildIslandLlmContext, deepThemeCount, enrichMapPointsWithResearch, islandCurrentFacts, islandExperiencePack, officialAnchorMapPoints, type TripIslandSlug } from "./islandKnowledge";
 import { islandForPosition, islandMapProfiles } from "./islandMapProfiles";
@@ -276,6 +277,7 @@ export default function AdventureApp() {
       const isExpanded = expandedMissionId === checkpoint.id;
       const distance = distances[checkpoint.id];
       const missionIndex = missionAreas.find((area) => area.id === checkpoint.id)?.index ?? index + 1;
+      const checkpointPhoto = photos.find((photo) => photo.checkpointId === checkpoint.id);
       return <article className={`${styles.mapMissionCard} ${isComplete ? styles.completed : ""}`} key={checkpoint.id}>
         <button type="button" className={styles.mapMissionSummary} aria-expanded={isExpanded} onClick={() => setExpandedMissionId(isExpanded ? null : checkpoint.id)}>
           <span className={styles.mapMissionMeta}><small>0{missionIndex} · {missionCategoryLabels[checkpoint.category] ?? checkpoint.category}</small><b>{distance === undefined ? "距離未確認" : formatDistance(distance)}</b></span>
@@ -284,7 +286,9 @@ export default function AdventureApp() {
         </button>
         {isExpanded && <div className={styles.mapMissionBody}>
           <p>{checkpoint.photoPrompt}</p>
-          <div className={styles.mapMissionActions}><button type="button" onClick={() => confirmCheckpoint(checkpoint)}>{isComplete ? "到着済み" : "現在地で到着判定"}</button><label className={isComplete ? "" : styles.locked}>{isComplete ? "写真を撮る" : "到着後に写真"}<input type="file" accept="image/*" capture="environment" disabled={!isComplete} onChange={(event) => void addPhoto(checkpoint, event)} /></label></div>
+          <div className={styles.mapMissionActions}><button type="button" onClick={() => confirmCheckpoint(checkpoint)}>{isComplete ? "到着済み" : "現在地で到着判定"}</button><label className={isComplete ? "" : styles.locked}>{isComplete ? "カメラを開く" : "到着後にカメラ"}<input type="file" accept="image/*" capture="environment" disabled={!isComplete} onChange={(event) => void addPhoto(checkpoint, event)} /></label></div>
+          <span className={styles.photoGate}>{isComplete ? "写真は端末内で色を解析し、画像本体は送信しません。" : "現在地で到着判定するとカメラが解放されます。"}</span>
+          {checkpointPhoto && <figure className={styles.missionPhotoPreview}><img src={checkpointPhoto.url} alt={`${checkpoint.title}で撮影した標本`} /><figcaption><strong>{checkpointPhoto.tag}</strong><span>この端末に保存中</span></figcaption></figure>}
           <small>REWARD · {checkpoint.reward}</small>
         </div>}
       </article>;
@@ -309,6 +313,14 @@ export default function AdventureApp() {
       <div className={styles.mapGuideAnswer} aria-live="polite">{answer || "例：『天上山は838年にできたの？』『満月でも星は見える？』"}</div>
     </div>}
   </div>;
+
+  const friendPanel = <FriendSyncPanel
+    nativeApp={isNativeApp}
+    island={island}
+    islandName={selectedIsland.name}
+    completed={completed.filter((id) => islandCheckpoints.some((checkpoint) => checkpoint.id === id))}
+    photos={photos.filter((photo) => islandCheckpoints.some((checkpoint) => checkpoint.id === photo.checkpointId)).map((photo) => ({ checkpointId: photo.checkpointId, checkpointTitle: photo.checkpointTitle, tag: photo.tag, color: photo.color }))}
+  />;
 
   return (
     <main className={`${styles.appShell} ${activeMode === "stars" ? styles.starShell : ""} ${activeMode === "explore" ? styles.mapShell : ""}`}>
@@ -394,8 +406,10 @@ export default function AdventureApp() {
                 locationMessage={locationMessage}
                 onRequestLocation={locateNearby}
                 onSelectionChange={setSelectedMapPoint}
+                onMissionSelect={setExpandedMissionId}
                 missionPanel={mapMissionPanel}
                 guidePanel={mapGuidePanel}
+                friendPanel={friendPanel}
                 missionAreas={missionAreas}
                 onIslandChange={(nextIsland) => {
                   setIsland(nextIsland);

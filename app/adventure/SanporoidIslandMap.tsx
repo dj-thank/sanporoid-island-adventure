@@ -7,6 +7,7 @@ import type { Map as MapLibreMap, Marker, StyleSpecification } from "maplibre-gl
 import type { MapPoint } from "../discover/island-data";
 import { circlePolygon, islandMapProfiles, pointCategory, type IslandMapProfile } from "./islandMapProfiles";
 import type { TripIslandSlug } from "./islandKnowledge";
+import { actionForMapPoint } from "./missionInteraction";
 import styles from "./sanporoid-island-map.module.css";
 
 type Props = {
@@ -22,8 +23,10 @@ type Props = {
   locationMessage: string;
   onRequestLocation: () => void;
   onSelectionChange?: (point: MapPoint | null) => void;
+  onMissionSelect?: (missionId: string) => void;
   missionPanel: ReactNode;
   guidePanel: ReactNode;
+  friendPanel: ReactNode;
   missionAreas: Array<{ id: string; position: [number, number]; radiusMeters: number; index: number; completed: boolean }>;
   onIslandChange: (island: TripIslandSlug) => void;
 };
@@ -47,8 +50,10 @@ export default function SanporoidIslandMap({
   locationMessage,
   onRequestLocation,
   onSelectionChange,
+  onMissionSelect,
   missionPanel,
   guidePanel,
+  friendPanel,
   missionAreas,
   onIslandChange,
 }: Props) {
@@ -60,7 +65,7 @@ export default function SanporoidIslandMap({
   const [selected, setSelected] = useState<MapPoint | null>(null);
   const [following, setFollowing] = useState(true);
   const [mapStatus, setMapStatus] = useState("潮星地図を準備中");
-  const [drawer, setDrawer] = useState<"missions" | "guide" | null>(null);
+  const [drawer, setDrawer] = useState<"missions" | "guide" | "friends" | null>(null);
   const [activeCategory, setActiveCategory] = useState("mission");
   const [sheetExpanded, setSheetExpanded] = useState(false);
 
@@ -123,9 +128,16 @@ export default function SanporoidIslandMap({
           button.dataset.category = category;
           button.setAttribute("aria-label", `${point.title}を選ぶ`);
           button.addEventListener("click", () => {
+            const action = actionForMapPoint(point.id);
             setSelected(point);
-            setSheetExpanded(true);
             onSelectionChange?.(point);
+            if (action.kind === "mission") {
+              onMissionSelect?.(action.missionId);
+              setSheetExpanded(false);
+              setDrawer("missions");
+            } else {
+              setSheetExpanded(true);
+            }
             map?.easeTo({ center: [point.position[1], point.position[0]], zoom: Math.max(map.getZoom(), 15.2), duration: 650 });
           });
           return { marker: new maplibre.Marker({ element: button, anchor: "bottom" }).setLngLat([point.position[1], point.position[0]]).addTo(map!), category };
@@ -162,7 +174,7 @@ export default function SanporoidIslandMap({
       map?.remove();
       mapRef.current = null;
     };
-  }, [center, missionAreas, onSelectionChange, points, profile]);
+  }, [center, missionAreas, onMissionSelect, onSelectionChange, points, profile]);
 
   useEffect(() => {
     activeCategoryRef.current = activeCategory;
@@ -238,9 +250,9 @@ export default function SanporoidIslandMap({
         <details><summary>情報・注意・出典</summary><div>{selected.researchedFacts?.length ? <ul>{selected.researchedFacts.map((fact) => <li key={fact}>{fact}</li>)}</ul> : <p>地図に登録された候補地点です。現地掲示を優先してください。</p>}{selected.cautions?.length ? <><b>注意</b><ul>{selected.cautions.map((caution) => <li key={caution}>{caution}</li>)}</ul></> : null}{selected.sources?.length ? <nav>{selected.sources.map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.url}>{source.label}</a>)}</nav> : null}</div></details>
       </article>}
 
-      {drawer && <section className={styles.infoDrawer} aria-label={drawer === "missions" ? "地図内の任務" : "地図内の島案内"}>
-        <header><div><small>SHIOBOSHI FIELD LOG</small><strong>{drawer === "missions" ? "近くの任務と写真" : "島の情報を聞く"}</strong></div><button type="button" onClick={() => setDrawer(null)} aria-label="地図シートを閉じる">×</button></header>
-        <div>{drawer === "missions" ? missionPanel : guidePanel}</div>
+      {drawer && <section className={styles.infoDrawer} aria-label={drawer === "missions" ? "地図内の任務" : drawer === "guide" ? "地図内の島案内" : "地図内の友達通信"}>
+        <header><div><small>SHIOBOSHI FIELD LOG</small><strong>{drawer === "missions" ? "近くの任務と写真" : drawer === "guide" ? "島の情報を聞く" : "友達と旅を同期"}</strong></div><button type="button" onClick={() => setDrawer(null)} aria-label="地図シートを閉じる">×</button></header>
+        <div>{drawer === "missions" ? missionPanel : drawer === "guide" ? guidePanel : friendPanel}</div>
       </section>}
 
       <aside className={`${styles.companionSheet} ${sheetExpanded ? styles.sheetExpanded : styles.sheetCollapsed}`}>
@@ -250,7 +262,7 @@ export default function SanporoidIslandMap({
         <strong className={styles.nextHint}>{selected ? `選択中 · ${selected.title}` : `次の任務 · ${nextTitle || `${islandName}を開拓`}`}</strong>
         <small className={styles.islandSafety}>{profile.safetyNote}</small>
         <div className={styles.mapLinks}><a href={profile.officialMapUrl} target="_blank" rel="noreferrer">公式MAP</a><a href={profile.hazardUrl} target="_blank" rel="noreferrer">防災データ</a></div>
-        <nav><button type="button" onClick={onRequestLocation}>⌖ 現在地</button><button type="button" onClick={() => setDrawer("missions")}>01 任務</button><button type="button" onClick={() => setDrawer("guide")}>島ガイド</button></nav>
+        <nav><button type="button" onClick={onRequestLocation}>⌖ 現在地</button><button type="button" onClick={() => setDrawer("missions")}>01 任務</button><button type="button" onClick={() => setDrawer("guide")}>島ガイド</button><button type="button" onClick={() => setDrawer("friends")}>友達</button></nav>
       </aside>
 
       <footer className={styles.mapStatus}>{mapStatus} · Sanporoid map core · 順番線は徒歩経路ではありません · © OpenStreetMap contributors</footer>

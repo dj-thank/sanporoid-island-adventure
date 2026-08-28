@@ -33,6 +33,7 @@ const constellationLines = [
   ["Caph", "Schedar", "Cih", "Ruchbah", "Segin"],
   ["Deneb", "Sadr", "Albireo"], ["Vega", "Sheliak", "Sulafat", "Vega"], ["Tarazed", "Altair", "Alshain"],
 ];
+const quickTargetNames = ["Polaris", "Vega", "Deneb", "Capella"];
 
 type OrientationEventWithCompass = DeviceOrientationEvent & { webkitCompassHeading?: number; webkitCompassAccuracy?: number };
 type OrientationConstructorWithPermission = typeof DeviceOrientationEvent & { requestPermission?: (absolute?: boolean) => Promise<"granted" | "denied"> };
@@ -159,6 +160,7 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
   const reticleTarget = [...visibleStars].sort((a, b) => Math.hypot(a.delta, a.altitude - viewAltitude) - Math.hypot(b.delta, b.altitude - viewAltitude))[0];
   const target = searchedTarget ?? selectedTarget ?? reticleTarget;
   const projectedByName = new Map(projected.map((star) => [star.name, star]));
+  const quickTargets = quickTargetNames.map((name) => sky.find((star) => star.name === name)).filter((star): star is NonNullable<typeof star> => Boolean(star));
 
   async function startSensors() {
     try {
@@ -256,6 +258,7 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
               <button type="button" onClick={() => setOffsetHours(0)}>現在</button>
               <strong>{displayedTime ? displayedTime.toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "時刻同期中"}</strong>
             </div>
+            <nav className={styles.quickTargetRail} aria-label="今夜の星を選ぶ">{quickTargets.map((star) => <button type="button" aria-pressed={selectedName === star.name} onClick={() => { setSearch(""); setSelectedName(star.name); }} key={star.name}>{star.japanese}</button>)}</nav>
           </div>
 
           <div className={styles.skyViewport} aria-label={`方位${Math.round(heading)}度・高度${Math.round(viewAltitude)}度の星空`} onPointerDown={startSkyDrag} onPointerMove={moveSkyDrag} onPointerUp={() => { dragStart.current = null; }} onPointerCancel={() => { dragStart.current = null; }}>

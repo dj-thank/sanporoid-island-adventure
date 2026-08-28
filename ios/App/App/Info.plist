@@ -30,6 +30,10 @@
 	<string>島のチェックポイントで写真ミッションを記録するために使用します。写真は端末内だけで処理します。</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>島の異変図鑑へ追加する写真を選ぶために使用します。写真は端末内だけで処理します。</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>近くの友達と任務数と写真タグを端末間で同期するために使用します。位置情報と写真本体は送信しません。</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>近くの友達へ潮星アプリの旅記録を共有するために使用します。</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
