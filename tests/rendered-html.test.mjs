@@ -228,7 +228,7 @@ test("shows a sign-in gate for every site-side write control", async () => {
   assert.match(store, /throw new Error\("BOT_UNAUTHORIZED"\)/);
 });
 
-test("server-renders the installable Sanporoid island adventure", async () => {
+test("server-renders the installable Shioboshi island adventure", async () => {
   const worker = await loadWorker();
   const response = await worker.fetch(
     new Request("http://localhost/adventure", { headers: { accept: "text/html" } }),
@@ -241,7 +241,7 @@ test("server-renders the installable Sanporoid island adventure", async () => {
   assert.match(html, /島の異変図鑑/);
   assert.match(html, /神津島 → 新島 → 式根島/);
   assert.match(html, /近くのチェックポイント/);
-  assert.match(html, /Sanporoid探索地図/);
+  assert.match(html, /潮星探索地図/);
   assert.match(html, /aria-label="アプリのモード"/);
   assert.match(html, /STARS/);
   assert.match(html, /島のことを聞く/);
@@ -281,7 +281,7 @@ test("keeps the PWA shell offline without caching private API data", async () =>
   assert.doesNotMatch(guideRoute, /console\.(?:log|error).*api/i);
 });
 
-test("uses the canonical Sanporoid MapLibre UI and local map assets", async () => {
+test("keeps the canonical Sanporoid map core under a distinct Shioboshi UI", async () => {
   const [component, styleJson, packageJson, provenance] = await Promise.all([
     readFile(new URL("../app/adventure/SanporoidIslandMap.tsx", import.meta.url), "utf8"),
     readFile(new URL("../public/sanporoid/map/sanpo-vector-game-style.json", import.meta.url), "utf8"),
@@ -294,10 +294,13 @@ test("uses the canonical Sanporoid MapLibre UI and local map assets", async () =
   assert.equal(mapStyle.sources.openmaptiles.url, "https://tiles.openfreemap.org/planet");
   assert.match(component, /maplibre-gl/);
   assert.match(component, /sanpo-vector-game-style\.json/);
-  assert.match(component, /sanpo_sensing_ring_wa/);
+  assert.match(component, /tideCompass/);
+  assert.match(component, /SHIOBOSHI FIELD LOG/);
+  assert.match(component, /Sanporoid map core/);
+  assert.doesNotMatch(component, /sanpo_sensing_ring_wa|avatar_idle_n_01/);
   assert.match(component, /osm-raster-fallback/);
   assert.match(component, /現在地/);
-  assert.match(component, /探索開始/);
+  assert.match(component, /01 任務/);
   assert.match(component, /currentPosition/);
   await Promise.all([
     access(new URL("../public/sanporoid/map/sanpo_washi_map_overlay_v2.webp", import.meta.url)),

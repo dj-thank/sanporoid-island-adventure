@@ -24,7 +24,7 @@ export const islandMapProfiles: Record<TripIslandSlug, IslandMapProfile> = {
     name: "神津島", shortName: "神",
     bounds: [[139.105, 34.178], [139.174, 34.255]],
     camera: { zoom: 12.35, pitch: 36, bearing: -8 },
-    biome: { background: "#a8dec9", water: "#58cbdc", park: "#57bd67", majorRoad: "#ffd36a", minorRoad: "#fff0bf" },
+    biome: { background: "#b8c8b1", water: "#4f91a5", park: "#789267", majorRoad: "#d8875c", minorRoad: "#ead7b5" },
     categories: [
       { id: "all", label: "すべて", pointLabels: [] },
       { id: "mission", label: "任務", pointLabels: ["MISSION"] },
@@ -41,7 +41,7 @@ export const islandMapProfiles: Record<TripIslandSlug, IslandMapProfile> = {
     name: "新島", shortName: "新",
     bounds: [[139.235, 34.332], [139.296, 34.447]],
     camera: { zoom: 11.95, pitch: 30, bearing: 2 },
-    biome: { background: "#c4e2cf", water: "#64ccdc", park: "#7bc776", majorRoad: "#f2d778", minorRoad: "#fff4cf" },
+    biome: { background: "#d1cab7", water: "#5797ad", park: "#8ba276", majorRoad: "#d39368", minorRoad: "#e8d5b7" },
     categories: [
       { id: "all", label: "すべて", pointLabels: [] },
       { id: "mission", label: "任務", pointLabels: ["MISSION"] },
@@ -58,7 +58,7 @@ export const islandMapProfiles: Record<TripIslandSlug, IslandMapProfile> = {
     name: "式根島", shortName: "式",
     bounds: [[139.197, 34.306], [139.231, 34.342]],
     camera: { zoom: 13.25, pitch: 38, bearing: -5 },
-    biome: { background: "#aedfc8", water: "#4fc7d5", park: "#54bd6d", majorRoad: "#f1d57a", minorRoad: "#fff0c7" },
+    biome: { background: "#bac9b2", water: "#4c94a3", park: "#70936a", majorRoad: "#d5a05c", minorRoad: "#e6d2af" },
     categories: [
       { id: "all", label: "すべて", pointLabels: [] },
       { id: "mission", label: "任務", pointLabels: ["MISSION"] },
