@@ -357,6 +357,14 @@ test("computes the night sky locally and requests sensor permission explicitly",
   assert.doesNotMatch(starGuide, /fetch\(/);
 });
 
+test("maps portrait and landscape phone orientation into a stable sky view", async () => {
+  const { deviceViewFromOrientation } = await import(new URL("../app/adventure/starMath.ts", import.meta.url));
+
+  assert.deepEqual(deviceViewFromOrientation({ alpha: 0, beta: 90, gamma: 0, screenAngle: 0 }), { heading: 0, altitude: 0 });
+  assert.deepEqual(deviceViewFromOrientation({ alpha: 90, beta: 0, gamma: -90, screenAngle: 90 }), { heading: 0, altitude: 0 });
+  assert.deepEqual(deviceViewFromOrientation({ alpha: 270, beta: 0, gamma: 90, screenAngle: -90 }), { heading: 0, altitude: 0 });
+});
+
 test("keeps deterministic astronomy transforms testable outside React", async () => {
   const { calculateSky, projectStar } = await import(new URL("../app/adventure/starMath.ts", import.meta.url));
   const polaris = { name: "Polaris", japanese: "北極星", constellation: "こぐま座", constellationCode: "UMi", raHours: 2.5303, decDegrees: 89.2641, magnitude: 1.98 };

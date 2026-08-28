@@ -1,4 +1,51 @@
-# vinext-starter
+# 欠けた潮星 — 三島冒険アプリ
+
+神津島 → 新島 → 式根島を歩き、地図上の島情報、チェックポイント、写真ミッション、実データ由来の星空、島ガイド AI を楽しむ Sanporoid 系の旅アプリです。
+
+Android / iPhone 版は Capacitor でパッケージ化され、サイトやローカル PC サーバーに接続しなくても基本機能が動きます。Cesium ランタイム、星表、島ガイドデータ、画面 UI はアプリ内へ同梱されます。AI 会話だけは、設定画面に利用者自身の OpenAI API キーを入力した場合にインターネット接続を使います。キーは保存しません。
+
+## Android
+
+GitHub Releases の `kaketa-shiose-android-debug.apk` を端末へダウンロードしてインストールしてください。これは動作確認用のデバッグ署名 APK です。
+
+ローカルで再ビルドする場合:
+
+```powershell
+pnpm install --frozen-lockfile
+pnpm android:apk
+```
+
+要件は Node.js 22 以上、JDK 21、Android SDK（compileSdk 36）です。APK は `android/app/build/outputs/apk/debug/app-debug.apk` に生成されます。
+
+## iPhone / iPad
+
+GitHub のソースをダウンロードし、macOS 上で次を実行します。
+
+```bash
+pnpm install --frozen-lockfile
+pnpm ios:sync
+open ios/App/App.xcodeproj
+```
+
+Xcode で自分の Team を選び、接続した iPhone に実行してください。iOS の実機インストールには Apple のコード署名が必要なため、Windows だけで署名済み IPA は生成できません。GitHub Actions は Xcode で署名なしビルドが通ることを検証し、シミュレータ用 `.app` を成果物として保存します。
+
+## 開発と検証
+
+```bash
+pnpm dev
+pnpm build
+pnpm test
+pnpm lint
+pnpm native:build
+```
+
+- Web/Sites 版は開発・共有用であり、モバイル版の実行依存先ではありません。
+- 位置情報は近隣チェックポイントと星空計算に使い、アプリ側では履歴を保存・送信しません。
+- OpenAI API キーは端末内ストレージへ保存せず、その場の API リクエストにだけ使用します。
+
+---
+
+## 旧 Web スターター情報
 
 A clean full-stack starter running on
 [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and

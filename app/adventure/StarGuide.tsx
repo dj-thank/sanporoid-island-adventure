@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import hygCatalog from "./hyg-bright-stars-v41.json";
-import { calculateSky, cardinal, normalizeDegrees, projectStar, sideLabel, type CatalogStar } from "./starMath";
+import { calculateSky, cardinal, deviceViewFromOrientation, normalizeDegrees, projectStar, sideLabel, smoothHeading, type CatalogStar } from "./starMath";
 import styles from "./star-guide.module.css";
 
 const localizedNames: Record<string, string> = {
@@ -51,6 +51,8 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
   const [search, setSearch] = useState("");
   const [selectedName, setSelectedName] = useState("");
   const [showLines, setShowLines] = useState(true);
+  const absoluteSensorSeen = useRef(false);
+  const dragStart = useRef<{ x: number; y: number; heading: number; altitude: number } | null>(null);
 
   useEffect(() => {
     const initialSync = window.setTimeout(() => setClockBase(new Date()), 0);
@@ -62,14 +64,21 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
     if (!sensorEnabled) return;
     const onOrientation = (raw: Event) => {
       const event = raw as OrientationEventWithCompass;
+      const isAbsolute = event.type === "deviceorientationabsolute" || event.absolute || typeof event.webkitCompassHeading === "number";
+      if (isAbsolute) absoluteSensorSeen.current = true;
+      if (!isAbsolute && absoluteSensorSeen.current) return;
+      let nextHeading: number | undefined;
       if (typeof event.webkitCompassHeading === "number") {
-        setHeading(normalizeDegrees(event.webkitCompassHeading));
+        nextHeading = normalizeDegrees(event.webkitCompassHeading);
         setSensorStatus(`iPhone方位センサーを使用中${typeof event.webkitCompassAccuracy === "number" ? `（精度 ±${Math.round(event.webkitCompassAccuracy)}°）` : ""}`);
-      } else if (typeof event.alpha === "number") {
-        setHeading(normalizeDegrees(360 - event.alpha));
+      } else if (typeof event.alpha === "number" && typeof event.beta === "number" && typeof event.gamma === "number") {
+        const screenAngle = window.screen.orientation?.angle ?? (window.orientation as number | undefined) ?? 0;
+        const view = deviceViewFromOrientation({ alpha: event.alpha, beta: event.beta, gamma: event.gamma, screenAngle });
+        nextHeading = view.heading;
+        setViewAltitude((previous) => previous + (view.altitude - previous) * 0.18);
         setSensorStatus(event.absolute ? "絶対方位センサーを使用中" : "相対方位です。北極星や既知の目標で補正してください");
       }
-      if (typeof event.beta === "number") setViewAltitude(clamp(90 - Math.abs(event.beta), -10, 90));
+      if (nextHeading !== undefined) setHeading((previous) => smoothHeading(previous, nextHeading));
     };
     window.addEventListener("deviceorientationabsolute", onOrientation);
     window.addEventListener("deviceorientation", onOrientation);
@@ -106,6 +115,18 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
     );
   }
 
+  function startSkyDrag(event: React.PointerEvent<HTMLDivElement>) {
+    dragStart.current = { x: event.clientX, y: event.clientY, heading, altitude: viewAltitude };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function moveSkyDrag(event: React.PointerEvent<HTMLDivElement>) {
+    const start = dragStart.current;
+    if (!start) return;
+    setHeading(normalizeDegrees(start.heading - (event.clientX - start.x) * 0.28));
+    setViewAltitude(clamp(start.altitude + (event.clientY - start.y) * 0.2, -10, 90));
+  }
+
   return (
     <section className={`${styles.starGuide} ${nightRed ? styles.nightRed : ""}`} style={{ "--night-dim": String(nightBrightness / 100) } as React.CSSProperties} aria-labelledby="star-guide-title">
       <header className={styles.starHeader}>
@@ -131,7 +152,8 @@ export default function StarGuide({ fallbackPosition, islandName }: { fallbackPo
             </div>
           </div>
 
-          <div className={styles.skyViewport} aria-label={`方位${Math.round(heading)}度・高度${Math.round(viewAltitude)}度の星空`}>
+          <div className={styles.skyViewport} aria-label={`方位${Math.round(heading)}度・高度${Math.round(viewAltitude)}度の星空`} onPointerDown={startSkyDrag} onPointerMove={moveSkyDrag} onPointerUp={() => { dragStart.current = null; }} onPointerCancel={() => { dragStart.current = null; }}>
+            <div className={styles.mobileSkyHint}>{sensorEnabled ? "端末を空へ向ける" : "空を指で動かす · センサー開始で追従"}</div>
             <div className={styles.compassLine}><span>左</span><strong>{Math.round(heading)}° · {cardinal(heading)} / 高度 {Math.round(viewAltitude)}°</strong><span>右</span></div>
             {showLines && <svg className={styles.constellationLayer} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">{constellationLines.flatMap((line, lineIndex) => line.slice(1).map((name, index) => { const from = projectedByName.get(line[index]); const to = projectedByName.get(name); return from?.inView && to?.inView ? <line key={`${lineIndex}-${name}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y} /> : null; }))}</svg>}
             {visibleStars.slice(0, 260).map((star) => <button type="button" className={styles.star} aria-label={`${star.japanese}、${star.constellation}、高度${Math.round(star.altitude)}度`} aria-pressed={selectedName === star.name} onClick={() => setSelectedName(star.name)} key={`${star.name}-${star.raHours}`} style={{ left: `${star.x}%`, top: `${star.y}%`, "--star-size": `${Math.max(3, 11 - star.magnitude * 1.55)}px` } as React.CSSProperties}><b /><span>{star.magnitude <= 2.2 ? star.japanese : ""}<small>{star.magnitude <= 1.7 ? star.constellation : ""}</small></span></button>)}

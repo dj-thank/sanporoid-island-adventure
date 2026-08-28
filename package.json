@@ -10,10 +10,17 @@
     "build": "vinext build",
     "start": "vinext start",
     "test": "pnpm run build && node --experimental-loader ./tests/cloudflare-loader.mjs --test tests/rendered-html.test.mjs",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern public/cesiumStatic",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern native-dist --ignore-pattern android --ignore-pattern ios --ignore-pattern .next --ignore-pattern public/cesiumStatic",
+    "native:build": "vite build --config vite.native.config.ts",
+    "native:sync": "pnpm native:build && cap sync",
+    "android:apk": "pnpm native:build && cap sync android && cd android && gradlew.bat assembleDebug",
+    "ios:sync": "pnpm native:build && cap sync ios",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/ios": "^8.5.0",
     "cesium": "^1.144.0",
     "drizzle-orm": "0.45.2",
     "leaflet": "^1.9.4",
@@ -21,6 +28,7 @@
     "react-dom": "19.2.6"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.0",
     "@cloudflare/vite-plugin": "1.37.1",
     "@eslint/js": "9.39.4",
     "@next/eslint-plugin-next": "16.2.6",

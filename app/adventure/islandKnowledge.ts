@@ -28,6 +28,18 @@ export function currentFactsFor(slug: TripIslandSlug) {
   return currentFacts.facts.filter((entry) => entry.island === islandNames[slug]);
 }
 
+export function buildIslandLlmContext(slug: TripIslandSlug) {
+  const operations = currentFactsFor(slug);
+  const experiences = experiencesFor(slug);
+  return [
+    `島: ${islandNames[slug]}`,
+    `現行公式情報（${islandCurrentFacts.checkedAt}確認）:`,
+    ...operations.map((entry) => `- ${entry.category}｜${entry.title}｜事実=${entry.facts.join("、")}｜注意=${entry.cautions.join("、")}｜出典=${entry.sources.map((source) => source.url).join(" ")}`),
+    `Sanporoid調査候補（${experiences.length}件、安全確認済み連続ルートではない）:`,
+    ...experiences.map((entry) => `- ${entry.title}｜順番候補=${entry.orderedStops.join(" → ")}｜根拠=${entry.supportedFacts.join("、") || "地点情報のみ"}｜制約=${entry.constraints.join("、") || "当日確認"}｜運用ゲート=${entry.sharedTransportGate}`),
+  ].join("\n");
+}
+
 export function officialAnchorMapPoints(slug: TripIslandSlug): MapPoint[] {
   return anchorsFor(slug).map((entry) => ({
     id: entry.id,

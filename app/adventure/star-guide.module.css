@@ -1,6 +1,6 @@
 .starGuide { min-height: calc(100dvh - 150px); color: #f4f1e8; color-scheme: dark; background: #03060b; overflow: clip; }
 .starGuide :where(button, input, summary):focus-visible { outline: 3px solid #d6ea4b; outline-offset: 3px; }
-.starGuide.nightRed { color: #ffb4a6; background: #050000; border-color: #44110c; filter: brightness(var(--night-dim,.38)); transition: filter .2s ease; }
+.starGuide.nightRed { color: #ffb4a6; background: #050000; border-color: #44110c; transition: background .2s ease,color .2s ease; }
 .starHeader { display: flex; justify-content: space-between; gap: 28px; align-items: end; padding: 24px clamp(18px,3vw,42px); border-bottom: 1px solid rgba(255,255,255,.13); background: #050a12; }
 .nightRed .starHeader { background: #090000; border-color: rgba(255,99,80,.22); }
 .starHeader > div:first-child { max-width: 760px; }
@@ -28,13 +28,14 @@
 .nightRed .timeMachine input { accent-color: #ff6350; }
 .timeMachine strong { align-self: center; text-align: right; font-size: 10px; }
 .skyViewport { position: relative; height: min(68vh,680px); min-height: 520px; overflow: hidden; background: radial-gradient(circle at 50% 105%,#1c416a,#07111f 45%,#02050a 78%); border: 1px solid rgba(135,191,255,.38); border-radius: 22px; box-shadow: inset 0 0 80px rgba(0,0,0,.42),0 22px 60px rgba(0,0,0,.32); }
-.nightRed .skyViewport { background: radial-gradient(circle at 50% 105%,#3a0b06,#120100 48%,#030000 80%); border-color: rgba(255,99,80,.42); }
+.nightRed .skyViewport { background: radial-gradient(circle at 50% 105%,#3a0b06,#120100 48%,#030000 80%); border-color: rgba(255,99,80,.42); filter: brightness(var(--night-dim,.38)); }
 .skyViewport::before, .skyViewport::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
 .skyViewport::before { opacity: .34; background-image: radial-gradient(circle,#fff 0 1px,transparent 1.5px); background-size: 83px 71px; }
 .skyViewport::after { background: linear-gradient(transparent 68%,rgba(3,6,11,.78)); }
 .nightRed .skyViewport::before { background-image: radial-gradient(circle,#ff8b79 0 1px,transparent 1.5px); }
 .nightRed .skyViewport::after { background: linear-gradient(transparent 68%,rgba(5,0,0,.82)); }
 .compassLine { position: absolute; z-index: 6; inset: auto 16px 13px; display: flex; justify-content: space-between; align-items: center; color: #d9e8f8; font-size: 11px; }
+.mobileSkyHint { display: none; }
 .compassLine strong { font-size: clamp(14px,2vw,19px); }
 .nightRed .compassLine { color: #ff9a89; }
 .constellationLayer { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -88,15 +89,18 @@
 }
 @media (max-width: 760px) {
   .starGuide { min-height: calc(100dvh - 132px); }
-  .starHeader { display: grid; gap: 15px; align-items: start; padding: 20px 14px 14px; }
-  .starHeader h2 { font-size: 34px; }
+  .starHeader { position: sticky; z-index: 20; top: 0; display: grid; gap: 10px; align-items: start; padding: max(10px,env(safe-area-inset-top)) 12px 10px; }
+  .starHeader h2 { font-size: 26px; }
+  .starHeader p { display: none; }
   .starActions { display: grid; grid-template-columns: repeat(3,1fr); justify-content: stretch; }
   .starActions button { min-width: 0; padding-inline: 7px; font-size: 10px; }
   .starWorkspace { gap: 8px; padding: 8px 8px 16px; }
   .searchRail { grid-template-columns: 1fr; gap: 8px; padding: 6px 2px 8px; }
   .timeMachine { grid-template-columns: auto 1fr auto auto; }
   .timeMachine strong { grid-column: 1 / -1; text-align: left; }
-  .skyViewport { height: 55vh; min-height: 430px; border-radius: 17px; }
+  .skyViewport { height: min(62dvh,620px); min-height: 440px; border-radius: 17px; touch-action: none; user-select: none; }
+  .mobileSkyHint { position: absolute; z-index: 8; left: 50%; top: 12px; display: block; padding: 6px 10px; color: #d9e8f8; background: rgba(0,0,0,.58); border: 1px solid rgba(255,255,255,.18); border-radius: 999px; font-size: 9px; font-weight: 900; transform: translateX(-50%); white-space: nowrap; pointer-events: none; }
+  .nightRed .mobileSkyHint { color: #ff9a89; border-color: rgba(255,99,80,.3); }
   .compassLine { inset-inline: 11px; }
   .controlDock { grid-template-columns: 1fr; padding-top: 0; }
   .manualPanel { grid-column: auto; }

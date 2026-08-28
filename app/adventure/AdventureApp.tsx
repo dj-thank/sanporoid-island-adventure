@@ -7,7 +7,7 @@ import { islandsBySlug, type Island, type MapPoint } from "../discover/island-da
 import CesiumIslandMap from "./CesiumIslandMap";
 import { formatDistance, haversineMeters } from "./geoMath";
 import IslandFieldGuide from "./IslandFieldGuide";
-import { answerFromExperiencePack, enrichMapPointsWithResearch, officialAnchorMapPoints, type TripIslandSlug } from "./islandKnowledge";
+import { answerFromExperiencePack, buildIslandLlmContext, enrichMapPointsWithResearch, officialAnchorMapPoints, type TripIslandSlug } from "./islandKnowledge";
 import StarGuide from "./StarGuide";
 import styles from "./adventure.module.css";
 
@@ -41,6 +41,7 @@ const appModes = [
 ] as const;
 
 type AppMode = (typeof appModes)[number]["id"];
+const isNativeApp = import.meta.env.VITE_NATIVE_APP === "true";
 
 const tripIslands: Array<{
   slug: TripIslandSlug;
@@ -203,14 +204,18 @@ export default function AdventureApp() {
 
     setAsking(true);
     try {
-      const response = await fetch("/api/island-guide", {
-        method: "POST",
-        headers: { "content-type": "application/json", "x-openai-api-key": apiKey },
-        body: JSON.stringify({ island, question, model }),
-      });
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error || "島ガイドへ接続できませんでした");
-      setAnswer(payload.answer);
+      if (isNativeApp) {
+        setAnswer(await askIslandFromNative(apiKey, model, island, question));
+      } else {
+        const response = await fetch("/api/island-guide", {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-openai-api-key": apiKey },
+          body: JSON.stringify({ island, question, model }),
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "島ガイドへ接続できませんでした");
+        setAnswer(payload.answer);
+      }
       const input = form.elements.namedItem("apiKey");
       if (input instanceof HTMLInputElement) input.value = "";
     } catch (cause) {
@@ -230,11 +235,11 @@ export default function AdventureApp() {
         <nav className={styles.desktopModeNav} aria-label="アプリのモード">
           {appModes.map((mode) => <button type="button" key={mode.id} className={activeMode === mode.id ? styles.activeMode : ""} aria-current={activeMode === mode.id ? "page" : undefined} onClick={() => activateMode(mode.id)}><span aria-hidden="true">{mode.icon}</span><small>{mode.eyebrow}</small><strong>{mode.label}</strong></button>)}
         </nav>
-        <nav className={styles.utilityNav} aria-label="関連ページ">
+        {!isNativeApp && <nav className={styles.utilityNav} aria-label="関連ページ">
           <a href="/">旅の予定</a>
           <a href="/discover">島の大特集</a>
           <span>LOCAL-FIRST PWA</span>
-        </nav>
+        </nav>}
       </header>
 
       <section className={styles.islandRail} aria-label="旅の章を選ぶ">
@@ -378,7 +383,7 @@ export default function AdventureApp() {
             <form onSubmit={askIsland} className={styles.guideForm}>
               <label>質問<textarea name="question" required rows={4} placeholder={`${selectedIsland.name}で雨の日にできることは？`} /></label>
               <div><label>OpenAI APIキー（任意）<input name="apiKey" type="password" autoComplete="off" placeholder="入力しなければローカル回答" /></label><label>モデル<select name="model" defaultValue="gpt-5.6-luna"><option>gpt-5.6-luna</option><option>gpt-5.6-terra</option><option>gpt-5.4-mini</option></select></label></div>
-              <p>キーはこの入力欄と一回の通信だけで使い、ブラウザ保存・D1・R2・ログへ残しません。公開アクセスでは利用せず、ChatGPTサインイン済みの所有者だけが接続できます。</p>
+              <p>{isNativeApp ? "キーはこの入力欄と端末からOpenAIへの一回の通信だけで使い、端末保存・サイト・ログへ残しません。" : "キーはこの入力欄と一回の通信だけで使い、ブラウザ保存・D1・R2・ログへ残しません。公開アクセスでは利用せず、ChatGPTサインイン済みの所有者だけが接続できます。"}</p>
               <button disabled={asking}>{asking ? "島へ聞いています…" : "島ガイドに聞く"}</button>
               {askError && <p className={styles.error} role="alert">{askError}</p>}
             </form>
@@ -392,6 +397,35 @@ export default function AdventureApp() {
       </nav>
     </main>
   );
+}
+
+async function askIslandFromNative(apiKey: string, model: string, island: TripIslandSlug, question: string) {
+  if (!/^sk-[A-Za-z0-9_-]{16,240}$/.test(apiKey)) throw new Error("OpenAI APIキーを確認してください");
+  const { Capacitor, CapacitorHttp } = await import("@capacitor/core");
+  if (!Capacitor.isNativePlatform()) throw new Error("ネイティブHTTPを利用できません");
+  const response = await CapacitorHttp.request({
+    method: "POST",
+    url: "https://api.openai.com/v1/responses",
+    headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+    data: {
+      model,
+      store: false,
+      max_output_tokens: 700,
+      instructions: "あなたは友達旅行の島ガイドです。提供された島データだけを根拠に日本語で簡潔に答えてください。事実、提案、創作を明確に分け、運航・天候・海況・立入・営業・宿泊は当日の公式情報を優先すると必ず伝えてください。危険区域、私有地、野宿、無断撮影を勧めないでください。分からないことは分からないと答えてください。",
+      input: `端末内の島データ:\n${buildIslandLlmContext(island)}\n\n質問:\n${question.slice(0, 600)}`,
+    },
+    connectTimeout: 20_000,
+    readTimeout: 60_000,
+  });
+  const payload = typeof response.data === "string" ? JSON.parse(response.data) : response.data as { output_text?: string; output?: Array<{ content?: Array<{ type?: string; text?: string }> }> };
+  if (response.status < 200 || response.status >= 300) {
+    if (response.status === 401 || response.status === 403) throw new Error("APIキーまたはモデルの利用権限を確認してください");
+    if (response.status === 429) throw new Error("APIの利用上限に達しました。少し待ってください");
+    throw new Error("島ガイドの応答を受け取れませんでした");
+  }
+  const answer = payload.output_text?.trim() || payload.output?.flatMap((item) => item.content ?? []).find((item) => item.type === "output_text")?.text?.trim();
+  if (!answer) throw new Error("島ガイドの回答が空でした");
+  return answer;
 }
 
 async function averagePhotoColor(file: File) {

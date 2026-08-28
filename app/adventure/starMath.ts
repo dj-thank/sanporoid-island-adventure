@@ -20,6 +20,23 @@ export type ProjectedStar = SkyStar & {
   inView: boolean;
 };
 
+export function deviceViewFromOrientation({ alpha, beta, gamma, screenAngle = 0 }: {
+  alpha: number;
+  beta: number;
+  gamma: number;
+  screenAngle?: number;
+}) {
+  const landscape = Math.abs(screenAngle) === 90;
+  return {
+    heading: normalizeDegrees(360 - alpha + screenAngle),
+    altitude: clamp(90 - Math.abs(landscape ? gamma : beta), -10, 90),
+  };
+}
+
+export function smoothHeading(previous: number, next: number, amount = 0.18) {
+  return normalizeDegrees(previous + normalizeSigned(next - previous) * amount);
+}
+
 export function calculateSky(catalog: CatalogStar[], date: Date, latitude: number, longitude: number, heading: number): SkyStar[] {
   const julianDate = date.getTime() / 86_400_000 + 2440587.5;
   const days = julianDate - 2451545;
@@ -47,3 +64,4 @@ export function cardinal(value: number) { return ["北", "北東", "東", "南�
 export function sideLabel(delta: number) { return Math.abs(delta) < 8 ? "正面" : delta > 0 ? "右側" : "左側"; }
 export function radians(value: number) { return value * Math.PI / 180; }
 export function degrees(value: number) { return value * 180 / Math.PI; }
+function clamp(value: number, min: number, max: number) { return Math.max(min, Math.min(max, value)); }
