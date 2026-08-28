@@ -322,16 +322,17 @@ test("prepares PC-free Android and iPhone installation surfaces for GitHub", asy
   assert.match(nativeConfig, /VITE_HOSTED_PWA/);
   assert.match(adventure, /GitHub Pages版はAPIキーを受け取らず/);
   assert.match(installWorker, /shioboshi-install-/);
-  assert.match(installWorker, /v6/);
-  assert.match(androidGradle, /versionCode 6/);
-  assert.match(androidGradle, /versionName "0\.2\.4"/);
-  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.4/);
-  assert.equal(JSON.parse(packageText).version, "0.2.4");
+  assert.match(installWorker, /v7/);
+  assert.match(androidGradle, /versionCode 7/);
+  assert.match(androidGradle, /versionName "0\.2\.5"/);
+  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.5/);
+  assert.equal(JSON.parse(packageText).version, "0.2.5");
   assert.equal(JSON.parse(packageText).packageManager, "pnpm@11.24.0");
-  assert.match(pnpmWorkspace, /onlyBuiltDependencies:/);
-  assert.match(pnpmWorkspace, /- esbuild/);
-  assert.match(pnpmWorkspace, /- sharp/);
-  assert.match(pnpmWorkspace, /- workerd/);
+  assert.match(pnpmWorkspace, /allowBuilds:/);
+  assert.match(pnpmWorkspace, /esbuild: true/);
+  assert.match(pnpmWorkspace, /sharp: true/);
+  assert.match(pnpmWorkspace, /workerd: true/);
+  assert.doesNotMatch(pnpmWorkspace, /onlyBuiltDependencies/);
 });
 
 test("keeps the canonical Sanporoid map core under a distinct Shioboshi UI", async () => {
