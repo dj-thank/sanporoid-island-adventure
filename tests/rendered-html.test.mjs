@@ -277,7 +277,7 @@ test("keeps the PWA shell offline without caching private API data", async () =>
 });
 
 test("prepares PC-free Android and iPhone installation surfaces for GitHub", async () => {
-  const [nativeIndex, nativeMain, installGuide, installManifestText, installWorker, pagesWorkflow, mobileWorkflow, pagesBuilder, nativeConfig, adventure, androidGradle, iosProject, packageText] = await Promise.all([
+  const [nativeIndex, nativeMain, installGuide, installManifestText, installWorker, pagesWorkflow, mobileWorkflow, pagesBuilder, nativeConfig, adventure, androidGradle, iosProject, packageText, pnpmWorkspace] = await Promise.all([
     readFile(new URL("../native/index.html", import.meta.url), "utf8"),
     readFile(new URL("../native/main.tsx", import.meta.url), "utf8"),
     readFile(new URL("../native/PwaInstallGuide.tsx", import.meta.url), "utf8"),
@@ -291,6 +291,7 @@ test("prepares PC-free Android and iPhone installation surfaces for GitHub", asy
     readFile(new URL("../android/app/build.gradle", import.meta.url), "utf8"),
     readFile(new URL("../ios/App/App.xcodeproj/project.pbxproj", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(new URL("../pnpm-workspace.yaml", import.meta.url), "utf8"),
   ]);
   const installManifest = JSON.parse(installManifestText);
   assert.match(nativeIndex, /rel="manifest" href="\.\/install\.webmanifest"/);
@@ -321,12 +322,16 @@ test("prepares PC-free Android and iPhone installation surfaces for GitHub", asy
   assert.match(nativeConfig, /VITE_HOSTED_PWA/);
   assert.match(adventure, /GitHub Pages版はAPIキーを受け取らず/);
   assert.match(installWorker, /shioboshi-install-/);
-  assert.match(installWorker, /v5/);
-  assert.match(androidGradle, /versionCode 5/);
-  assert.match(androidGradle, /versionName "0\.2\.3"/);
-  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.3/);
-  assert.equal(JSON.parse(packageText).version, "0.2.3");
+  assert.match(installWorker, /v6/);
+  assert.match(androidGradle, /versionCode 6/);
+  assert.match(androidGradle, /versionName "0\.2\.4"/);
+  assert.match(iosProject, /MARKETING_VERSION = 0\.2\.4/);
+  assert.equal(JSON.parse(packageText).version, "0.2.4");
   assert.equal(JSON.parse(packageText).packageManager, "pnpm@11.24.0");
+  assert.match(pnpmWorkspace, /onlyBuiltDependencies:/);
+  assert.match(pnpmWorkspace, /- esbuild/);
+  assert.match(pnpmWorkspace, /- sharp/);
+  assert.match(pnpmWorkspace, /- workerd/);
 });
 
 test("keeps the canonical Sanporoid map core under a distinct Shioboshi UI", async () => {
