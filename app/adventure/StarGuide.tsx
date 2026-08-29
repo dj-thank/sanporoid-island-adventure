@@ -161,7 +161,7 @@ export default function StarGuide({ active, fallbackPosition, islandName, knownP
   const projectedMoon = useMemo(() => moon ? projectHorizontal(moon.altitude, moon.delta, viewAltitude) : null, [moon, viewAltitude]);
   const visibleStars = projected.filter((star) => star.inView && star.altitude > -3 && star.magnitude <= magnitudeLimit).sort((a, b) => a.magnitude - b.magnitude);
   const searchNeedle = search.trim().toLowerCase();
-  const moonSelected = selectedName === "__moon__" || /月|moon/.test(searchNeedle);
+  const moonSelected = searchNeedle ? /月|moon/.test(searchNeedle) : selectedName === "__moon__";
   const searchedTarget = searchNeedle && !moonSelected ? sky.find((star) => `${star.japanese} ${star.name} ${star.constellation}`.toLowerCase().includes(searchNeedle)) : undefined;
   const selectedTarget = moonSelected ? undefined : sky.find((star) => star.name === selectedName);
   const reticleTarget = [...visibleStars].sort((a, b) => Math.hypot(a.delta, a.altitude - viewAltitude) - Math.hypot(b.delta, b.altitude - viewAltitude))[0];

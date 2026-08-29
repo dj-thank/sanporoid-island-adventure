@@ -567,6 +567,7 @@ test("computes the night sky locally and requests sensor permission explicitly",
   assert.match(starGuide, /時間移動/);
   assert.match(starGuide, /constellationLines/);
   assert.match(starGuide, /event\.beta/);
+  assert.match(starGuide, /searchNeedle \? \/月\|moon\/\.test\(searchNeedle\) : selectedName === "__moon__"/);
   assert.doesNotMatch(starGuide, /fetch\(/);
 });
 
