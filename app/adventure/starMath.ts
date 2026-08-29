@@ -20,6 +20,12 @@ export type ProjectedStar = SkyStar & {
   inView: boolean;
 };
 
+export type ProjectedHorizontal = {
+  x: number;
+  y: number;
+  inView: boolean;
+};
+
 export function deviceViewFromOrientation({ alpha, beta, gamma, fallbackHeading }: {
   alpha: number;
   beta: number;
@@ -86,9 +92,13 @@ export function calculateSky(catalog: CatalogStar[], date: Date, latitude: numbe
 }
 
 export function projectStar(star: SkyStar, viewAltitude: number, horizontalFov = 150, verticalFov = 100): ProjectedStar {
-  const x = 50 + star.delta / horizontalFov * 100;
-  const y = 50 - (star.altitude - viewAltitude) / verticalFov * 100;
-  return { ...star, x, y, inView: Math.abs(star.delta) <= horizontalFov / 2 && Math.abs(star.altitude - viewAltitude) <= verticalFov / 2 };
+  return { ...star, ...projectHorizontal(star.altitude, star.delta, viewAltitude, horizontalFov, verticalFov) };
+}
+
+export function projectHorizontal(altitude: number, delta: number, viewAltitude: number, horizontalFov = 150, verticalFov = 100): ProjectedHorizontal {
+  const x = 50 + delta / horizontalFov * 100;
+  const y = 50 - (altitude - viewAltitude) / verticalFov * 100;
+  return { x, y, inView: Math.abs(delta) <= horizontalFov / 2 && Math.abs(altitude - viewAltitude) <= verticalFov / 2 };
 }
 
 export function normalizeDegrees(value: number) { return ((value % 360) + 360) % 360; }

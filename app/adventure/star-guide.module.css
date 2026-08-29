@@ -27,7 +27,7 @@
 .timeMachine input { min-height: 44px; accent-color: #87bfff; }
 .nightRed .timeMachine input { accent-color: #ff6350; }
 .timeMachine strong { align-self: center; text-align: right; font-size: 10px; }
-.quickTargetRail { grid-column:1 / -1; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+.quickTargetRail { grid-column:1 / -1; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; }
 .quickTargetRail button { min-width:0; min-height:44px; padding:7px 9px; overflow:hidden; color:#d9e8f8; text-overflow:ellipsis; white-space:nowrap; background:rgba(135,191,255,.08); border:1px solid rgba(135,191,255,.3); border-radius:9px; font:inherit; font-size:10px; font-weight:900; cursor:pointer; }
 .quickTargetRail button[aria-pressed="true"] { color:#050a12; background:#87bfff; }
 .nightRed .quickTargetRail button { color:#ff9a89; background:rgba(255,99,80,.06); border-color:rgba(255,99,80,.3); }
@@ -53,6 +53,14 @@
 .star > span { position: absolute; left: calc(50% + 10px); top: 7px; width: max-content; max-width: 120px; font-size: 10px; font-weight: 900; text-align: left; text-shadow: 0 1px 5px #000; }
 .star small { display: block; color: #8ea0b4; font-size: 8px; }
 .nightRed .star small { color: #d36d60; }
+.moon { appearance:none; position:absolute; z-index:4; width:48px; height:48px; padding:0; color:#fff6d5; background:transparent; border:0; cursor:pointer; transform:translate(-50%,-50%); }
+.moon > b { position:absolute; left:50%; top:50%; display:grid; place-items:center; width:30px; height:30px; background:transparent; border:0; border-radius:50%; font-size:26px; line-height:1; filter:drop-shadow(0 0 9px rgba(255,232,155,.85)); transform:translate(-50%,-50%); }
+.moon > span { position:absolute; top:35px; left:50%; display:grid; width:max-content; max-width:110px; transform:translateX(-50%); font-size:10px; font-weight:900; text-align:center; text-shadow:0 1px 5px #000; }
+.moon small { color:#d8c890; font-size:8px; }
+.moon[aria-pressed="true"] > b { outline:2px solid #d6ea4b; outline-offset:4px; }
+.nightRed .moon { color:#ff9a89; }
+.nightRed .moon > b { filter:sepia(1) saturate(5) hue-rotate(315deg) drop-shadow(0 0 9px rgba(255,50,27,.8)); }
+.nightRed .moon small { color:#d36d60; }
 .reticle { position: absolute; z-index: 5; left: 50%; top: 50%; width: 74px; height: 74px; border: 1px solid rgba(255,255,255,.58); border-radius: 50%; transform: translate(-50%,-50%); pointer-events: none; }
 .reticle span:first-child { position: absolute; left: 50%; top: -15px; bottom: -15px; border-left: 1px solid rgba(255,255,255,.36); }
 .reticle span:last-child { position: absolute; top: 50%; left: -15px; right: -15px; border-top: 1px solid rgba(255,255,255,.36); }
@@ -121,6 +129,8 @@
   .compassLine { inset-inline: 11px; }
   .star > span { display:none; }
   .majorStar > span, .star[aria-pressed="true"] > span { top:calc(50% + 9px); left:50%; display:block; width:96px; max-width:96px; transform:translateX(-50%); text-align:center; white-space:normal; }
+  .moon > span { display:none; }
+  .moon[aria-pressed="true"] > span { top:calc(50% + 16px); display:grid; }
   .controlDock { position:absolute; z-index:15; right:14px; bottom:calc(88px + env(safe-area-inset-bottom)); left:14px; display:block; padding:0; }
   .tripSkyCard, .sensorReadout, .manualPanel { display:none; }
   .targetCard { padding:10px 12px; background:rgba(9,17,29,.9); backdrop-filter:blur(14px); }

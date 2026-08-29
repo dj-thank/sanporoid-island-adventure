@@ -373,7 +373,7 @@ export function TripBoard({ viewer, signInPath, signOutPath }: TripBoardProps) {
           <article className="live-idea">
             <small>04 / NIGHT / MOONRISE</small>
             <h3>海から上がる月を待つ。</h3>
-            <p>Discordで出たばかりの希望です。正確な月の出、東向きの観賞場所、雲量は、場所を絞って出発直前に確認します。</p>
+            <p>アプリとDiscordは島代表位置から月の出方向を計算します。雲、地形、建物、実際の水平線は含まないため、現地の安全と視界を出発直前に確認します。</p>
             <a href="https://discord.com/channels/1535960563140796476/1535960564059213947" target="_blank" rel="noreferrer">この相談の続きをする ↗</a>
           </article>
         </div>

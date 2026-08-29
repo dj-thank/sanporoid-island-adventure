@@ -1,6 +1,6 @@
 {
   "name": "openclos-island-trip-board",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "private": true,
   "packageManager": "pnpm@11.24.0",
   "engines": {
@@ -25,6 +25,7 @@
     "@capacitor/core": "^8.5.0",
     "@capacitor/ios": "^8.5.0",
     "@capgo/capacitor-bluetooth-low-energy": "8.2.0",
+    "astronomy-engine": "2.1.19",
     "cesium": "^1.144.0",
     "drizzle-orm": "0.45.2",
     "leaflet": "^1.9.4",

@@ -2,6 +2,7 @@ import { getTripBoard, requireBot } from "../../../../db/store";
 import { currentFactsFor, deepKnowledgeFor, deepThemeCount, experiencesFor, islandCurrentFacts, islandDeepKnowledge, islandExperiencePack } from "../../../adventure/islandKnowledge";
 import { islandsBySlug } from "../../../discover/island-data";
 import { islandMapProfiles } from "../../../adventure/islandMapProfiles";
+import { calculateMoonSnapshot, type MoonEvent } from "../../../adventure/moonMath";
 
 const tripIslandSlugs = ["kozushima", "niijima", "shikinejima"] as const;
 
@@ -9,8 +10,9 @@ export async function GET(request: Request) {
   try {
     await requireBot(request);
     const board = await getTripBoard();
+    const observedAt = new Date();
     return Response.json({
-      observedAt: new Date().toISOString(),
+      observedAt: observedAt.toISOString(),
       writeCapabilities: false,
       trip: {
         routeLabel: board.trip?.routeLabel,
@@ -38,6 +40,7 @@ export async function GET(request: Request) {
           spots: island.spots.map((spot) => ({ title: spot.title, label: spot.label, summary: spot.summary })),
           rules: island.rules,
           official: island.official,
+          moon: moonContext(observedAt, island.mapCenter),
           currentOfficialFacts: currentFactsFor(slug),
           deepKnowledge: deepKnowledgeFor(slug),
           mapProfile: {
@@ -84,4 +87,39 @@ export async function GET(request: Request) {
     const message = error instanceof Error ? error.message : "BOT_UNAUTHORIZED";
     return Response.json({ error: message }, { status: message === "BOT_UNAUTHORIZED" ? 401 : 400 });
   }
+}
+
+function moonContext(date: Date, position: [number, number]) {
+  const moon = calculateMoonSnapshot(date, position[0], position[1]);
+  return {
+    observerBasis: "島の代表位置。端末の正確な現在地ではない",
+    timeZone: "Asia/Tokyo",
+    phase: moon.phaseLabel,
+    illuminationPercent: Math.round(moon.illumination * 100),
+    ageDays: Number(moon.ageDays.toFixed(1)),
+    aboveHorizon: moon.altitude >= 0,
+    altitudeDegrees: Math.round(moon.altitude),
+    azimuthDegrees: Math.round(moon.azimuth),
+    direction: moon.direction,
+    nextRise: serializeMoonEvent(moon.rise),
+    nextSet: serializeMoonEvent(moon.set),
+    accuracyBoundary: "地形、建物、雲、局地的な水平線は含まない。現地の安全と視界を優先する",
+  };
+}
+
+function serializeMoonEvent(event: MoonEvent | null) {
+  if (!event) return null;
+  return {
+    at: event.at.toISOString(),
+    localJst: new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(event.at),
+    azimuthDegrees: Math.round(event.azimuth),
+    direction: event.direction,
+  };
 }

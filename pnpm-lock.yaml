@@ -20,6 +20,9 @@ importers:
       '@capgo/capacitor-bluetooth-low-energy':
         specifier: 8.2.0
         version: 8.2.0(@capacitor/core@8.5.0)
+      astronomy-engine:
+        specifier: 2.1.19
+        version: 2.1.19
       cesium:
         specifier: ^1.144.0
         version: 1.144.0
@@ -1731,6 +1734,9 @@ packages:
   astral-regex@2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
+
+  astronomy-engine@2.1.19:
+    resolution: {integrity: sha512-8yWKNf7UeNbH458h3sAJ6ZgAjE5jTXp/mNNRFoC20j2SHwZIjAQeEsBB2Q3uCFRaTCCJRv33K2XhkhZQMXoX6w==}
 
   async-function@1.0.0:
     resolution: {integrity: sha512-hsU18Ae8CDTR6Kgu9DYf0EbCr/a5iGL0rytQDobUcdpYOKokk8LEjVphnXkDkgpi0wYVsqrXuP0bZxJaTqdgoA==}
@@ -5106,6 +5112,8 @@ snapshots:
   ast-types-flow@0.0.8: {}
 
   astral-regex@2.0.0: {}
+
+  astronomy-engine@2.1.19: {}
 
   async-function@1.0.0: {}
 

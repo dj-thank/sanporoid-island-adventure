@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import hygCatalog from "./hyg-bright-stars-v41.json";
 import { islandDeepKnowledge } from "./islandKnowledge";
-import { calculateSky, cardinal, deviceViewFromOrientation, isHeadingReliable, normalizeDegrees, normalizeSigned, projectStar, sensorSmoothingAmount, sideLabel, smoothHeading, type CatalogStar } from "./starMath";
+import { calculateMoonEvents, calculateMoonPosition, moonPhaseGlyph, type MoonEvent } from "./moonMath";
+import { calculateSky, cardinal, deviceViewFromOrientation, isHeadingReliable, normalizeDegrees, normalizeSigned, projectHorizontal, projectStar, sensorSmoothingAmount, sideLabel, smoothHeading, type CatalogStar } from "./starMath";
 import styles from "./star-guide.module.css";
 
 const localizedNames: Record<string, string> = {
@@ -38,7 +39,7 @@ const quickTargetNames = ["Polaris", "Vega", "Deneb", "Capella"];
 type OrientationEventWithCompass = DeviceOrientationEvent & { webkitCompassHeading?: number; webkitCompassAccuracy?: number };
 type OrientationConstructorWithPermission = typeof DeviceOrientationEvent & { requestPermission?: (absolute?: boolean) => Promise<"granted" | "denied"> };
 
-export default function StarGuide({ active, fallbackPosition, islandName }: { active: boolean; fallbackPosition: [number, number]; islandName: string }) {
+export default function StarGuide({ active, fallbackPosition, islandName, knownPosition }: { active: boolean; fallbackPosition: [number, number]; islandName: string; knownPosition?: [number, number] | null }) {
   const [heading, setHeading] = useState(0);
   const [viewAltitude, setViewAltitude] = useState(35);
   const [sensorEnabled, setSensorEnabled] = useState(false);
@@ -150,15 +151,27 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
     return () => stopLocationRefinement();
   }, [active]);
 
+  const effectivePosition = knownPosition ?? position;
+  const effectiveLocationStatus = knownPosition ? "地図で取得した現在地を端末内の月・星計算に連動中" : locationStatus;
   const displayedTime = useMemo(() => clockBase ? new Date(clockBase.getTime() + offsetHours * 3_600_000) : null, [clockBase, offsetHours]);
-  const sky = useMemo(() => displayedTime ? calculateSky(stars, displayedTime, position[0], position[1], heading) : [], [displayedTime, heading, position]);
+  const sky = useMemo(() => displayedTime ? calculateSky(stars, displayedTime, effectivePosition[0], effectivePosition[1], heading) : [], [displayedTime, effectivePosition, heading]);
+  const moon = useMemo(() => displayedTime ? calculateMoonPosition(displayedTime, effectivePosition[0], effectivePosition[1], heading) : null, [displayedTime, effectivePosition, heading]);
+  const moonEvents = useMemo(() => displayedTime ? calculateMoonEvents(displayedTime, effectivePosition[0], effectivePosition[1]) : null, [displayedTime, effectivePosition]);
   const projected = useMemo(() => sky.map((star) => projectStar(star, viewAltitude)), [sky, viewAltitude]);
+  const projectedMoon = useMemo(() => moon ? projectHorizontal(moon.altitude, moon.delta, viewAltitude) : null, [moon, viewAltitude]);
   const visibleStars = projected.filter((star) => star.inView && star.altitude > -3 && star.magnitude <= magnitudeLimit).sort((a, b) => a.magnitude - b.magnitude);
   const searchNeedle = search.trim().toLowerCase();
-  const searchedTarget = searchNeedle ? sky.find((star) => `${star.japanese} ${star.name} ${star.constellation}`.toLowerCase().includes(searchNeedle)) : undefined;
-  const selectedTarget = sky.find((star) => star.name === selectedName);
+  const moonSelected = selectedName === "__moon__" || /月|moon/.test(searchNeedle);
+  const searchedTarget = searchNeedle && !moonSelected ? sky.find((star) => `${star.japanese} ${star.name} ${star.constellation}`.toLowerCase().includes(searchNeedle)) : undefined;
+  const selectedTarget = moonSelected ? undefined : sky.find((star) => star.name === selectedName);
   const reticleTarget = [...visibleStars].sort((a, b) => Math.hypot(a.delta, a.altitude - viewAltitude) - Math.hypot(b.delta, b.altitude - viewAltitude))[0];
   const target = searchedTarget ?? selectedTarget ?? reticleTarget;
+  const guidanceTarget = moonSelected && moon
+    ? { kind: "moon" as const, label: "月", subtitle: moon.phaseLabel, altitude: moon.altitude, azimuth: moon.azimuth, delta: moon.delta }
+    : target
+      ? { kind: "star" as const, label: target.japanese, subtitle: target.constellation, altitude: target.altitude, azimuth: target.azimuth, delta: target.delta }
+      : null;
+  const guidanceProjection = guidanceTarget ? projectHorizontal(guidanceTarget.altitude, guidanceTarget.delta, viewAltitude) : null;
   const projectedByName = new Map(projected.map((star) => [star.name, star]));
   const quickTargets = quickTargetNames.map((name) => sky.find((star) => star.name === name)).filter((star): star is NonNullable<typeof star> => Boolean(star));
 
@@ -173,6 +186,7 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
       setSensorStatus("センサー読み取り待ち。端末を8の字に動かすと補正しやすくなります。");
     } catch { setSensorStatus("方位センサーを開始できません。手動操作を使えます。"); }
 
+    if (knownPosition) return;
     if (!navigator.geolocation) return;
     stopLocationRefinement();
     let bestAccuracy = Number.POSITIVE_INFINITY;
@@ -208,12 +222,12 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
   }
 
   function calibrateToTarget() {
-    if (!target || rawSensorHeading.current === null || !latestHeadingReliable.current) return;
-    const correction = normalizeSigned(target.azimuth - rawSensorHeading.current);
+    if (!guidanceTarget || rawSensorHeading.current === null || !latestHeadingReliable.current) return;
+    const correction = normalizeSigned(guidanceTarget.azimuth - rawSensorHeading.current);
     headingOffsetRef.current = correction;
     setHeadingOffset(correction);
     setHeading(normalizeDegrees(rawSensorHeading.current + correction));
-    setSensorStatus(`${target.japanese}を基準に方位を補正しました（${correction >= 0 ? "+" : ""}${Math.round(correction)}°、この画面だけ）`);
+    setSensorStatus(`${guidanceTarget.label}を基準に方位を補正しました（${correction >= 0 ? "+" : ""}${Math.round(correction)}°、この画面だけ）`);
   }
 
   function resetCalibration() {
@@ -249,22 +263,23 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
       <div className={styles.starWorkspace}>
         <div className={styles.skyColumn}>
           <div className={styles.searchRail}>
-            <label>星・星座を探す<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} list="star-search-list" placeholder="例：北極星、オリオン座、Vega" /></label>
-            <datalist id="star-search-list">{stars.filter((star) => star.magnitude <= 2.5).slice(0, 180).map((star) => <option key={star.name} value={star.japanese}>{star.constellation}</option>)}</datalist>
+            <label>月・星・星座を探す<input type="search" value={search} onChange={(event) => setSearch(event.target.value)} list="star-search-list" placeholder="例：月、北極星、オリオン座" /></label>
+            <datalist id="star-search-list"><option value="月">現在地と時刻から計算</option>{stars.filter((star) => star.magnitude <= 2.5).slice(0, 180).map((star) => <option key={star.name} value={star.japanese}>{star.constellation}</option>)}</datalist>
             <div className={styles.timeMachine} aria-label="星空の時間移動">
               <button type="button" aria-label="1時間戻す" onClick={() => setOffsetHours((value) => clamp(value - 1, -12, 24))}>−1h</button>
               <input aria-label={`時間移動 ${offsetHours}時間`} type="range" min="-12" max="24" value={offsetHours} onChange={(event) => setOffsetHours(Number(event.target.value))} />
               <button type="button" aria-label="1時間進める" onClick={() => setOffsetHours((value) => clamp(value + 1, -12, 24))}>＋1h</button>
               <button type="button" onClick={() => setOffsetHours(0)}>現在</button>
-              <strong>{displayedTime ? displayedTime.toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "時刻同期中"}</strong>
+              <strong>{displayedTime ? displayedTime.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "時刻同期中"}</strong>
             </div>
-            <nav className={styles.quickTargetRail} aria-label="今夜の星を選ぶ">{quickTargets.map((star) => <button type="button" aria-pressed={selectedName === star.name} onClick={() => { setSearch(""); setSelectedName(star.name); }} key={star.name}>{star.japanese}</button>)}</nav>
+            <nav className={styles.quickTargetRail} aria-label="今夜の月と星を選ぶ"><button type="button" aria-pressed={moonSelected} onClick={() => { setSearch(""); setSelectedName("__moon__"); }}>月</button>{quickTargets.map((star) => <button type="button" aria-pressed={selectedName === star.name} onClick={() => { setSearch(""); setSelectedName(star.name); }} key={star.name}>{star.japanese}</button>)}</nav>
           </div>
 
           <div className={styles.skyViewport} aria-label={`方位${Math.round(heading)}度・高度${Math.round(viewAltitude)}度の星空`} onPointerDown={startSkyDrag} onPointerMove={moveSkyDrag} onPointerUp={() => { dragStart.current = null; }} onPointerCancel={() => { dragStart.current = null; }}>
-            <div className={styles.mobileSkyHint}>満月直後 · {sensorEnabled ? "端末を空へ向ける" : "指で空を動かせます"}</div>
+            <div className={styles.mobileSkyHint}>{moon?.phaseLabel ?? "月を計算中"} · {sensorEnabled ? "端末を空へ向ける" : "指で空を動かせます"}</div>
             <div className={styles.compassLine}><span>左</span><strong>{Math.round(heading)}° · {cardinal(heading)} / 高度 {Math.round(viewAltitude)}°</strong><span>右</span></div>
             {showLines && <svg className={styles.constellationLayer} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">{constellationLines.flatMap((line, lineIndex) => line.slice(1).map((name, index) => { const from = projectedByName.get(line[index]); const to = projectedByName.get(name); return from?.inView && to?.inView ? <line key={`${lineIndex}-${name}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y} /> : null; }))}</svg>}
+            {moon && projectedMoon?.inView && moon.altitude > -3 && <button type="button" className={styles.moon} aria-label={`月、${moon.phaseLabel}、高度${Math.round(moon.altitude)}度、方位${Math.round(moon.azimuth)}度`} aria-pressed={moonSelected} onClick={() => { setSearch(""); setSelectedName("__moon__"); }} style={{ left: `${projectedMoon.x}%`, top: `${projectedMoon.y}%` }}><b aria-hidden="true">{moonPhaseGlyph(moon.phaseAngle)}</b><span>月<small>{moon.phaseLabel}</small></span></button>}
             {visibleStars.slice(0, 260).map((star) => {
               const selected = selectedName === star.name;
               const selectable = selected || star.magnitude <= 2.5;
@@ -275,23 +290,23 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
               return <button type="button" className={className} aria-label={`${star.japanese}、${star.constellation}、高度${Math.round(star.altitude)}度`} aria-pressed={selected} onClick={() => setSelectedName(star.name)} key={`${star.name}-${star.raHours}`} style={style}><b /><span>{showLabel ? star.japanese : ""}<small>{showLabel && star.magnitude <= 1.7 ? star.constellation : ""}</small></span></button>;
             })}
             <div className={styles.reticle}><span /><span /></div>
-            {target && (!projectStar(target, viewAltitude).inView || searchedTarget) && <div className={styles.locateArrow} style={{ "--arrow-angle": `${Math.atan2(target.delta, target.altitude - viewAltitude) * 180 / Math.PI}deg` } as React.CSSProperties}><b>↑</b><span>{target.japanese}<small>{directionText(target.delta, target.altitude - viewAltitude)}</small></span></div>}
+            {guidanceTarget && guidanceProjection && (!guidanceProjection.inView || searchedTarget || moonSelected) && <div className={styles.locateArrow} style={{ "--arrow-angle": `${Math.atan2(guidanceTarget.delta, guidanceTarget.altitude - viewAltitude) * 180 / Math.PI}deg` } as React.CSSProperties}><b>↑</b><span>{guidanceTarget.label}<small>{directionText(guidanceTarget.delta, guidanceTarget.altitude - viewAltitude)}</small></span></div>}
           </div>
         </div>
 
         <aside className={styles.controlDock}>
           <article className={styles.tripSkyCard}>
             <small>TRIP SKY · 8/29—9/1</small>
-            <strong>満月直後の空</strong>
-            <p>{islandDeepKnowledge.tripContext.nightSky}</p>
+            <strong>{moon ? `${moon.phaseLabel}・明るさ${Math.round(moon.illumination * 100)}%` : "月を同期中"}</strong>
+            <p>{moonEvents ? `${formatMoonEvent("月の出", moonEvents.rise)} / ${formatMoonEvent("月の入り", moonEvents.set)}。` : "月の出入りを計算中。"} {islandDeepKnowledge.tripContext.nightSky}</p>
           </article>
           <article className={styles.targetCard} aria-live="polite">
             <small>あれが何座？</small>
-            {target ? <><h3>{sideLabel(target.delta)}に {target.japanese}</h3><strong>{target.constellation}</strong><p>見かけ高度 約{Math.round(target.altitude)}°・方位 {Math.round(target.azimuth)}°。{directionText(target.delta, target.altitude - viewAltitude)}。標準大気差を補正し、雲・障害物・局地的な磁気ずれは含みません。</p></> : <><h3>星空を同期しています</h3><p>現在時刻の端末計算を準備中です。</p></>}
-            {sensorEnabled && target && <div className={styles.calibrationActions}><button type="button" onClick={calibrateToTarget}>中央の星で方位補正</button>{headingOffset !== 0 && <button type="button" onClick={resetCalibration}>補正を解除</button>}</div>}
+            {guidanceTarget ? <><h3>{sideLabel(guidanceTarget.delta)}に {guidanceTarget.label}</h3><strong>{guidanceTarget.subtitle}</strong><p>見かけ高度 約{Math.round(guidanceTarget.altitude)}°・方位 {Math.round(guidanceTarget.azimuth)}°。{directionText(guidanceTarget.delta, guidanceTarget.altitude - viewAltitude)}。{guidanceTarget.kind === "moon" && moon ? `月面の明るさ約${Math.round(moon.illumination * 100)}%、月齢約${moon.ageDays.toFixed(1)}日。` : ""}雲・障害物・局地的な磁気ずれは含みません。</p></> : <><h3>月と星空を同期しています</h3><p>現在時刻の端末計算を準備中です。</p></>}
+            {sensorEnabled && guidanceTarget && <div className={styles.calibrationActions}><button type="button" onClick={calibrateToTarget}>中央の天体で方位補正</button>{headingOffset !== 0 && <button type="button" onClick={resetCalibration}>補正を解除</button>}</div>}
           </article>
 
-          <div className={styles.sensorReadout} role="status"><p><strong>方位</strong>{sensorStatus}</p><p><strong>位置</strong>{locationStatus}。緯度・経度の数値は保存・送信しません。</p></div>
+          <div className={styles.sensorReadout} role="status"><p><strong>方位</strong>{sensorStatus}</p><p><strong>位置</strong>{effectiveLocationStatus}。緯度・経度の数値は保存・送信しません。</p></div>
 
           <details className={styles.manualPanel}>
             <summary><span><small>MANUAL CONTROLS</small><strong>手動調整と暗所輝度</strong></span><b>開く</b></summary>
@@ -312,3 +327,4 @@ export default function StarGuide({ active, fallbackPosition, islandName }: { ac
 
 function clamp(value: number, min: number, max: number) { return Math.max(min, Math.min(max, value)); }
 function directionText(horizontal: number, vertical: number) { const horizontalText = Math.abs(horizontal) < 6 ? "左右はほぼ中央" : horizontal > 0 ? `右へ約${Math.round(Math.abs(horizontal))}°` : `左へ約${Math.round(Math.abs(horizontal))}°`; const verticalText = Math.abs(vertical) < 6 ? "上下もほぼ中央" : vertical > 0 ? `上へ約${Math.round(Math.abs(vertical))}°` : `下へ約${Math.round(Math.abs(vertical))}°`; return `${horizontalText}、${verticalText}`; }
+function formatMoonEvent(label: string, event: MoonEvent | null) { return event ? `${label} ${event.at.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}ごろ・${event.direction} ${Math.round(event.azimuth)}°` : `${label}は計算範囲外`; }

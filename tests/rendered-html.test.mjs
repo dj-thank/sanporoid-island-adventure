@@ -325,11 +325,11 @@ test("prepares PC-free Android and iPhone installation surfaces for GitHub", asy
   assert.match(adventure, /VITE_NATIVE_APP === "true" && !isHostedPwa/);
   assert.match(adventure, /GitHub Pages版はAPIキーを受け取らず/);
   assert.match(installWorker, /shioboshi-install-/);
-  assert.match(installWorker, /v10/);
-  assert.match(androidGradle, /versionCode 10/);
-  assert.match(androidGradle, /versionName "0\.3\.2"/);
-  assert.match(iosProject, /MARKETING_VERSION = 0\.3\.2/);
-  assert.equal(JSON.parse(packageText).version, "0.3.2");
+  assert.match(installWorker, /v11/);
+  assert.match(androidGradle, /versionCode 11/);
+  assert.match(androidGradle, /versionName "0\.3\.3"/);
+  assert.match(iosProject, /MARKETING_VERSION = 0\.3\.3/);
+  assert.equal(JSON.parse(packageText).version, "0.3.3");
   assert.equal(JSON.parse(packageText).packageManager, "pnpm@11.24.0");
   assert.match(pnpmWorkspace, /allowBuilds:/);
   assert.match(pnpmWorkspace, /esbuild: true/);
@@ -598,6 +598,34 @@ test("keeps deterministic astronomy transforms testable outside React", async ()
   assert.equal(projected.y, 50);
 });
 
+test("computes the moon from time and location without exporting device coordinates", async () => {
+  const [moonModule, moonSource, starGuide, adventure] = await Promise.all([
+    import(new URL("../app/adventure/moonMath.ts", import.meta.url)),
+    readFile(new URL("../app/adventure/moonMath.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/StarGuide.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),
+  ]);
+  const { calculateMoonEvents, calculateMoonPosition, moonPhaseGlyph, moonPhaseLabel } = moonModule;
+  const date = new Date("2026-08-29T12:00:00.000Z");
+  const moon = calculateMoonPosition(date, 34.2097, 139.1327, 90);
+  const events = calculateMoonEvents(date, 34.2097, 139.1327);
+
+  assert.ok(moon.azimuth > 111 && moon.azimuth < 114, `Moon azimuth ${moon.azimuth}`);
+  assert.ok(moon.altitude > 25 && moon.altitude < 28, `Moon altitude ${moon.altitude}`);
+  assert.ok(moon.illumination > 0.97 && moon.illumination < 0.99, `Moon illumination ${moon.illumination}`);
+  assert.equal(moon.phaseLabel, "満月");
+  assert.equal(moon.direction, "南東");
+  assert.ok(moon.delta > 21 && moon.delta < 24);
+  assert.equal(events.set?.at.toISOString().slice(0, 16), "2026-08-29T22:00");
+  assert.equal(events.rise?.at.toISOString().slice(0, 16), "2026-08-30T10:08");
+  assert.equal(moonPhaseLabel(90), "上弦");
+  assert.equal(moonPhaseLabel(270), "下弦");
+  assert.equal(moonPhaseGlyph(180), "🌕");
+  assert.doesNotMatch(moonSource, /fetch\(|sendBeacon|XMLHttpRequest/);
+  assert.match(starGuide, /knownPosition/);
+  assert.match(adventure, /knownPosition=\{currentPosition\}/);
+});
+
 test("imports current, deep, and candidate island knowledge into the map and LLM context", async () => {
   const [rawPack, rawCurrentFacts, rawDeepKnowledge, mapKnowledge, guideRoute] = await Promise.all([
     readFile(new URL("../app/adventure/island-experience-pack.json", import.meta.url), "utf8"),
@@ -671,6 +699,10 @@ test("gives the Bot a scoped read-only trip and island context", async () => {
   assert.deepEqual(payload.islands.map((island) => island.mapProfile.categories.length), [6, 6, 6]);
   assert.equal(payload.islands.every((island) => island.mapProfile.officialMapUrl && island.mapProfile.hazardUrl), true);
   assert.match(payload.islands[0].mapProfile.routeBoundary, /徒歩経路/);
+  assert.equal(payload.islands.every((island) => Number.isFinite(island.moon.altitudeDegrees) && Number.isFinite(island.moon.azimuthDegrees)), true);
+  assert.equal(payload.islands.every((island) => island.moon.observerBasis.includes("島の代表位置")), true);
+  assert.equal(payload.islands.every((island) => island.moon.nextRise?.at && island.moon.nextSet?.at), true);
+  assert.doesNotMatch(JSON.stringify(payload.islands.map((island) => island.moon)), /latitude|longitude|currentPosition|devicePosition|"delta"/);
   assert.equal(payload.researchPack.experienceCount, 19);
   assert.equal(payload.researchPack.currentFactCount, 18);
   assert.equal(payload.researchPack.deepThemeCount, 15);
