@@ -45,8 +45,8 @@ const missionCategoryLabels: Record<string, string> = {
 };
 
 type AppMode = (typeof appModes)[number]["id"];
-const isNativeApp = import.meta.env.VITE_NATIVE_APP === "true";
 const isHostedPwa = import.meta.env.VITE_HOSTED_PWA === "true";
+const isNativeApp = import.meta.env.VITE_NATIVE_APP === "true" && !isHostedPwa;
 
 const tripIslands: Array<{
   slug: TripIslandSlug;

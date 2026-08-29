@@ -15,6 +15,8 @@
   isolation:isolate;
 }
 .mapCanvas { position:absolute; inset:0; }
+.shell :global(.maplibregl-ctrl-top-left) { top:230px; left:8px; }
+.shell :global(.maplibregl-ctrl-attrib-button) { width:44px; height:44px; }
 .washiOverlay {
   position:absolute;
   z-index:2;
@@ -292,6 +294,7 @@
   .categoryFilters { display:none; }
   .mobileCategorySelect { position:absolute; z-index:7; left:12px; top:132px; display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px; align-items:center; width:calc(100% - 88px); min-height:44px; padding:6px 8px; color:#e8f1ed; background:rgba(9,34,45,.88); border:1px solid rgba(245,239,225,.2); border-radius:9px; font-size:10px; font-weight:900; backdrop-filter:blur(12px); }
   .mobileCategorySelect select { width:100%; min-height:44px; padding:4px 8px; color:var(--ink); background:var(--paper); border:0; border-radius:7px; font:inherit; font-size:14px; }
+  .shell :global(.maplibregl-ctrl-top-left) { top:196px; }
   .floatingControls { right:12px; top:31%; }
   .floatingControls button { width:56px; height:56px; }
   .selectionCard { left:12px; bottom:248px; width:calc(100% - 82px); }

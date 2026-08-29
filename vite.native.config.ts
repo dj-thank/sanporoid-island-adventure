@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
   base: "./",
   define: {
     CESIUM_BASE_URL: JSON.stringify("/cesiumStatic"),
-    "import.meta.env.VITE_NATIVE_APP": JSON.stringify("true"),
+    "import.meta.env.VITE_NATIVE_APP": JSON.stringify(mode === "pages" ? "false" : "true"),
     "import.meta.env.VITE_HOSTED_PWA": JSON.stringify(mode === "pages" ? "true" : "false"),
   },
   plugins: [react()],
