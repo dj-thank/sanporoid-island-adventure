@@ -325,11 +325,11 @@ test("prepares PC-free Android and iPhone installation surfaces for GitHub", asy
   assert.match(adventure, /VITE_NATIVE_APP === "true" && !isHostedPwa/);
   assert.match(adventure, /GitHub Pages版はAPIキーを受け取らず/);
   assert.match(installWorker, /shioboshi-install-/);
-  assert.match(installWorker, /v9/);
-  assert.match(androidGradle, /versionCode 9/);
-  assert.match(androidGradle, /versionName "0\.3\.1"/);
-  assert.match(iosProject, /MARKETING_VERSION = 0\.3\.1/);
-  assert.equal(JSON.parse(packageText).version, "0.3.1");
+  assert.match(installWorker, /v10/);
+  assert.match(androidGradle, /versionCode 10/);
+  assert.match(androidGradle, /versionName "0\.3\.2"/);
+  assert.match(iosProject, /MARKETING_VERSION = 0\.3\.2/);
+  assert.equal(JSON.parse(packageText).version, "0.3.2");
   assert.equal(JSON.parse(packageText).packageManager, "pnpm@11.24.0");
   assert.match(pnpmWorkspace, /allowBuilds:/);
   assert.match(pnpmWorkspace, /esbuild: true/);
@@ -460,7 +460,8 @@ test("keeps the phone map, island guide, and sky finder focused and touchable", 
   assert.match(map, /sheetExpanded/);
   assert.match(map, /島の通信記録を広げる/);
   assert.match(mapCss, /\.poiMarker\s*\{[^}]*width:44px;[^}]*height:44px;/s);
-  assert.match(mapCss, /maplibregl-ctrl-attrib-button[^}]*width:44px;[^}]*height:44px/s);
+  assert.match(mapCss, /maplibregl-ctrl-attrib-button[^}]*width:44px;[^}]*height:44px;[^}]*background-repeat:no-repeat;[^}]*background-position:center;[^}]*background-size:24px 24px/s);
+  assert.match(mapCss, /maplibregl-ctrl-attrib\.maplibregl-compact[^}]*min-height:44px;[^}]*padding:0 44px 0 0;/s);
   assert.match(mapCss, /\.mobileCategorySelect select \{[^}]*min-height:44px;/s);
   assert.match(mapCss, /\.sheetCollapsed p/);
   assert.match(mapCss, /\.clockCard \{ display:none; \}/);
