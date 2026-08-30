@@ -405,6 +405,7 @@ export default function AdventureApp() {
                 nextTitle={nextCheckpoint?.title ?? "島を開拓"}
                 locationMessage={locationMessage}
                 onRequestLocation={locateNearby}
+                onOpenStars={() => activateMode("stars")}
                 onSelectionChange={setSelectedMapPoint}
                 onMissionSelect={setExpandedMissionId}
                 missionPanel={mapMissionPanel}

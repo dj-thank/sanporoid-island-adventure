@@ -510,6 +510,20 @@ test("gives all three islands bounded map profiles without fake walk routes", as
   assert.deepEqual(ring.coordinates[0][0], ring.coordinates[0].at(-1));
 });
 
+test("server-renders a direct star-mode action inside the fullscreen map", async () => {
+  const worker = await loadWorker();
+  const response = await worker.fetch(
+    new Request("http://localhost/adventure", { headers: { accept: "text/html" } }),
+    runtime,
+    context,
+  );
+
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.ok(html.includes('aria-label="地図の機能"'), "fullscreen map must expose its action navigation");
+  assert.ok(html.includes('aria-label="地図から星座モードを開く"'), "fullscreen map must have a direct star-mode entry");
+});
+
 test("organizes the island adventure into accessible responsive app modes", async () => {
   const [app, map, fieldGuide, starGuide, shellCss, mapCss, fieldCss, starCss] = await Promise.all([
     readFile(new URL("../app/adventure/AdventureApp.tsx", import.meta.url), "utf8"),

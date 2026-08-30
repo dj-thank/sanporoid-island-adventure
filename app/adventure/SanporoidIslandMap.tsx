@@ -22,6 +22,7 @@ type Props = {
   nextTitle: string;
   locationMessage: string;
   onRequestLocation: () => void;
+  onOpenStars: () => void;
   onSelectionChange?: (point: MapPoint | null) => void;
   onMissionSelect?: (missionId: string) => void;
   missionPanel: ReactNode;
@@ -49,6 +50,7 @@ export default function SanporoidIslandMap({
   nextTitle,
   locationMessage,
   onRequestLocation,
+  onOpenStars,
   onSelectionChange,
   onMissionSelect,
   missionPanel,
@@ -262,7 +264,7 @@ export default function SanporoidIslandMap({
         <strong className={styles.nextHint}>{selected ? `選択中 · ${selected.title}` : `次の任務 · ${nextTitle || `${islandName}を開拓`}`}</strong>
         <small className={styles.islandSafety}>{profile.safetyNote}</small>
         <div className={styles.mapLinks}><a href={profile.officialMapUrl} target="_blank" rel="noreferrer">公式MAP</a><a href={profile.hazardUrl} target="_blank" rel="noreferrer">防災データ</a></div>
-        <nav><button type="button" onClick={onRequestLocation}>⌖ 現在地</button><button type="button" onClick={() => setDrawer("missions")}>01 任務</button><button type="button" onClick={() => setDrawer("guide")}>島ガイド</button><button type="button" onClick={() => setDrawer("friends")}>友達</button></nav>
+        <nav aria-label="地図の機能"><button type="button" onClick={onRequestLocation}>⌖ 現在地</button><button type="button" onClick={() => setDrawer("missions")}>01 任務</button><button type="button" onClick={onOpenStars} aria-label="地図から星座モードを開く">✦ 星座</button><button type="button" onClick={() => setDrawer("guide")}>島ガイド</button><button type="button" onClick={() => setDrawer("friends")}>友達</button></nav>
       </aside>
 
       <footer className={styles.mapStatus}>{mapStatus} · Sanporoid map core · 順番線は徒歩経路ではありません · © OpenStreetMap contributors</footer>
